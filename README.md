@@ -2,6 +2,18 @@
 
 Public GitHub Pages project for the Precision E-Cycle Transfer of Custody form.
 
+## Live app
+
+Expected GitHub Pages URL:
+
+https://ilya-shulyak-ai.github.io/pec-transfer-of-custody/
+
+If this link shows a GitHub Pages 404 after a repository rename, re-save the Pages setting under **Settings → Pages** using:
+
+- Source: Deploy from a branch
+- Branch: main
+- Folder: / root
+
 ## Purpose
 
 This repository is intended to hold the working code for Precision E-Cycle's Transfer of Custody form app.
