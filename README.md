@@ -4,23 +4,32 @@ Public GitHub Pages project for the Precision E-Cycle Transfer of Custody form.
 
 ## Live app
 
-Expected GitHub Pages URL:
-
 https://ilya-shulyak-ai.github.io/pec-transfer-of-custody/
-
-If this link shows a GitHub Pages 404 after a repository rename, re-save the Pages setting under **Settings → Pages** using:
-
-- Source: Deploy from a branch
-- Branch: main
-- Folder: / root
 
 ## Purpose
 
-This repository is intended to hold the working code for Precision E-Cycle's Transfer of Custody form app.
+This repository holds the working code for Precision E-Cycle's Transfer of Custody form app.
+
+## Use on iPhone
+
+1. Open the live app link in Safari.
+2. Tap Share.
+3. Tap Add to Home Screen.
+4. Open the app from the Home Screen.
+
+## Data storage
+
+The form stores entered data locally in the browser on the device being used. It does not use a backend database.
+
+Use the New button after finishing a form to clear local form data and signatures before starting another form.
+
+## Printing
+
+Use the Print button to print or save as PDF. The print layout is controlled by `print.css` and is intended to fit on one Letter-size page.
 
 ## Current app status
 
-The current uploaded `index.html` is the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
+The current app is the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
 
 ## Credit and starting point
 
@@ -34,9 +43,19 @@ This repository was created separately because the original GitHub repository wa
 
 - Keep `main` clean and stable.
 - Use focused feature branches for meaningful changes.
-- Keep changes small and easy to review.
+- Test against `QA-CHECKLIST.md` before merging.
 - Preserve mobile/iPhone behavior carefully.
+- Keep print styles isolated in `print.css`.
+- Keep screen styles isolated in `styles.css`.
 - Prefer simple, static, local-first implementation unless more complexity is clearly needed.
+
+## GitHub Pages recovery
+
+If the live link shows a GitHub Pages 404 after a repository rename, re-save the Pages setting under **Settings → Pages** using:
+
+- Source: Deploy from a branch
+- Branch: main
+- Folder: / root
 
 ## Notes
 
