@@ -2,8 +2,8 @@
   'use strict';
 
   const APP = {
-    storageKey: 'pec_toc_form_v5',
-    oldStorageKeys: ['pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
+    storageKey: 'pec_toc_form_v6',
+    oldStorageKeys: ['pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
     signatureKeyPrefix: 'pec_toc_sig_',
     states: [
       'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
@@ -14,12 +14,23 @@
     ],
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
+    radioGroups: ['dataDestruction', 'certificateRequired'],
     validationRules: {
-      fromState: { type: 'state' },
-      fromEmail: { type: 'email' },
-      receiverPhone: { type: 'phone' },
-      fromPhone: { type: 'phone' },
-      estimatedWeightOther: { type: 'positiveNumber' }
+      tocFormNumber: { required: true, label: 'TOC Form Number' },
+      formDate: { required: true, label: 'Date' },
+      fromCompanyName: { requiredAny: ['fromCompanyName', 'fromContactName'], label: 'Transferring Company or Contact' },
+      fromContactName: { requiredAny: ['fromCompanyName', 'fromContactName'], label: 'Transferring Company or Contact' },
+      transferMethod: { required: true, label: 'Transfer Method' },
+      receivedBy: { required: true, label: 'Received By' },
+      fromState: { type: 'state', label: 'State' },
+      fromEmail: { type: 'email', label: 'Email' },
+      receiverPhone: { type: 'phone', label: 'Receiving Phone' },
+      fromPhone: { type: 'phone', label: 'Phone' },
+      estimatedWeightOther: { type: 'positiveNumber', label: 'Manual Weight' }
+    },
+    requiredRadioGroups: {
+      dataDestruction: 'Data Destruction Required',
+      certificateRequired: 'Certificate Required'
     }
   };
 
@@ -71,12 +82,40 @@
     el.setCustomValidity(message || '');
   }
 
+  function getRadioGroupValue(name) {
+    const selected = document.querySelector(`input[name="${name}"]:checked`);
+    return selected ? selected.value : '';
+  }
+
+  function setRadioGroupValue(name, value) {
+    $$(`input[name="${name}"]`).forEach((el) => { el.checked = el.value === value; });
+  }
+
+  function validateRequiredRadioGroups() {
+    const missing = [];
+    Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => {
+      if (!getRadioGroupValue(groupName)) missing.push(label);
+    });
+    return missing;
+  }
+
   function validateField(el) {
     if (!el || !el.id) return true;
     const rule = APP.validationRules[el.id];
     if (!rule) return true;
-
     const value = el.value.trim();
+
+    if (rule.required && !value) {
+      setValidity(el, `${rule.label || 'This field'} is required.`);
+      return false;
+    }
+
+    if (rule.requiredAny) {
+      const hasAny = rule.requiredAny.some((id) => ($(id)?.value || '').trim());
+      rule.requiredAny.forEach((id) => setValidity($(id), hasAny ? '' : `${rule.label || 'This field'} is required.`));
+      if (!hasAny) return false;
+    }
+
     if (!value) { setValidity(el, ''); return true; }
 
     if (rule.type === 'state') {
@@ -105,11 +144,18 @@
       return valid;
     }
 
+    setValidity(el, '');
     return true;
   }
 
-  function validateAllFields() {
-    return getSaveFields().map(validateField).every(Boolean);
+  function validateAllFields(showAlert = false) {
+    const fieldResults = getSaveFields().map(validateField);
+    const missingRadioGroups = validateRequiredRadioGroups();
+    const isValid = fieldResults.every(Boolean) && missingRadioGroups.length === 0;
+    if (!isValid && showAlert) {
+      alert('Please complete required fields before printing:\n\n' + missingRadioGroups.join('\n'));
+    }
+    return isValid;
   }
 
   function handleFormattedInput(el) {
@@ -167,12 +213,13 @@
 
   function getFormData() {
     const data = {};
-    getSaveFields().forEach((el) => { data[el.id] = el.type === 'radio' ? el.checked : el.value; });
+    getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; });
+    APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); });
     return data;
   }
 
   function saveToStorage() {
-    const payload = { version: 5, savedAt: new Date().toISOString(), data: getFormData() };
+    const payload = { version: 6, savedAt: new Date().toISOString(), data: getFormData() };
     safeLocalStorage((storage) => storage.setItem(APP.storageKey, JSON.stringify(payload)));
   }
 
@@ -196,9 +243,12 @@
       const parsed = JSON.parse(saved);
       const data = parsed && parsed.data ? parsed.data : parsed;
       getSaveFields().forEach((el) => {
-        if (data[el.id] === undefined) return;
-        if (el.type === 'radio') el.checked = Boolean(data[el.id]);
-        else el.value = data[el.id];
+        if (el.type === 'radio') return;
+        if (data[el.id] !== undefined) el.value = data[el.id];
+      });
+      APP.radioGroups.forEach((groupName) => {
+        if (data[groupName]) setRadioGroupValue(groupName, data[groupName]);
+        else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; });
       });
     } catch (error) {
       console.warn('Stored form data could not be read. Clearing corrupted data.', error);
@@ -208,7 +258,7 @@
 
     restoreSignatures();
     toggleAllOtherFields();
-    validateAllFields();
+    validateAllFields(false);
   }
 
   function clearStoredFormData() {
@@ -256,7 +306,7 @@
       state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale));
       state.sigCanvas.style.width = r.width + 'px';
       state.sigCanvas.style.height = r.height + 'px';
-      state.sigCtx.scale(scale, scale);
+      state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0);
       state.sigCtx.strokeStyle = '#1a1a1a';
       state.sigCtx.lineWidth = 2.5;
       state.sigCtx.lineCap = 'round';
@@ -267,8 +317,10 @@
   function sigModalClear() {
     initSigCanvas();
     if (!state.sigCtx || !state.sigCanvas) return;
+    state.sigCtx.save();
     state.sigCtx.setTransform(1, 0, 0, 1, 0, 0);
     state.sigCtx.clearRect(0, 0, state.sigCanvas.width, state.sigCanvas.height);
+    state.sigCtx.restore();
     state.hasMark = false;
     $('sigModalDone')?.classList.remove('ready');
   }
@@ -292,13 +344,11 @@
     }
 
     if (maxX <= minX || maxY <= minY) return srcCanvas.toDataURL('image/png');
-
     const pad = 16;
     minX = Math.max(0, minX - pad);
     minY = Math.max(0, minY - pad);
     maxX = Math.min(srcCanvas.width, maxX + pad);
     maxY = Math.min(srcCanvas.height, maxY + pad);
-
     const width = maxX - minX;
     const height = maxY - minY;
     const out = document.createElement('canvas');
@@ -384,7 +434,7 @@
     if (actionEl) {
       const action = actionEl.dataset.action;
       if (action === 'new-form') resetForm();
-      if (action === 'print') { validateAllFields(); window.print(); }
+      if (action === 'print') { if (validateAllFields(true)) window.print(); }
       if (action === 'today') setTodayAllDates();
       if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); }
       if (action === 'modal-clear-signature') sigModalClear();
@@ -393,6 +443,15 @@
     }
     const sigBox = event.target.closest('[data-signature-box]');
     if (sigBox) openSigModal(sigBox.dataset.signatureBox);
+  }
+
+  function handleKeydown(event) {
+    const sigBox = event.target.closest('[data-signature-box]');
+    if (!sigBox) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openSigModal(sigBox.dataset.signatureBox);
+    }
   }
 
   function handleInput(event) {
@@ -415,6 +474,7 @@
     bindSignatureCanvas();
     loadFromStorage();
     document.addEventListener('click', handleClick);
+    document.addEventListener('keydown', handleKeydown);
     document.addEventListener('input', handleInput);
     document.addEventListener('change', handleChange);
   }
