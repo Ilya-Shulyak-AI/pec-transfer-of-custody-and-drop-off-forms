@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="E-Cycle TOC">
+<meta name="theme-color" content="#1a4f8a">
+<title>Precision E-Cycle — Transfer of Custody</title>
+
+<script>
+  const manifestData = {
+    name: "Precision E-Cycle TOC", short_name: "TOC",
+    start_url: "./index.html", display: "standalone",
+    background_color: "#f0f4f8", theme_color: "#1a4f8a",
+    icons: [{ src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231a4f8a'/><text y='130' font-size='120' text-anchor='middle' x='96'>📋</text></svg>", sizes: "192x192", type: "image/svg+xml" }]
+  };
+  document.write('<link rel="manifest" href="' + URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type:'application/json'})) + '">');
+
+  function fmtPhone(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,10);
+    if (v.length >= 6) v = '(' + v.substring(0,3) + ') ' + v.substring(3,6) + '-' + v.substring(6);
+    else if (v.length >= 3) v = '(' + v.substring(0,3) + ') ' + v.substring(3);
+    el.value = v;
+  }
+
+  function toggleOther(selectId, inputId) {
+    const sel = document.getElementById(selectId);
+    const inp = document.getElementById(inputId);
+    if (inp) inp.style.display = sel.value === 'Other' ? 'block' : 'none';
+  }
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root { --blue:#1a4f8a; --blue-mid:#2563b0; --blue-light:#29abe2; --blue-pale:#e8f0fb; --ink:#1a1a1a; --mid:#555; --border:#c5c5c5; --bg:#f0f4f8; --white:#fff; --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px); --safe-left:env(safe-area-inset-left,0px); --safe-right:env(safe-area-inset-right,0px); }
+  html { height:-webkit-fill-available; }
+  body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; min-height:-webkit-fill-available; display:flex; flex-direction:column; align-items:center; padding:0 0 calc(24px + var(--safe-bottom)); padding-top:calc(60px + var(--safe-top)); }
+  .toolbar { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; gap:8px; align-items:center; background:var(--ink); padding:10px 14px; padding-top:calc(10px + var(--safe-top)); padding-left:calc(14px + var(--safe-left)); padding-right:calc(14px + var(--safe-right)); box-shadow:0 2px 8px rgba(0,0,0,.3); }
+  .toolbar-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.45); margin-right:auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .btn { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; min-height:44px; min-width:44px; padding:10px 16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .15s,transform .1s; border-radius:2px; flex-shrink:0; }
+  .btn:active { transform:scale(.95); opacity:.8; }
+  .btn-new { background:rgba(255,255,255,.12); color:#fff; border:1.5px solid rgba(255,255,255,.25); }
+  .btn-print { background:var(--blue); color:#fff; }
+  .btn-save { background:#f5c518; color:#1a1a1a; }
+  .page { width:100%; max-width:760px; background:#fff; border:2px solid var(--blue-light); box-shadow:0 2px 16px rgba(26,79,138,.12); }
+  @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
+  .doc-header { border-bottom:3px solid var(--blue-light); padding:16px 20px; background:#fff; }
+  .brand-title { font-family:'Barlow Condensed',sans-serif; font-size:34px; font-weight:800; color:var(--ink); letter-spacing:1px; text-transform:uppercase; line-height:1; }
+  .brand-subtitle { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; color:var(--blue); letter-spacing:2px; text-transform:uppercase; margin-top:5px; }
+  .brand-note { font-size:11px; color:var(--mid); margin-top:6px; }
+  .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid var(--border); padding:10px 16px; background:#f8fafc; }
+  .meta-item { display:flex; align-items:center; gap:8px; }
+  .meta-label { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; color:var(--blue); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+  .meta-item input { border:none; border-bottom:1.5px solid var(--border); font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; color:var(--ink); background:transparent; outline:none; flex:1; padding:2px 4px; min-height:32px; -webkit-appearance:none; }
+  .meta-item input:focus { border-bottom-color:var(--blue); background:var(--blue-pale); }
+  .sec-header { background:var(--blue); color:#fff; padding:8px 16px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+  .field-grid { display:grid; gap:0; }
+  .fg-2 { grid-template-columns:1fr 1fr; } .fg-3 { grid-template-columns:1fr 1fr 1fr; } .fg-city { grid-template-columns:2fr 1fr 1fr 1fr; }
+  .fld { display:flex; flex-direction:column; gap:3px; padding:8px 12px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .fld:last-child { border-right:none; }
+  .fld label { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--mid); }
+  .fld input:not([type="checkbox"]), .fld select, .fld textarea { border:none; border-bottom:1px solid transparent; font-size:15px; font-family:'Barlow',sans-serif; color:var(--ink); background:transparent; outline:none; width:100%; -webkit-appearance:none; appearance:none; min-height:36px; padding:2px 0; transition:border-color .15s; }
+  .fld input:not([type="checkbox"]):focus, .fld select:focus, .fld textarea:focus { border-bottom-color:var(--blue); background:var(--blue-pale); padding:2px 4px; }
+  .fld textarea { resize:vertical; min-height:50px; }
+  .fld.pre-fill { background:#f0f7ff; }
+  .fld.pre-fill input { color:var(--mid); font-style:italic; }
+  .checkbox-row { display:flex; align-items:center; gap:16px; padding-top:6px; }
+  .cb-opt { display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .cb-opt input[type="checkbox"], .cb-opt input[type="radio"] { width:20px; height:20px; min-height:20px; cursor:pointer; accent-color:var(--blue); flex-shrink:0; }
+  .cb-opt span { font-size:14px; font-family:'Barlow',sans-serif; color:var(--ink); }
+  .note-box { background:#f0f7ff; border:1px solid var(--blue-light); padding:10px 16px; margin:0; font-size:12px; font-style:italic; color:var(--blue); border-top:none; }
+  .sig-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+  .sig-panel { padding:12px 16px; border-right:1px solid var(--border); }
+  .sig-panel:last-child { border-right:none; }
+  .sig-panel-title { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#fff; background:var(--blue-mid); padding:6px 12px; margin:-12px -16px 12px; }
+  .sig-date-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .sig-date-row label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--mid); white-space:nowrap; }
+  .sig-date-row input { border:none; border-bottom:1.5px solid var(--border); font-size:14px; font-family:'Barlow',sans-serif; color:var(--ink); background:transparent; outline:none; flex:1; padding:2px 4px; min-height:32px; -webkit-appearance:none; }
+  .sig-label { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--mid); margin-bottom:4px; }
+  .sig-canvas-wrap { border:1.5px solid var(--border); background:#fff; position:relative; height:90px; }
+  .sig-canvas-wrap canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair; }
+  .sig-clear { position:absolute; top:4px; right:6px; background:none; border:none; font-size:11px; color:#bbb; cursor:pointer; padding:2px 4px; font-family:'Barlow',sans-serif; }
+  .page-footer { height:6px; background:linear-gradient(90deg, var(--blue) 0%, var(--blue-light) 100%); }
+  @media(max-width:540px){ .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } }
+  .sig-modal { display:none; position:fixed; inset:0; z-index:500; background:#1a1a1a; flex-direction:column; padding:var(--safe-top,0px) var(--safe-right,0px) var(--safe-bottom,0px) var(--safe-left,0px); }
+  .sig-modal.open { display:flex; }
+  .sig-modal-header { background:var(--blue); color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .sig-modal-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+  .sig-modal-canvas-wrap { flex:1; position:relative; margin:12px; background:#fff; border:2px solid rgba(255,255,255,.2); border-radius:4px; overflow:hidden; }
+  .sig-modal-canvas-wrap canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair; }
+  .sig-modal-baseline { position:absolute; bottom:28%; left:5%; right:5%; border-top:1.5px dashed rgba(0,0,0,.15); pointer-events:none; }
+  .sig-modal-x { position:absolute; bottom:calc(28% + 6px); left:5%; font-size:18px; color:rgba(0,0,0,.2); pointer-events:none; }
+  .sig-modal-actions { display:flex; gap:10px; padding:10px 12px; flex-shrink:0; }
+  .sig-modal-clear { flex:1; background:rgba(255,255,255,.1); color:rgba(255,255,255,.7); border:1.5px solid rgba(255,255,255,.2); font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase; min-height:50px; cursor:pointer; border-radius:2px; }
+  .sig-modal-done { flex:2; background:var(--blue); color:#fff; border:none; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; min-height:50px; cursor:pointer; border-radius:2px; opacity:.4; pointer-events:none; }
+  .sig-modal-done.ready { opacity:1; pointer-events:all; }
+  .sig-tap-hint { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; font-size:11px; color:#aaa; letter-spacing:.5px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; gap:4px; }
+  .sig-has-data .sig-tap-hint { display:none; }
+  @media print { @page { size: letter portrait; margin: 0.45in; } body { background:white; padding:0; display:block; } .toolbar { display:none!important; } .page { box-shadow:none!important; border:2px solid #29abe2!important; max-width:100%!important; width:100%!important; margin:0!important; } .fg-2{grid-template-columns:1fr 1fr!important} .fg-3{grid-template-columns:1fr 1fr 1fr!important} .fg-city{grid-template-columns:2fr 1fr 1fr 1fr!important} .meta-row{grid-template-columns:1fr 1fr!important} .sig-grid{grid-template-columns:1fr 1fr!important} .sec-header,.sig-panel-title,.page-footer{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body>
+<div class="toolbar"><span class="toolbar-label">Precision E-Cycle — Transfer of Custody</span><button class="btn btn-new" onclick="newForm()">↺ New</button><button class="btn btn-print" onclick="window.print()">🖨 Print</button></div>
+<div class="page">
+  <div class="doc-header"><div class="brand-title">Precision E-Cycle</div><div class="brand-subtitle">Transfer of Custody</div><div class="brand-note">Secure IT recycling, electronics recycling, and data destruction documentation</div></div>
+  <div class="meta-row"><div class="meta-item"><span class="meta-label">Form #: TOC-</span><input type="text" id="formNum" placeholder="__________"></div><div class="meta-item"><span class="meta-label">Date:</span><input type="text" id="formDate" placeholder="MM / DD / YYYY" inputmode="text"><button onclick="stampDate()" style="margin-left:6px;background:var(--blue);color:#fff;border:none;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;white-space:nowrap;min-height:32px;">Today</button></div></div>
+  <div class="field-grid fg-2" style="border-bottom:2px solid var(--border)"><div class="fld" style="grid-column:1/-1"><label>PO #</label><input type="text" inputmode="text"></div></div>
+  <div class="sec-header">Transferring Party (From)</div>
+  <div class="field-grid fg-2"><div class="fld"><label>Company Name</label><input type="text" inputmode="text"></div><div class="fld"><label>Contact Name</label><input type="text" inputmode="text" autocomplete="name"></div></div>
+  <div class="field-grid fg-3"><div class="fld"><label>Address</label><input type="text" inputmode="text" autocomplete="street-address"></div><div class="fld"><label>Phone</label><input type="tel" inputmode="tel" autocomplete="tel" placeholder="(___) ___-____" oninput="fmtPhone(this)"></div><div class="fld"><label>Email</label><input type="email" inputmode="email" autocomplete="email"></div></div>
+  <div class="field-grid fg-city"><div class="fld"><label>City</label><input type="text" inputmode="text" autocomplete="address-level2"></div><div class="fld"><label>State</label><input type="text" inputmode="text" autocomplete="address-level1" maxlength="2"></div><div class="fld"><label>Zip</label><input type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div><div class="fld"><label>Transfer Method</label><input type="text" inputmode="text"></div></div>
+  <div class="sec-header" style="margin-top:2px">Receiving Party (To) — Precision E-Cycle</div>
+  <div class="field-grid fg-2"><div class="fld pre-fill"><label>Company Name</label><input type="text" value="Precision E-Cycle" readonly></div><div class="fld"><label>Contact Name</label><input type="text" inputmode="text" autocomplete="name"></div></div>
+  <div class="field-grid fg-3"><div class="fld pre-fill"><label>Address</label><input type="text" value="4100 Industrial Ave, STE D" readonly></div><div class="fld"><label>Phone</label><input type="tel" inputmode="tel" placeholder="(___) ___-____" oninput="fmtPhone(this)"></div><div class="fld pre-fill"><label>Email</label><input type="email" value="info@precisionecycle.com" readonly></div></div>
+  <div class="field-grid fg-city"><div class="fld pre-fill"><label>City</label><input type="text" value="Lincoln" readonly></div><div class="fld pre-fill"><label>State</label><input type="text" value="NE" readonly maxlength="2"></div><div class="fld pre-fill"><label>Zip</label><input type="text" value="68504" readonly></div><div class="fld"><label>Received By</label><select><option value="">— Select —</option><option>Ilya Shulyak</option><option>Slavic Brychka</option></select></div></div>
+  <div class="sec-header" style="margin-top:2px">Transfer Details</div>
+  <div class="field-grid fg-2"><div class="fld"><label>Reason for Transfer</label><select id="reasonSelect" onchange="toggleOther('reasonSelect','reasonOther')"><option value="">— Select —</option><option>IT Recycling</option><option>Electronics Recycling</option><option>Data Destruction</option><option>Total Device Shredding</option><option value="Other">Other</option></select><input type="text" id="reasonOther" inputmode="text" placeholder="Specify reason…" style="display:none;margin-top:6px;"></div><div class="fld"><label>Data Destruction Required</label><div class="checkbox-row"><label class="cb-opt"><input type="radio" name="dataDestruction" value="Yes"><span>Yes</span></label><label class="cb-opt"><input type="radio" name="dataDestruction" value="No"><span>No</span></label><label class="cb-opt"><input type="radio" name="dataDestruction" value="N/A"><span>N/A</span></label></div></div></div>
+  <div class="field-grid fg-3"><div class="fld"><label>Certificate Required</label><div class="checkbox-row"><label class="cb-opt"><input type="checkbox" id="certYes" onchange="cbExclusive('certYes','certNo')"><span>Yes</span></label><label class="cb-opt"><input type="checkbox" id="certNo" onchange="cbExclusive('certNo','certYes')"><span>No</span></label></div></div><div class="fld"><label>Est. Total Weight (lbs)</label><select><option value="">— Select —</option><option>Less than 100 lbs</option><option>100 lbs</option><option>200 lbs</option><option>300 lbs</option><option>400 lbs</option><option>500 lbs</option><option>1,000 lbs</option><option>2,000 lbs</option><option>5,000 lbs</option><option>10,000 lbs</option><option value="Other">Other (specify)</option></select></div><div class="fld"><label>Total Units</label><input type="text" inputmode="text" placeholder="e.g. 2 pallets, 3 laptops"></div></div>
+  <div class="note-box">* See attached appendix for serialized audit report</div>
+  <div class="sig-grid" style="border-top:2px solid var(--border)"><div class="sig-panel"><div class="sig-panel-title">Transferring Party</div><div class="sig-date-row"><label>Date:</label><input type="text" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox1" class="sig-canvas-wrap" style="cursor:pointer;" onclick="openSigModal(1)"><img id="sigPreview1" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:calc(100% - 8px);width:auto;max-width:calc(100% - 8px);display:none;"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" onclick="event.stopPropagation();clearSigBox(1)">✕ Clear</button></div></div><div class="sig-panel"><div class="sig-panel-title">Receiving Party — Precision E-Cycle</div><div class="sig-date-row"><label>Date:</label><input type="text" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox2" class="sig-canvas-wrap" style="cursor:pointer;" onclick="openSigModal(2)"><img id="sigPreview2" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:calc(100% - 8px);width:auto;max-width:calc(100% - 8px);display:none;"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" onclick="event.stopPropagation();clearSigBox(2)" style="z-index:2;">✕ Clear</button></div></div></div>
+  <div class="page-footer"></div>
+</div>
+<script>
+function genFormNum(){const n=new Date();return String(n.getMonth()+1).padStart(2,'0')+String(n.getDate()).padStart(2,'0')+n.getFullYear()+String(n.getHours()).padStart(2,'0')+String(n.getMinutes()).padStart(2,'0')}
+function stampDate(){const n=new Date();document.getElementById('formDate').value=String(n.getMonth()+1).padStart(2,'0')+' / '+String(n.getDate()).padStart(2,'0')+' / '+n.getFullYear()}
+function cbExclusive(checked, other){if(document.getElementById(checked).checked){document.getElementById(other).checked=false}}
+let _sc=null,_sx=null,_sd=false,_hasMark=false,_activeSig=1;
+function _initSigCanvas(){if(!_sc){_sc=document.getElementById('sigCanvas');_sx=_sc.getContext('2d')}}
+function openSigModal(n){_initSigCanvas();_activeSig=n;_hasMark=false;document.getElementById('sigModalDone').classList.remove('ready');document.getElementById('sigModalSub').textContent=n===1?'Transferring Party':'Receiving Party';document.getElementById('sigModal').classList.add('open');requestAnimationFrame(()=>{const wrap=document.getElementById('sigModalWrap');const r=wrap.getBoundingClientRect();_sc.width=r.width||300;_sc.height=r.height||300;_sx.strokeStyle='#1a1a1a';_sx.lineWidth=2.5;_sx.lineCap='round';_sx.lineJoin='round';})}
+function sigModalClear(){if(!_sx)return;_sx.clearRect(0,0,_sc.width,_sc.height);_hasMark=false;document.getElementById('sigModalDone').classList.remove('ready')}
+function cropSigCanvas(srcCanvas){const ctx=srcCanvas.getContext('2d'),w=srcCanvas.width,h=srcCanvas.height,data=ctx.getImageData(0,0,w,h).data;let minX=w,minY=h,maxX=0,maxY=0,found=false;for(let y=0;y<h;y++){for(let x=0;x<w;x++){const a=data[(y*w+x)*4+3];if(a>20){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;found=true}}}if(!found)return srcCanvas.toDataURL('image/png');const pad=12;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(w,maxX+pad);maxY=Math.min(h,maxY+pad);const cw=maxX-minX,ch=maxY-minY,out=document.createElement('canvas');out.width=cw;out.height=ch;out.getContext('2d').drawImage(srcCanvas,minX,minY,cw,ch,0,0,cw,ch);return out.toDataURL('image/png')}
+function sigModalDone(){if(!_hasMark)return;const dataURL=cropSigCanvas(_sc),preview=document.getElementById('sigPreview'+_activeSig);preview.src=dataURL;preview.style.display='block';document.getElementById('sigBox'+_activeSig).classList.add('sig-has-data');localStorage.setItem('toc_sig'+_activeSig,dataURL);document.getElementById('sigModal').classList.remove('open')}
+function clearSigBox(n){document.getElementById('sigPreview'+n).style.display='none';document.getElementById('sigPreview'+n).src='';document.getElementById('sigBox'+n).classList.remove('sig-has-data');localStorage.removeItem('toc_sig'+n)}
+function _sigPos(e){const r=_sc.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(_sc.width/r.width),y:(s.clientY-r.top)*(_sc.height/r.height)}}
+document.addEventListener('DOMContentLoaded',()=>{const canvas=document.getElementById('sigCanvas');if(!canvas)return;canvas.addEventListener('mousedown',e=>{_initSigCanvas();_sd=true;const p=_sigPos(e);_sx.beginPath();_sx.moveTo(p.x,p.y)});canvas.addEventListener('mousemove',e=>{if(!_sd)return;const p=_sigPos(e);_sx.lineTo(p.x,p.y);_sx.stroke();_hasMark=true;document.getElementById('sigModalDone').classList.add('ready')});canvas.addEventListener('mouseup',()=>_sd=false);canvas.addEventListener('mouseleave',()=>_sd=false);canvas.addEventListener('touchstart',e=>{e.preventDefault();_initSigCanvas();_sd=true;const p=_sigPos(e);_sx.beginPath();_sx.moveTo(p.x,p.y)},{passive:false});canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!_sd)return;const p=_sigPos(e);_sx.lineTo(p.x,p.y);_sx.stroke();_hasMark=true;document.getElementById('sigModalDone').classList.add('ready')},{passive:false});canvas.addEventListener('touchend',e=>{e.preventDefault();_sd=false},{passive:false});document.getElementById('formNum').value=genFormNum();stampDate();loadFromStorage()});
+function saveToStorage(){const data={};document.querySelectorAll('input:not([readonly]),textarea').forEach((el,i)=>{if(el.type==='checkbox'||el.type==='radio')data['cb'+(el.id||el.name+i)]=el.checked;else data['f'+i]=el.value});localStorage.setItem('toc_form',JSON.stringify(data))}
+function loadFromStorage(){const saved=localStorage.getItem('toc_form');if(saved){const data=JSON.parse(saved);document.querySelectorAll('input:not([readonly]),textarea').forEach((el,i)=>{if(el.type==='checkbox'||el.type==='radio'){const v=data['cb'+(el.id||el.name+i)];if(v!==undefined)el.checked=v}else if(data['f'+i]!==undefined)el.value=data['f'+i]})}[1,2].forEach(n=>{const sig=localStorage.getItem('toc_sig'+n);if(sig){const preview=document.getElementById('sigPreview'+n);preview.src=sig;preview.style.display='block';document.getElementById('sigBox'+n).classList.add('sig-has-data')}})}
+document.addEventListener('input',saveToStorage);document.addEventListener('change',saveToStorage);
+function newForm(){if(!confirm('Clear this form and start a new one?'))return;document.querySelectorAll('input:not([readonly]),textarea').forEach(i=>{if(i.type==='checkbox'||i.type==='radio')i.checked=false;else i.value=''});clearSigBox(1);clearSigBox(2);localStorage.removeItem('toc_form');localStorage.removeItem('toc_sig1');localStorage.removeItem('toc_sig2');document.getElementById('formNum').value=genFormNum();stampDate();window.scrollTo({top:0,behavior:'smooth'})}
+</script>
+<div class="sig-modal" id="sigModal"><div class="sig-modal-header"><div class="sig-modal-title" id="sigModalTitle">✏️ Sign Here</div><span style="font-size:11px;color:rgba(255,255,255,.6);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;" id="sigModalSub"></span></div><div class="sig-modal-canvas-wrap" id="sigModalWrap"><canvas id="sigCanvas"></canvas><div class="sig-modal-baseline"></div><div class="sig-modal-x">✕</div></div><div class="sig-modal-actions"><button class="sig-modal-clear" onclick="sigModalClear()">Clear</button><button class="sig-modal-done" id="sigModalDone" onclick="sigModalDone()">✓ Done</button></div></div>
+</body>
+</html>
