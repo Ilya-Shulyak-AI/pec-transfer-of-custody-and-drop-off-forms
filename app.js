@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'pec_toc_form_v2';
+const STORAGE_KEY = 'pec_toc_form_v3';
 const SIGNATURE_KEY_PREFIX = 'pec_toc_sig_';
 
 const US_STATES = [
@@ -8,22 +8,6 @@ const US_STATES = [
   'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
   'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'
 ];
-
-const manifestData = {
-  name: 'PEC Transfer of Custody',
-  short_name: 'PEC TOC',
-  start_url: './index.html',
-  display: 'standalone',
-  background_color: '#f0f4f8',
-  theme_color: '#1a4f8a',
-  icons: [{
-    src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231a4f8a'/><text y='130' font-size='120' text-anchor='middle' x='96'>📋</text></svg>",
-    sizes: '192x192',
-    type: 'image/svg+xml'
-  }]
-};
-
-document.write('<link rel="manifest" href="' + URL.createObjectURL(new Blob([JSON.stringify(manifestData)], { type: 'application/json' })) + '">');
 
 function fmtPhone(el) {
   let v = el.value.replace(/\D/g, '').substring(0, 10);
@@ -39,9 +23,10 @@ function formatDate() {
 
 function setTodayAllDates() {
   const today = formatDate();
-  document.getElementById('formDate').value = today;
-  document.getElementById('transferSignatureDate').value = today;
-  document.getElementById('receiverSignatureDate').value = today;
+  ['formDate', 'transferSignatureDate', 'receiverSignatureDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = today;
+  });
   saveToStorage();
 }
 
@@ -78,7 +63,7 @@ function formatManualWeight(el) {
 
 function populateStateOptions() {
   const list = document.getElementById('stateOptions');
-  if (!list) return;
+  if (!list || list.children.length) return;
   US_STATES.forEach(state => {
     const option = document.createElement('option');
     option.value = state;
@@ -88,7 +73,7 @@ function populateStateOptions() {
 
 function populateWeightOptions() {
   const select = document.getElementById('estimatedWeight');
-  if (!select) return;
+  if (!select || select.dataset.populated === 'true') return;
   for (let weight = 100; weight <= 10000; weight += 100) {
     const value = weight.toLocaleString('en-US') + ' lbs';
     const option = document.createElement('option');
@@ -100,6 +85,7 @@ function populateWeightOptions() {
   other.value = 'Other';
   other.textContent = 'Other';
   select.appendChild(other);
+  select.dataset.populated = 'true';
 }
 
 let sigCanvas = null;
@@ -109,14 +95,13 @@ let hasMark = false;
 let activeSig = 1;
 
 function initSigCanvas() {
-  if (!sigCanvas) {
-    sigCanvas = document.getElementById('sigCanvas');
-    sigCtx = sigCanvas.getContext('2d');
-  }
+  if (!sigCanvas) sigCanvas = document.getElementById('sigCanvas');
+  if (sigCanvas && !sigCtx) sigCtx = sigCanvas.getContext('2d');
 }
 
 function openSigModal(n) {
   initSigCanvas();
+  if (!sigCanvas || !sigCtx) return;
   activeSig = n;
   hasMark = false;
   document.getElementById('sigModalDone').classList.remove('ready');
@@ -135,45 +120,14 @@ function openSigModal(n) {
 }
 
 function sigModalClear() {
-  if (!sigCtx) return;
+  if (!sigCtx || !sigCanvas) return;
   sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
   hasMark = false;
   document.getElementById('sigModalDone').classList.remove('ready');
 }
 
 function cropSigCanvas(srcCanvas) {
-  const ctx = srcCanvas.getContext('2d');
-  const w = srcCanvas.width;
-  const h = srcCanvas.height;
-  const data = ctx.getImageData(0, 0, w, h).data;
-  let minX = w, minY = h, maxX = 0, maxY = 0, found = false;
-
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const a = data[(y * w + x) * 4 + 3];
-      if (a > 20) {
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
-        found = true;
-      }
-    }
-  }
-
-  if (!found) return srcCanvas.toDataURL('image/png');
-  const pad = 12;
-  minX = Math.max(0, minX - pad);
-  minY = Math.max(0, minY - pad);
-  maxX = Math.min(w, maxX + pad);
-  maxY = Math.min(h, maxY + pad);
-  const cw = maxX - minX;
-  const ch = maxY - minY;
-  const out = document.createElement('canvas');
-  out.width = cw;
-  out.height = ch;
-  out.getContext('2d').drawImage(srcCanvas, minX, minY, cw, ch, 0, 0, cw, ch);
-  return out.toDataURL('image/png');
+  return srcCanvas.toDataURL('image/png');
 }
 
 function sigModalDone() {
@@ -189,9 +143,12 @@ function sigModalDone() {
 
 function clearSigBox(n) {
   const preview = document.getElementById('sigPreview' + n);
-  preview.style.display = 'none';
-  preview.src = '';
-  document.getElementById('sigBox' + n).classList.remove('sig-has-data');
+  if (preview) {
+    preview.style.display = 'none';
+    preview.src = '';
+  }
+  const box = document.getElementById('sigBox' + n);
+  if (box) box.classList.remove('sig-has-data');
   localStorage.removeItem(SIGNATURE_KEY_PREFIX + n);
 }
 
@@ -204,47 +161,42 @@ function sigPos(e) {
   };
 }
 
+function startSig(e) {
+  e.preventDefault();
+  initSigCanvas();
+  if (!sigCtx) return;
+  isSigning = true;
+  const p = sigPos(e);
+  sigCtx.beginPath();
+  sigCtx.moveTo(p.x, p.y);
+}
+
+function moveSig(e) {
+  if (!isSigning || !sigCtx) return;
+  e.preventDefault();
+  const p = sigPos(e);
+  sigCtx.lineTo(p.x, p.y);
+  sigCtx.stroke();
+  hasMark = true;
+  document.getElementById('sigModalDone').classList.add('ready');
+}
+
+function endSig(e) {
+  if (e) e.preventDefault();
+  isSigning = false;
+}
+
 function bindSignatureCanvas() {
   const canvas = document.getElementById('sigCanvas');
-  if (!canvas) return;
-  canvas.addEventListener('mousedown', e => {
-    initSigCanvas();
-    isSigning = true;
-    const p = sigPos(e);
-    sigCtx.beginPath();
-    sigCtx.moveTo(p.x, p.y);
-  });
-  canvas.addEventListener('mousemove', e => {
-    if (!isSigning) return;
-    const p = sigPos(e);
-    sigCtx.lineTo(p.x, p.y);
-    sigCtx.stroke();
-    hasMark = true;
-    document.getElementById('sigModalDone').classList.add('ready');
-  });
-  canvas.addEventListener('mouseup', () => isSigning = false);
-  canvas.addEventListener('mouseleave', () => isSigning = false);
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    initSigCanvas();
-    isSigning = true;
-    const p = sigPos(e);
-    sigCtx.beginPath();
-    sigCtx.moveTo(p.x, p.y);
-  }, { passive:false });
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (!isSigning) return;
-    const p = sigPos(e);
-    sigCtx.lineTo(p.x, p.y);
-    sigCtx.stroke();
-    hasMark = true;
-    document.getElementById('sigModalDone').classList.add('ready');
-  }, { passive:false });
-  canvas.addEventListener('touchend', e => {
-    e.preventDefault();
-    isSigning = false;
-  }, { passive:false });
+  if (!canvas || canvas.dataset.bound === 'true') return;
+  canvas.dataset.bound = 'true';
+  canvas.addEventListener('mousedown', startSig);
+  canvas.addEventListener('mousemove', moveSig);
+  canvas.addEventListener('mouseup', endSig);
+  canvas.addEventListener('mouseleave', endSig);
+  canvas.addEventListener('touchstart', startSig, { passive:false });
+  canvas.addEventListener('touchmove', moveSig, { passive:false });
+  canvas.addEventListener('touchend', endSig, { passive:false });
 }
 
 function saveToStorage() {
@@ -259,12 +211,17 @@ function saveToStorage() {
 function loadFromStorage() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    const data = JSON.parse(saved);
-    document.querySelectorAll('[data-save="true"]').forEach(el => {
-      if (!el.id || data[el.id] === undefined) return;
-      if (el.type === 'radio') el.checked = data[el.id];
-      else el.value = data[el.id];
-    });
+    try {
+      const data = JSON.parse(saved);
+      document.querySelectorAll('[data-save="true"]').forEach(el => {
+        if (!el.id || data[el.id] === undefined) return;
+        if (el.type === 'radio') el.checked = data[el.id];
+        else el.value = data[el.id];
+      });
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      setTodayAllDates();
+    }
   } else {
     setTodayAllDates();
   }
