@@ -1,6 +1,6 @@
 @page { size: letter portrait; margin: 0.3in; }
 html, body { background: white !important; padding: 0 !important; margin: 0 !important; width: 100% !important; min-height: 0 !important; display: block !important; }
-.toolbar, .sig-clear { display: none !important; }
+.toolbar, .sig-clear, .today-btn, .sig-tap-hint { display: none !important; }
 .page { box-shadow: none !important; border: 2px solid #29abe2 !important; width: 7.3in !important; max-width: 7.3in !important; height: 9.9in !important; margin: 0 auto !important; display: flex !important; flex-direction: column !important; }
 .doc-header { padding: 0.16in 0.18in 0.13in !important; border-bottom: 2px solid #29abe2 !important; text-align: center !important; }
 .brand-title { font-size: 36px !important; line-height: .95 !important; }
