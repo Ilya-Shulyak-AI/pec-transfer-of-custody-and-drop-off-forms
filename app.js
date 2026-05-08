@@ -9,19 +9,7 @@
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
     radioGroups: ['dataDestruction', 'certificateRequired'],
-    validationRules: {
-      tocFormNumber: { required: true, label: 'TOC Form Number' },
-      formDate: { required: true, label: 'Date' },
-      fromCompanyName: { requiredAny: ['fromCompanyName', 'fromContactName'], label: 'Transferring Company or Contact' },
-      fromContactName: { requiredAny: ['fromCompanyName', 'fromContactName'], label: 'Transferring Company or Contact' },
-      transferMethod: { required: true, label: 'Transfer Method' },
-      receivedBy: { required: true, label: 'Received By' },
-      fromState: { type: 'state', label: 'State' },
-      fromEmail: { type: 'email', label: 'Email' },
-      receiverPhone: { type: 'phone', label: 'Receiving Phone' },
-      fromPhone: { type: 'phone', label: 'Phone' },
-      estimatedWeightOther: { type: 'positiveNumber', label: 'Manual Weight' }
-    },
+    optionalEmptyFields: ['poNumber'],
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
@@ -41,6 +29,20 @@
   function findFieldContainer(el) { return el?.closest('.fld, .meta-item'); }
   function markField(el, isMissing) { const container = findFieldContainer(el); if (container) container.classList.toggle('field-missing', Boolean(isMissing)); }
   function clearMissingHighlights() { $$('.field-missing').forEach((el) => el.classList.remove('field-missing')); }
+  function isHiddenByOtherWrap(el) { const wrap = el.closest('.other-wrap'); return wrap && getComputedStyle(wrap).display === 'none'; }
+  function isEmptyExpectedField(el) {
+    if (!el || !el.id || APP.optionalEmptyFields.includes(el.id) || el.type === 'radio' || el.readOnly || el.disabled || isHiddenByOtherWrap(el)) return false;
+    return !String(el.value || '').trim();
+  }
+  function fieldHasInvalidValue(el) {
+    const value = String(el.value || '').trim();
+    if (!value) return false;
+    if (el.dataset.format === 'state') return !APP.states.includes(value.toUpperCase());
+    if (el.type === 'email') return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    if (el.type === 'tel') { const digits = value.replace(/\D/g, ''); return digits.length > 0 && digits.length !== 10; }
+    if (el.dataset.format === 'weight') return Number(value.replace(/\D/g, '')) <= 0;
+    return false;
+  }
 
   function validateRequiredRadioGroups(mark = false) {
     const missing = [];
@@ -54,26 +56,11 @@
 
   function validateField(el, mark = false) {
     if (!el || !el.id) return true;
-    const rule = APP.validationRules[el.id];
-    if (!rule) return true;
-    const value = el.value.trim();
-    let valid = true;
-    let message = '';
-
-    if (rule.required && !value) { valid = false; message = `${rule.label || 'This field'} is required.`; }
-    if (valid && rule.requiredAny) {
-      const hasAny = rule.requiredAny.some((id) => ($(id)?.value || '').trim());
-      rule.requiredAny.forEach((id) => { setValidity($(id), hasAny ? '' : `${rule.label || 'This field'} is required.`); if (mark) markField($(id), !hasAny); });
-      if (!hasAny) return false;
-    }
-    if (valid && value && rule.type === 'state') { valid = APP.states.includes(value.toUpperCase()); message = valid ? '' : 'Use a valid 2-letter state abbreviation.'; }
-    if (valid && value && rule.type === 'email') { valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); message = valid ? '' : 'Enter a valid email address.'; }
-    if (valid && value && rule.type === 'phone') { const digits = value.replace(/\D/g, ''); valid = digits.length === 0 || digits.length === 10; message = valid ? '' : 'Enter a 10-digit phone number.'; }
-    if (valid && value && rule.type === 'positiveNumber') { const digits = value.replace(/\D/g, ''); valid = digits.length === 0 || Number(digits) > 0; message = valid ? '' : 'Enter a valid weight.'; }
-
-    setValidity(el, valid ? '' : message);
-    if (mark && !rule.requiredAny) markField(el, !valid);
-    return valid;
+    const missing = isEmptyExpectedField(el);
+    const invalid = fieldHasInvalidValue(el);
+    setValidity(el, invalid ? 'Please check this field.' : '');
+    if (mark) markField(el, missing || invalid);
+    return !missing && !invalid;
   }
 
   function validateAllFields(mark = false) {
@@ -83,16 +70,12 @@
     return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0, missingRadioGroups };
   }
 
-  function showValidationBanner() {
-    const banner = $('validationBanner');
-    if (!banner) return;
-    banner.textContent = 'Some fields are not filled out. You can continue filling out the form or print with the information currently entered.';
-    banner.classList.add('show');
-  }
-  function hideValidationBanner() { $('validationBanner')?.classList.remove('show'); }
+  function showValidationBanner() { return; }
+  function hideValidationBanner() { return; }
   function openPrintWarningModal() { $('printWarningModal')?.classList.add('open'); }
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
-  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { hideValidationBanner(); window.print(); } else { showValidationBanner(); openPrintWarningModal(); } }
+  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(); } }
+  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
 
   function handleFormattedInput(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); validateField(el, true); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
@@ -126,7 +109,7 @@
       const action = actionEl.dataset.action;
       if (action === 'new-form') resetForm();
       if (action === 'print') requestPrint();
-      if (action === 'force-print') { closePrintWarningModal(); window.print(); }
+      if (action === 'force-print') printAnyway();
       if (action === 'continue-editing') closePrintWarningModal();
       if (action === 'today') setTodayAllDates();
       if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); }
