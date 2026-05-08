@@ -5,13 +5,7 @@
     storageKey: 'pec_toc_form_v6',
     oldStorageKeys: ['pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
     signatureKeyPrefix: 'pec_toc_sig_',
-    states: [
-      'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
-      'HI','ID','IL','IN','IA','KS','KY','LA','ME','MD',
-      'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
-      'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
-      'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'
-    ],
+    states: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'],
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
     radioGroups: ['dataDestruction', 'certificateRequired'],
@@ -28,413 +22,112 @@
       fromPhone: { type: 'phone', label: 'Phone' },
       estimatedWeightOther: { type: 'positiveNumber', label: 'Manual Weight' }
     },
-    requiredRadioGroups: {
-      dataDestruction: 'Data Destruction Required',
-      certificateRequired: 'Certificate Required'
-    }
+    requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
-  const state = {
-    sigCanvas: null,
-    sigCtx: null,
-    isSigning: false,
-    hasMark: false,
-    activeSig: '1'
-  };
-
+  const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1' };
   const $ = (id) => document.getElementById(id);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
-  function safeLocalStorage(action, fallback = null) {
-    try { return action(window.localStorage); }
-    catch (error) { console.warn('Local storage unavailable:', error); return fallback; }
-  }
+  function safeLocalStorage(action, fallback = null) { try { return action(window.localStorage); } catch (error) { console.warn('Local storage unavailable:', error); return fallback; } }
+  function formatDate() { const n = new Date(); return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear(); }
+  function setTodayAllDates() { const today = formatDate(); APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; }); saveToStorage(); }
+  function formatPhoneValue(value) { let v = value.replace(/\D/g, '').substring(0, 10); if (v.length >= 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6); if (v.length >= 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3); return v; }
+  function formatManualWeightValue(value) { const digits = value.replace(/\D/g, ''); return digits ? Number(digits).toLocaleString('en-US') : ''; }
+  function normalizeStateValue(value) { return value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2); }
+  function setValidity(el, message) { if (!el || typeof el.setCustomValidity !== 'function') return; el.setCustomValidity(message || ''); }
+  function getRadioGroupValue(name) { const selected = document.querySelector(`input[name="${name}"]:checked`); return selected ? selected.value : ''; }
+  function setRadioGroupValue(name, value) { $$(`input[name="${name}"]`).forEach((el) => { el.checked = el.value === value; }); }
+  function findFieldContainer(el) { return el?.closest('.fld, .meta-item'); }
+  function markField(el, isMissing) { const container = findFieldContainer(el); if (container) container.classList.toggle('field-missing', Boolean(isMissing)); }
+  function clearMissingHighlights() { $$('.field-missing').forEach((el) => el.classList.remove('field-missing')); }
 
-  function formatDate() {
-    const n = new Date();
-    return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear();
-  }
-
-  function setTodayAllDates() {
-    const today = formatDate();
-    APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; });
-    saveToStorage();
-  }
-
-  function formatPhoneValue(value) {
-    let v = value.replace(/\D/g, '').substring(0, 10);
-    if (v.length >= 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6);
-    if (v.length >= 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3);
-    return v;
-  }
-
-  function formatManualWeightValue(value) {
-    const digits = value.replace(/\D/g, '');
-    return digits ? Number(digits).toLocaleString('en-US') : '';
-  }
-
-  function normalizeStateValue(value) {
-    return value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
-  }
-
-  function setValidity(el, message) {
-    if (!el || typeof el.setCustomValidity !== 'function') return;
-    el.setCustomValidity(message || '');
-  }
-
-  function getRadioGroupValue(name) {
-    const selected = document.querySelector(`input[name="${name}"]:checked`);
-    return selected ? selected.value : '';
-  }
-
-  function setRadioGroupValue(name, value) {
-    $$(`input[name="${name}"]`).forEach((el) => { el.checked = el.value === value; });
-  }
-
-  function validateRequiredRadioGroups() {
+  function validateRequiredRadioGroups(mark = false) {
     const missing = [];
     Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => {
-      if (!getRadioGroupValue(groupName)) missing.push(label);
+      const checked = Boolean(getRadioGroupValue(groupName));
+      if (!checked) missing.push(label);
+      if (mark) $$(`input[name="${groupName}"]`).forEach((el) => markField(el, !checked));
     });
     return missing;
   }
 
-  function validateField(el) {
+  function validateField(el, mark = false) {
     if (!el || !el.id) return true;
     const rule = APP.validationRules[el.id];
     if (!rule) return true;
     const value = el.value.trim();
+    let valid = true;
+    let message = '';
 
-    if (rule.required && !value) {
-      setValidity(el, `${rule.label || 'This field'} is required.`);
-      return false;
-    }
-
-    if (rule.requiredAny) {
+    if (rule.required && !value) { valid = false; message = `${rule.label || 'This field'} is required.`; }
+    if (valid && rule.requiredAny) {
       const hasAny = rule.requiredAny.some((id) => ($(id)?.value || '').trim());
-      rule.requiredAny.forEach((id) => setValidity($(id), hasAny ? '' : `${rule.label || 'This field'} is required.`));
+      rule.requiredAny.forEach((id) => { setValidity($(id), hasAny ? '' : `${rule.label || 'This field'} is required.`); if (mark) markField($(id), !hasAny); });
       if (!hasAny) return false;
     }
+    if (valid && value && rule.type === 'state') { valid = APP.states.includes(value.toUpperCase()); message = valid ? '' : 'Use a valid 2-letter state abbreviation.'; }
+    if (valid && value && rule.type === 'email') { valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); message = valid ? '' : 'Enter a valid email address.'; }
+    if (valid && value && rule.type === 'phone') { const digits = value.replace(/\D/g, ''); valid = digits.length === 0 || digits.length === 10; message = valid ? '' : 'Enter a 10-digit phone number.'; }
+    if (valid && value && rule.type === 'positiveNumber') { const digits = value.replace(/\D/g, ''); valid = digits.length === 0 || Number(digits) > 0; message = valid ? '' : 'Enter a valid weight.'; }
 
-    if (!value) { setValidity(el, ''); return true; }
-
-    if (rule.type === 'state') {
-      const valid = APP.states.includes(value.toUpperCase());
-      setValidity(el, valid ? '' : 'Use a valid 2-letter state abbreviation.');
-      return valid;
-    }
-
-    if (rule.type === 'email') {
-      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      setValidity(el, valid ? '' : 'Enter a valid email address.');
-      return valid;
-    }
-
-    if (rule.type === 'phone') {
-      const digits = value.replace(/\D/g, '');
-      const valid = digits.length === 0 || digits.length === 10;
-      setValidity(el, valid ? '' : 'Enter a 10-digit phone number.');
-      return valid;
-    }
-
-    if (rule.type === 'positiveNumber') {
-      const digits = value.replace(/\D/g, '');
-      const valid = digits.length === 0 || Number(digits) > 0;
-      setValidity(el, valid ? '' : 'Enter a valid weight.');
-      return valid;
-    }
-
-    setValidity(el, '');
-    return true;
+    setValidity(el, valid ? '' : message);
+    if (mark && !rule.requiredAny) markField(el, !valid);
+    return valid;
   }
 
-  function validateAllFields(showAlert = false) {
-    const fieldResults = getSaveFields().map(validateField);
-    const missingRadioGroups = validateRequiredRadioGroups();
-    const isValid = fieldResults.every(Boolean) && missingRadioGroups.length === 0;
-    if (!isValid && showAlert) {
-      alert('Please complete required fields before printing:\n\n' + missingRadioGroups.join('\n'));
-    }
-    return isValid;
+  function validateAllFields(mark = false) {
+    if (mark) clearMissingHighlights();
+    const fieldResults = getSaveFields().map((el) => validateField(el, mark));
+    const missingRadioGroups = validateRequiredRadioGroups(mark);
+    return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0, missingRadioGroups };
   }
 
-  function handleFormattedInput(el) {
-    const type = el.dataset.format;
-    if (type === 'phone') el.value = formatPhoneValue(el.value);
-    if (type === 'weight') el.value = formatManualWeightValue(el.value);
-    if (type === 'state') el.value = normalizeStateValue(el.value);
-    validateField(el);
+  function showValidationBanner() {
+    const banner = $('validationBanner');
+    if (!banner) return;
+    banner.textContent = 'Some fields are not filled out. You can continue filling out the form or print with the information currently entered.';
+    banner.classList.add('show');
   }
+  function hideValidationBanner() { $('validationBanner')?.classList.remove('show'); }
+  function openPrintWarningModal() { $('printWarningModal')?.classList.add('open'); }
+  function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
+  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { hideValidationBanner(); window.print(); } else { showValidationBanner(); openPrintWarningModal(); } }
 
-  function toggleOtherForSelect(select) {
-    const wrapId = select.dataset.otherTarget;
-    if (!wrapId) return;
-    const wrap = $(wrapId);
-    if (!wrap) return;
-    const show = select.value === 'Other';
-    wrap.style.display = show ? 'block' : 'none';
-    const input = wrap.querySelector('input');
-    if (!show && input) {
-      input.value = '';
-      setValidity(input, '');
-    }
-  }
-
+  function handleFormattedInput(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); validateField(el, true); }
+  function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
-
-  function populateStateOptions() {
-    const list = $('stateOptions');
-    if (!list || list.children.length) return;
-    APP.states.forEach((stateAbbr) => {
-      const option = document.createElement('option');
-      option.value = stateAbbr;
-      list.appendChild(option);
-    });
-  }
-
-  function populateWeightOptions() {
-    const select = $('estimatedWeight');
-    if (!select || select.dataset.populated === 'true') return;
-    for (let weight = 100; weight <= 10000; weight += 100) {
-      const value = weight.toLocaleString('en-US') + ' lbs';
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = value;
-      select.appendChild(option);
-    }
-    const other = document.createElement('option');
-    other.value = 'Other';
-    other.textContent = 'Other';
-    select.appendChild(other);
-    select.dataset.populated = 'true';
-  }
-
+  function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
+  function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
+  function getFormData() { const data = {}; getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; }); APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); }); return data; }
+  function saveToStorage() { const payload = { version: 6, savedAt: new Date().toISOString(), data: getFormData() }; safeLocalStorage((storage) => storage.setItem(APP.storageKey, JSON.stringify(payload))); }
+  function readStoredPayload() { return safeLocalStorage((storage) => { const current = storage.getItem(APP.storageKey); if (current) return current; for (const key of APP.oldStorageKeys) { const oldValue = storage.getItem(key); if (oldValue) return oldValue; } return null; }); }
+  function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setTodayAllDates(); restoreSignatures(); toggleAllOtherFields(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setTodayAllDates(); } restoreSignatures(); toggleAllOtherFields(); validateAllFields(false); }
+  function clearStoredFormData() { safeLocalStorage((storage) => { storage.removeItem(APP.storageKey); APP.oldStorageKeys.forEach((key) => storage.removeItem(key)); APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id)); }); }
+  function resetForm() { if (!confirm('Clear this form and start a new one?')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); clearStoredFormData(); clearMissingHighlights(); hideValidationBanner(); toggleAllOtherFields(); setTodayAllDates(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-  function getFormData() {
-    const data = {};
-    getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; });
-    APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); });
-    return data;
-  }
-
-  function saveToStorage() {
-    const payload = { version: 6, savedAt: new Date().toISOString(), data: getFormData() };
-    safeLocalStorage((storage) => storage.setItem(APP.storageKey, JSON.stringify(payload)));
-  }
-
-  function readStoredPayload() {
-    return safeLocalStorage((storage) => {
-      const current = storage.getItem(APP.storageKey);
-      if (current) return current;
-      for (const key of APP.oldStorageKeys) {
-        const oldValue = storage.getItem(key);
-        if (oldValue) return oldValue;
-      }
-      return null;
-    });
-  }
-
-  function loadFromStorage() {
-    const saved = readStoredPayload();
-    if (!saved) { setTodayAllDates(); restoreSignatures(); toggleAllOtherFields(); return; }
-
-    try {
-      const parsed = JSON.parse(saved);
-      const data = parsed && parsed.data ? parsed.data : parsed;
-      getSaveFields().forEach((el) => {
-        if (el.type === 'radio') return;
-        if (data[el.id] !== undefined) el.value = data[el.id];
-      });
-      APP.radioGroups.forEach((groupName) => {
-        if (data[groupName]) setRadioGroupValue(groupName, data[groupName]);
-        else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; });
-      });
-    } catch (error) {
-      console.warn('Stored form data could not be read. Clearing corrupted data.', error);
-      clearStoredFormData();
-      setTodayAllDates();
-    }
-
-    restoreSignatures();
-    toggleAllOtherFields();
-    validateAllFields(false);
-  }
-
-  function clearStoredFormData() {
-    safeLocalStorage((storage) => {
-      storage.removeItem(APP.storageKey);
-      APP.oldStorageKeys.forEach((key) => storage.removeItem(key));
-      APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id));
-    });
-  }
-
-  function resetForm() {
-    if (!confirm('Clear this form and start a new one?')) return;
-    getSaveFields().forEach((el) => {
-      if (el.type === 'radio') el.checked = false;
-      else el.value = '';
-      setValidity(el, '');
-    });
-    APP.signatureIds.forEach(clearSigBox);
-    clearStoredFormData();
-    toggleAllOtherFields();
-    setTodayAllDates();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function initSigCanvas() {
-    if (!state.sigCanvas) state.sigCanvas = $('sigCanvas');
-    if (state.sigCanvas && !state.sigCtx) state.sigCtx = state.sigCanvas.getContext('2d', { willReadFrequently: true });
-  }
-
-  function openSigModal(signatureId) {
-    initSigCanvas();
-    if (!state.sigCanvas || !state.sigCtx) return;
-    state.activeSig = String(signatureId);
-    state.hasMark = false;
-    $('sigModalDone')?.classList.remove('ready');
-    const subtitle = $('sigModalSub');
-    if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party';
-    $('sigModal')?.classList.add('open');
-    requestAnimationFrame(() => {
-      const wrap = $('sigModalWrap');
-      if (!wrap) return;
-      const r = wrap.getBoundingClientRect();
-      const scale = window.devicePixelRatio || 1;
-      state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale));
-      state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale));
-      state.sigCanvas.style.width = r.width + 'px';
-      state.sigCanvas.style.height = r.height + 'px';
-      state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0);
-      state.sigCtx.strokeStyle = '#1a1a1a';
-      state.sigCtx.lineWidth = 2.5;
-      state.sigCtx.lineCap = 'round';
-      state.sigCtx.lineJoin = 'round';
-    });
-  }
-
-  function sigModalClear() {
-    initSigCanvas();
-    if (!state.sigCtx || !state.sigCanvas) return;
-    state.sigCtx.save();
-    state.sigCtx.setTransform(1, 0, 0, 1, 0, 0);
-    state.sigCtx.clearRect(0, 0, state.sigCanvas.width, state.sigCanvas.height);
-    state.sigCtx.restore();
-    state.hasMark = false;
-    $('sigModalDone')?.classList.remove('ready');
-  }
-
-  function cropSigCanvas(srcCanvas) {
-    const ctx = srcCanvas.getContext('2d', { willReadFrequently: true });
-    const pixels = ctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height);
-    const data = pixels.data;
-    let minX = srcCanvas.width, minY = srcCanvas.height, maxX = 0, maxY = 0;
-
-    for (let y = 0; y < srcCanvas.height; y++) {
-      for (let x = 0; x < srcCanvas.width; x++) {
-        const alpha = data[(y * srcCanvas.width + x) * 4 + 3];
-        if (alpha > 0) {
-          minX = Math.min(minX, x);
-          minY = Math.min(minY, y);
-          maxX = Math.max(maxX, x);
-          maxY = Math.max(maxY, y);
-        }
-      }
-    }
-
-    if (maxX <= minX || maxY <= minY) return srcCanvas.toDataURL('image/png');
-    const pad = 16;
-    minX = Math.max(0, minX - pad);
-    minY = Math.max(0, minY - pad);
-    maxX = Math.min(srcCanvas.width, maxX + pad);
-    maxY = Math.min(srcCanvas.height, maxY + pad);
-    const width = maxX - minX;
-    const height = maxY - minY;
-    const out = document.createElement('canvas');
-    out.width = width;
-    out.height = height;
-    out.getContext('2d').drawImage(srcCanvas, minX, minY, width, height, 0, 0, width, height);
-    return out.toDataURL('image/png');
-  }
-
-  function sigModalDone() {
-    if (!state.hasMark || !state.sigCanvas) return;
-    const dataURL = cropSigCanvas(state.sigCanvas);
-    const preview = $('sigPreview' + state.activeSig);
-    const box = $('sigBox' + state.activeSig);
-    if (preview) { preview.src = dataURL; preview.style.display = 'block'; }
-    if (box) box.classList.add('sig-has-data');
-    safeLocalStorage((storage) => storage.setItem(APP.signatureKeyPrefix + state.activeSig, dataURL));
-    $('sigModal')?.classList.remove('open');
-  }
-
-  function clearSigBox(signatureId) {
-    const id = String(signatureId);
-    const preview = $('sigPreview' + id);
-    if (preview) { preview.style.display = 'none'; preview.src = ''; }
-    $('sigBox' + id)?.classList.remove('sig-has-data');
-    safeLocalStorage((storage) => storage.removeItem(APP.signatureKeyPrefix + id));
-  }
-
-  function restoreSignatures() {
-    APP.signatureIds.forEach((id) => {
-      const sig = safeLocalStorage((storage) => storage.getItem(APP.signatureKeyPrefix + id));
-      if (!sig) return;
-      const preview = $('sigPreview' + id);
-      const box = $('sigBox' + id);
-      if (preview) { preview.src = sig; preview.style.display = 'block'; }
-      if (box) box.classList.add('sig-has-data');
-    });
-  }
-
-  function sigPos(e) {
-    const r = state.sigCanvas.getBoundingClientRect();
-    const s = e.touches ? e.touches[0] : e;
-    return { x: s.clientX - r.left, y: s.clientY - r.top };
-  }
-
-  function startSig(e) {
-    e.preventDefault();
-    initSigCanvas();
-    if (!state.sigCtx) return;
-    state.isSigning = true;
-    const p = sigPos(e);
-    state.sigCtx.beginPath();
-    state.sigCtx.moveTo(p.x, p.y);
-  }
-
-  function moveSig(e) {
-    if (!state.isSigning || !state.sigCtx) return;
-    e.preventDefault();
-    const p = sigPos(e);
-    state.sigCtx.lineTo(p.x, p.y);
-    state.sigCtx.stroke();
-    state.hasMark = true;
-    $('sigModalDone')?.classList.add('ready');
-  }
-
+  function initSigCanvas() { if (!state.sigCanvas) state.sigCanvas = $('sigCanvas'); if (state.sigCanvas && !state.sigCtx) state.sigCtx = state.sigCanvas.getContext('2d', { willReadFrequently: true }); }
+  function openSigModal(signatureId) { initSigCanvas(); if (!state.sigCanvas || !state.sigCtx) return; state.activeSig = String(signatureId); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); const subtitle = $('sigModalSub'); if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party'; $('sigModal')?.classList.add('open'); requestAnimationFrame(() => { const wrap = $('sigModalWrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); const scale = window.devicePixelRatio || 1; state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale)); state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale)); state.sigCanvas.style.width = r.width + 'px'; state.sigCanvas.style.height = r.height + 'px'; state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0); state.sigCtx.strokeStyle = '#1a1a1a'; state.sigCtx.lineWidth = 2.5; state.sigCtx.lineCap = 'round'; state.sigCtx.lineJoin = 'round'; }); }
+  function sigModalClear() { initSigCanvas(); if (!state.sigCtx || !state.sigCanvas) return; state.sigCtx.save(); state.sigCtx.setTransform(1, 0, 0, 1, 0, 0); state.sigCtx.clearRect(0, 0, state.sigCanvas.width, state.sigCanvas.height); state.sigCtx.restore(); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); }
+  function cropSigCanvas(srcCanvas) { const ctx = srcCanvas.getContext('2d', { willReadFrequently: true }); const pixels = ctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height); const data = pixels.data; let minX = srcCanvas.width, minY = srcCanvas.height, maxX = 0, maxY = 0; for (let y = 0; y < srcCanvas.height; y++) { for (let x = 0; x < srcCanvas.width; x++) { const alpha = data[(y * srcCanvas.width + x) * 4 + 3]; if (alpha > 0) { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y); } } } if (maxX <= minX || maxY <= minY) return srcCanvas.toDataURL('image/png'); const pad = 16; minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad); maxX = Math.min(srcCanvas.width, maxX + pad); maxY = Math.min(srcCanvas.height, maxY + pad); const width = maxX - minX; const height = maxY - minY; const out = document.createElement('canvas'); out.width = width; out.height = height; out.getContext('2d').drawImage(srcCanvas, minX, minY, width, height, 0, 0, width, height); return out.toDataURL('image/png'); }
+  function sigModalDone() { if (!state.hasMark || !state.sigCanvas) return; const dataURL = cropSigCanvas(state.sigCanvas); const preview = $('sigPreview' + state.activeSig); const box = $('sigBox' + state.activeSig); if (preview) { preview.src = dataURL; preview.style.display = 'block'; } if (box) box.classList.add('sig-has-data'); safeLocalStorage((storage) => storage.setItem(APP.signatureKeyPrefix + state.activeSig, dataURL)); $('sigModal')?.classList.remove('open'); }
+  function clearSigBox(signatureId) { const id = String(signatureId); const preview = $('sigPreview' + id); if (preview) { preview.style.display = 'none'; preview.src = ''; } $('sigBox' + id)?.classList.remove('sig-has-data'); safeLocalStorage((storage) => storage.removeItem(APP.signatureKeyPrefix + id)); }
+  function restoreSignatures() { APP.signatureIds.forEach((id) => { const sig = safeLocalStorage((storage) => storage.getItem(APP.signatureKeyPrefix + id)); if (!sig) return; const preview = $('sigPreview' + id); const box = $('sigBox' + id); if (preview) { preview.src = sig; preview.style.display = 'block'; } if (box) box.classList.add('sig-has-data'); }); }
+  function sigPos(e) { const r = state.sigCanvas.getBoundingClientRect(); const s = e.touches ? e.touches[0] : e; return { x: s.clientX - r.left, y: s.clientY - r.top }; }
+  function startSig(e) { e.preventDefault(); initSigCanvas(); if (!state.sigCtx) return; state.isSigning = true; const p = sigPos(e); state.sigCtx.beginPath(); state.sigCtx.moveTo(p.x, p.y); }
+  function moveSig(e) { if (!state.isSigning || !state.sigCtx) return; e.preventDefault(); const p = sigPos(e); state.sigCtx.lineTo(p.x, p.y); state.sigCtx.stroke(); state.hasMark = true; $('sigModalDone')?.classList.add('ready'); }
   function endSig(e) { if (e) e.preventDefault(); state.isSigning = false; }
-
-  function bindSignatureCanvas() {
-    const canvas = $('sigCanvas');
-    if (!canvas || canvas.dataset.bound === 'true') return;
-    canvas.dataset.bound = 'true';
-    canvas.addEventListener('mousedown', startSig);
-    canvas.addEventListener('mousemove', moveSig);
-    canvas.addEventListener('mouseup', endSig);
-    canvas.addEventListener('mouseleave', endSig);
-    canvas.addEventListener('touchstart', startSig, { passive: false });
-    canvas.addEventListener('touchmove', moveSig, { passive: false });
-    canvas.addEventListener('touchend', endSig, { passive: false });
-  }
+  function bindSignatureCanvas() { const canvas = $('sigCanvas'); if (!canvas || canvas.dataset.bound === 'true') return; canvas.dataset.bound = 'true'; canvas.addEventListener('mousedown', startSig); canvas.addEventListener('mousemove', moveSig); canvas.addEventListener('mouseup', endSig); canvas.addEventListener('mouseleave', endSig); canvas.addEventListener('touchstart', startSig, { passive: false }); canvas.addEventListener('touchmove', moveSig, { passive: false }); canvas.addEventListener('touchend', endSig, { passive: false }); }
 
   function handleClick(event) {
     const actionEl = event.target.closest('[data-action]');
     if (actionEl) {
       const action = actionEl.dataset.action;
       if (action === 'new-form') resetForm();
-      if (action === 'print') { if (validateAllFields(true)) window.print(); }
+      if (action === 'print') requestPrint();
+      if (action === 'force-print') { closePrintWarningModal(); window.print(); }
+      if (action === 'continue-editing') closePrintWarningModal();
       if (action === 'today') setTodayAllDates();
       if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); }
       if (action === 'modal-clear-signature') sigModalClear();
@@ -444,40 +137,9 @@
     const sigBox = event.target.closest('[data-signature-box]');
     if (sigBox) openSigModal(sigBox.dataset.signatureBox);
   }
-
-  function handleKeydown(event) {
-    const sigBox = event.target.closest('[data-signature-box]');
-    if (!sigBox) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openSigModal(sigBox.dataset.signatureBox);
-    }
-  }
-
-  function handleInput(event) {
-    const el = event.target;
-    if (el.matches('[data-format]')) handleFormattedInput(el);
-    else validateField(el);
-    saveToStorage();
-  }
-
-  function handleChange(event) {
-    const el = event.target;
-    if (el.matches('select[data-other-target]')) toggleOtherForSelect(el);
-    validateField(el);
-    saveToStorage();
-  }
-
-  function init() {
-    populateStateOptions();
-    populateWeightOptions();
-    bindSignatureCanvas();
-    loadFromStorage();
-    document.addEventListener('click', handleClick);
-    document.addEventListener('keydown', handleKeydown);
-    document.addEventListener('input', handleInput);
-    document.addEventListener('change', handleChange);
-  }
-
+  function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
+  function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
+  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); saveToStorage(); }
+  function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
   document.addEventListener('DOMContentLoaded', init);
 })();
