@@ -6,9 +6,11 @@ Private internal project for Precision E-Cycle forms.
 
 This repository is intended to hold the working code for Precision E-Cycle's Transfer of Custody and Drop-Off form app.
 
-## Current starting point
+## Credit and starting point
 
-The initial code came from the standalone HTML file provided by Slavic Brychka and shared into the ChatGPT project workflow.
+Credit to Slavic Brychka for creating and sharing the initial `index.html` code used as the starting point for this project.
+
+This repository was created separately because the original GitHub repository was not publicly accessible or available to fork at the time. Slavic shared the standalone code directly, so this repo is being used as a private working copy for continued PEC-specific adjustments.
 
 ## Development workflow
 
