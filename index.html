@@ -14,8 +14,8 @@
 <body>
   <div class="toolbar">
     <span class="toolbar-label">PEC Transfer of Custody</span>
-    <button class="btn btn-new" type="button" onclick="newForm()">↺ New</button>
-    <button class="btn btn-print" type="button" onclick="window.print()">🖨 Print</button>
+    <button class="btn btn-new" type="button" data-action="new-form">↺ New</button>
+    <button class="btn btn-print" type="button" data-action="print">🖨 Print</button>
   </div>
 
   <main class="page">
@@ -33,12 +33,12 @@
       <div class="meta-item">
         <span class="meta-label">Date:</span>
         <input type="text" id="formDate" data-save="true" placeholder="MM / DD / YYYY" inputmode="text">
-        <button class="today-btn" type="button" onclick="setTodayAllDates()">Today</button>
+        <button class="today-btn" type="button" data-action="today">Today</button>
       </div>
     </section>
 
-    <section class="field-grid fg-2" style="border-bottom:2px solid var(--border)">
-      <div class="fld" style="grid-column:1/-1">
+    <section class="field-grid fg-2 po-row">
+      <div class="fld full-row">
         <label for="poNumber">PO #</label>
         <input type="text" id="poNumber" data-save="true" inputmode="text">
       </div>
@@ -62,7 +62,7 @@
       </div>
       <div class="fld">
         <label for="fromPhone">Phone</label>
-        <input type="tel" id="fromPhone" data-save="true" inputmode="tel" autocomplete="tel" placeholder="(___) ___-____" oninput="fmtPhone(this)">
+        <input type="tel" id="fromPhone" data-save="true" inputmode="tel" autocomplete="tel" placeholder="(___) ___-____" data-format="phone">
       </div>
       <div class="fld">
         <label for="fromEmail">Email</label>
@@ -76,7 +76,7 @@
       </div>
       <div class="fld">
         <label for="fromState">State</label>
-        <input type="text" id="fromState" data-save="true" list="stateOptions" inputmode="text" autocomplete="address-level1" maxlength="2" placeholder="NE" oninput="normalizeState(this)">
+        <input type="text" id="fromState" data-save="true" list="stateOptions" inputmode="text" autocomplete="address-level1" maxlength="2" placeholder="NE" data-format="state">
         <datalist id="stateOptions"></datalist>
       </div>
       <div class="fld">
@@ -85,7 +85,7 @@
       </div>
       <div class="fld">
         <label for="transferMethod">Transfer Method</label>
-        <select id="transferMethod" data-save="true" onchange="toggleOther('transferMethod','transferMethodOtherWrap')">
+        <select id="transferMethod" data-save="true" data-other-target="transferMethodOtherWrap">
           <option value="">— Select —</option>
           <option>In-Person</option>
           <option>Shipped</option>
@@ -98,7 +98,7 @@
       </div>
     </section>
 
-    <section class="sec-header" style="margin-top:2px">Receiving Party (To) — Precision E-Cycle</section>
+    <section class="sec-header mt-small">Receiving Party (To) — Precision E-Cycle</section>
     <section class="field-grid fg-2">
       <div class="fld pre-fill">
         <label>Company Name</label>
@@ -116,7 +116,7 @@
       </div>
       <div class="fld">
         <label for="receiverPhone">Phone</label>
-        <input type="tel" id="receiverPhone" data-save="true" inputmode="tel" placeholder="(___) ___-____" oninput="fmtPhone(this)">
+        <input type="tel" id="receiverPhone" data-save="true" inputmode="tel" placeholder="(___) ___-____" data-format="phone">
       </div>
       <div class="fld pre-fill">
         <label>Email</label>
@@ -138,7 +138,7 @@
       </div>
       <div class="fld">
         <label for="receivedBy">Received By</label>
-        <select id="receivedBy" data-save="true" onchange="toggleOther('receivedBy','receivedByOtherWrap')">
+        <select id="receivedBy" data-save="true" data-other-target="receivedByOtherWrap">
           <option value="">— Select —</option>
           <option>Ilya Shulyak</option>
           <option>Slavic Brychka</option>
@@ -150,11 +150,11 @@
       </div>
     </section>
 
-    <section class="sec-header" style="margin-top:2px">Transfer Details</section>
+    <section class="sec-header mt-small">Transfer Details</section>
     <section class="field-grid fg-2">
       <div class="fld">
         <label for="reasonSelect">Reason for Transfer</label>
-        <select id="reasonSelect" data-save="true" onchange="toggleOther('reasonSelect','reasonOtherWrap')">
+        <select id="reasonSelect" data-save="true" data-other-target="reasonOtherWrap">
           <option value="">— Select —</option>
           <option>IT Recycling</option>
           <option>Electronics Recycling</option>
@@ -185,13 +185,13 @@
       </div>
       <div class="fld">
         <label for="estimatedWeight">Est. Total Weight (lbs)</label>
-        <select id="estimatedWeight" data-save="true" onchange="toggleOther('estimatedWeight','estimatedWeightOtherWrap')">
+        <select id="estimatedWeight" data-save="true" data-other-target="estimatedWeightOtherWrap">
           <option value="">— Select —</option>
           <option>Less than 100 lbs</option>
         </select>
         <div class="other-wrap" id="estimatedWeightOtherWrap">
           <div class="with-suffix">
-            <input type="text" id="estimatedWeightOther" data-save="true" inputmode="numeric" placeholder="Enter weight" oninput="formatManualWeight(this)">
+            <input type="text" id="estimatedWeightOther" data-save="true" inputmode="numeric" placeholder="Enter weight" data-format="weight">
             <span class="suffix">lbs</span>
           </div>
         </div>
@@ -204,7 +204,7 @@
 
     <div class="note-box">* See attached appendix for serialized audit report.</div>
 
-    <section class="sig-grid" style="border-top:2px solid var(--border)">
+    <section class="sig-grid sig-section">
       <div class="sig-panel">
         <div class="sig-panel-title">Transferring Party</div>
         <div class="sig-date-row">
@@ -212,10 +212,10 @@
           <input type="text" id="transferSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text">
         </div>
         <div class="sig-label">Signature</div>
-        <div id="sigBox1" class="sig-canvas-wrap" style="cursor:pointer;" onclick="openSigModal(1)">
+        <div id="sigBox1" class="sig-canvas-wrap" data-signature-box="1">
           <img id="sigPreview1" class="sig-preview" alt="Transferring Party Signature">
           <div class="sig-tap-hint">✏️ Tap to Sign</div>
-          <button class="sig-clear" type="button" onclick="event.stopPropagation();clearSigBox(1)">✕ Clear</button>
+          <button class="sig-clear" type="button" data-action="clear-signature" data-signature="1">✕ Clear</button>
         </div>
       </div>
       <div class="sig-panel">
@@ -225,10 +225,10 @@
           <input type="text" id="receiverSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text">
         </div>
         <div class="sig-label">Signature</div>
-        <div id="sigBox2" class="sig-canvas-wrap" style="cursor:pointer;" onclick="openSigModal(2)">
+        <div id="sigBox2" class="sig-canvas-wrap" data-signature-box="2">
           <img id="sigPreview2" class="sig-preview" alt="Receiving Party Signature">
           <div class="sig-tap-hint">✏️ Tap to Sign</div>
-          <button class="sig-clear" type="button" onclick="event.stopPropagation();clearSigBox(2)">✕ Clear</button>
+          <button class="sig-clear" type="button" data-action="clear-signature" data-signature="2">✕ Clear</button>
         </div>
       </div>
     </section>
@@ -239,7 +239,7 @@
   <div class="sig-modal" id="sigModal">
     <div class="sig-modal-header">
       <div class="sig-modal-title" id="sigModalTitle">✏️ Sign Here</div>
-      <span style="font-size:11px;color:rgba(255,255,255,.6);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;" id="sigModalSub"></span>
+      <span class="sig-modal-sub" id="sigModalSub"></span>
     </div>
     <div class="sig-modal-canvas-wrap" id="sigModalWrap">
       <canvas id="sigCanvas"></canvas>
@@ -247,8 +247,8 @@
       <div class="sig-modal-x">✕</div>
     </div>
     <div class="sig-modal-actions">
-      <button class="sig-modal-clear" type="button" onclick="sigModalClear()">Clear</button>
-      <button class="sig-modal-done" type="button" id="sigModalDone" onclick="sigModalDone()">✓ Done</button>
+      <button class="sig-modal-clear" type="button" data-action="modal-clear-signature">Clear</button>
+      <button class="sig-modal-done" type="button" id="sigModalDone" data-action="modal-save-signature">✓ Done</button>
     </div>
   </div>
 </body>
