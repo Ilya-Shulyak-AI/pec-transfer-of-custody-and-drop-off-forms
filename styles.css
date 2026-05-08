@@ -82,18 +82,20 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; 
   .meta-label { font-size:9px!important; letter-spacing:.8px!important; }
   .meta-item input { font-size:10px!important; min-height:0.16in!important; }
   .today-btn { display:none!important; }
+  .field-grid { display:grid!important; align-items:stretch!important; }
   .fg-2 { grid-template-columns:1fr 1fr!important; }
   .fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
-  .fg-city { grid-template-columns:2fr 1fr 1fr 1fr!important; }
+  .fg-city { grid-template-columns:2fr 1fr 1fr 1.35fr!important; }
   .sec-header { padding:0.05in 0.13in!important; font-size:9px!important; letter-spacing:1px!important; }
-  .fld { padding:0.055in 0.1in!important; gap:0.015in!important; }
+  .fld { padding:0.055in 0.1in!important; gap:0.015in!important; min-height:0.43in!important; border-right:1px solid #c5c5c5!important; border-bottom:1px solid #c5c5c5!important; }
+  .fld:last-child { border-right:none!important; }
   .fld label { font-size:6.6px!important; letter-spacing:.8px!important; }
-  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:9.2px!important; min-height:0.16in!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
-  .note-box { padding:0.055in 0.13in!important; font-size:8px!important; }
+  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:9.2px!important; min-height:0.18in!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
+  .note-box { padding:0.055in 0.13in!important; font-size:8px!important; border-top:1px solid #c5c5c5!important; }
   .checkbox-row { padding-top:0.015in!important; gap:0.11in!important; }
   .cb-opt span { font-size:9px!important; }
   .cb-opt input[type="radio"] { width:10px!important; height:10px!important; min-height:10px!important; }
-  .sig-grid { grid-template-columns:1fr 1fr!important; margin-top:auto!important; min-height:1.68in!important; }
+  .sig-grid { grid-template-columns:1fr 1fr!important; margin-top:auto!important; min-height:1.55in!important; }
   .sig-panel { padding:0.09in 0.12in!important; border-right:1px solid #c5c5c5!important; border-bottom:none!important; }
   .sig-panel:last-child { border-right:none!important; }
   .sig-panel-title { padding:0.045in 0.1in!important; font-size:8.5px!important; margin:-0.09in -0.12in 0.09in!important; letter-spacing:1px!important; }
@@ -101,7 +103,7 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; 
   .sig-date-row label { font-size:7.2px!important; }
   .sig-date-row input { font-size:9px!important; min-height:0.15in!important; }
   .sig-label { font-size:6.8px!important; }
-  .sig-canvas-wrap { height:0.86in!important; }
+  .sig-canvas-wrap { height:0.78in!important; }
   .page-footer { height:0.065in!important; }
   .sec-header, .sig-panel-title, .page-footer { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
 }
