@@ -1,7 +1,7 @@
 # Final QA Status
 
-Branch tested:
-- stabilize-and-harden-toc
+Primary branch tested:
+- main
 
 ## Completed verification areas
 
@@ -48,9 +48,7 @@ Branch tested:
 - Issue templates added
 - Version tracking added
 
-## Recommended manual final checks
-
-Before merging into main:
+## Recommended manual checks
 
 1. Test on iPhone Safari
 2. Test Add to Home Screen
@@ -59,7 +57,3 @@ Before merging into main:
 5. Test New button reset flow
 6. Verify no stale cache after refresh
 7. Verify GitHub Pages deployment
-
-## Merge recommendation
-
-After final manual verification, merge `stabilize-and-harden-toc` into `main`.
