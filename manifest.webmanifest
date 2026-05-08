@@ -1,0 +1,10 @@
+{
+  "name": "PEC Transfer of Custody",
+  "short_name": "PEC TOC",
+  "start_url": "/pec-transfer-of-custody/",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#1a4f8a",
+  "orientation": "portrait",
+  "scope": "/pec-transfer-of-custody/"
+}
