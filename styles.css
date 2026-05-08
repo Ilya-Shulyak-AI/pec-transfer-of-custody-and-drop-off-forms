@@ -70,38 +70,38 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; 
 .sig-modal-done.ready { opacity:1; pointer-events:all; }
 @media(max-width:540px){ .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } }
 @media print {
-  @page { size: letter portrait; margin: 0.2in; }
-  html, body { background:white!important; padding:0!important; margin:0!important; width:100%!important; height:100%!important; min-height:0!important; display:block!important; }
+  @page { size: letter portrait; margin: 0.25in; }
+  html, body { background:white!important; padding:0!important; margin:0!important; width:100%!important; min-height:0!important; display:block!important; }
   .toolbar, .sig-clear { display:none!important; }
-  .page { box-shadow:none!important; border:2px solid #29abe2!important; width:100%!important; max-width:100%!important; min-height:10.6in!important; margin:0!important; display:grid!important; grid-template-rows:auto auto auto auto auto auto auto auto auto 1fr auto!important; }
-  .doc-header { padding:14px 16px!important; border-bottom:2px solid #29abe2!important; }
-  .brand-title { font-size:31px!important; }
-  .brand-subtitle { font-size:13px!important; margin-top:4px!important; }
-  .brand-note { font-size:10px!important; margin-top:4px!important; }
-  .meta-row { grid-template-columns:1fr 1fr!important; padding:8px 14px!important; }
-  .meta-label { font-size:11px!important; }
-  .meta-item input { font-size:12px!important; min-height:24px!important; }
+  .page { box-shadow:none!important; border:2px solid #29abe2!important; width:7.55in!important; max-width:7.55in!important; height:10.5in!important; margin:0 auto!important; display:flex!important; flex-direction:column!important; transform:none!important; }
+  .doc-header { padding:0.18in 0.16in!important; border-bottom:2px solid #29abe2!important; }
+  .brand-title { font-size:28px!important; }
+  .brand-subtitle { font-size:12px!important; margin-top:3px!important; }
+  .brand-note { font-size:9px!important; margin-top:3px!important; }
+  .meta-row { grid-template-columns:1fr 1fr!important; padding:0.08in 0.14in!important; }
+  .meta-label { font-size:10px!important; }
+  .meta-item input { font-size:11px!important; min-height:0.22in!important; }
   .today-btn { display:none!important; }
   .fg-2 { grid-template-columns:1fr 1fr!important; }
   .fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
   .fg-city { grid-template-columns:2fr 1fr 1fr 1fr!important; }
-  .sec-header { padding:7px 14px!important; font-size:11px!important; letter-spacing:1.2px!important; }
-  .fld { padding:7px 10px!important; gap:3px!important; }
-  .fld label { font-size:8px!important; letter-spacing:1px!important; }
-  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:11px!important; min-height:23px!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
-  .note-box { padding:8px 14px!important; font-size:10px!important; }
-  .checkbox-row { padding-top:4px!important; gap:12px!important; }
-  .cb-opt span { font-size:11px!important; }
-  .cb-opt input[type="radio"] { width:12px!important; height:12px!important; min-height:12px!important; }
-  .sig-grid { grid-template-columns:1fr 1fr!important; align-self:end!important; min-height:1.65in!important; }
-  .sig-panel { padding:10px 14px!important; border-right:1px solid #c5c5c5!important; border-bottom:none!important; }
+  .sec-header { padding:0.075in 0.14in!important; font-size:10px!important; letter-spacing:1.1px!important; }
+  .fld { padding:0.08in 0.11in!important; gap:0.025in!important; }
+  .fld label { font-size:7.4px!important; letter-spacing:0.9px!important; }
+  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:10.5px!important; min-height:0.22in!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
+  .note-box { padding:0.08in 0.14in!important; font-size:9px!important; }
+  .checkbox-row { padding-top:0.03in!important; gap:0.13in!important; }
+  .cb-opt span { font-size:10px!important; }
+  .cb-opt input[type="radio"] { width:11px!important; height:11px!important; min-height:11px!important; }
+  .sig-grid { grid-template-columns:1fr 1fr!important; margin-top:auto!important; min-height:2.1in!important; }
+  .sig-panel { padding:0.12in 0.14in!important; border-right:1px solid #c5c5c5!important; border-bottom:none!important; }
   .sig-panel:last-child { border-right:none!important; }
-  .sig-panel-title { padding:5px 12px!important; font-size:10px!important; margin:-10px -14px 9px!important; }
-  .sig-date-row { margin-bottom:8px!important; }
-  .sig-date-row label { font-size:9px!important; }
-  .sig-date-row input { font-size:11px!important; min-height:20px!important; }
-  .sig-label { font-size:8px!important; }
-  .sig-canvas-wrap { height:92px!important; }
-  .page-footer { height:7px!important; }
+  .sig-panel-title { padding:0.06in 0.12in!important; font-size:9.5px!important; margin:-0.12in -0.14in 0.12in!important; }
+  .sig-date-row { margin-bottom:0.1in!important; }
+  .sig-date-row label { font-size:8px!important; }
+  .sig-date-row input { font-size:10px!important; min-height:0.2in!important; }
+  .sig-label { font-size:7.5px!important; }
+  .sig-canvas-wrap { height:1.2in!important; }
+  .page-footer { height:0.08in!important; }
   .sec-header, .sig-panel-title, .page-footer { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
 }
