@@ -31,6 +31,15 @@ Use the Print button to print or save as PDF. The print layout is controlled by 
 
 The current app is the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
 
+## Current architecture
+
+- `index.html` contains the form structure.
+- `styles.css` controls screen/app styling.
+- `print.css` controls print/PDF styling.
+- `app.js` controls form behavior, local storage, validation, and signatures.
+- `manifest.webmanifest` controls PWA/Home Screen metadata.
+- `icon.svg` provides the app icon.
+
 ## Credit and starting point
 
 Credit to Slavic Brychka for creating and sharing the initial `index.html` code used as the starting point for this project.
