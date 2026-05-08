@@ -1,14 +1,14 @@
-# PEC Transfer of Custody and Drop-Off Forms
+# PEC Transfer of Custody Form
 
-Public GitHub Pages project for Precision E-Cycle forms.
+Public GitHub Pages project for the Precision E-Cycle Transfer of Custody form.
 
 ## Purpose
 
-This repository is intended to hold the working code for Precision E-Cycle's Transfer of Custody and Drop-Off form app.
+This repository is intended to hold the working code for Precision E-Cycle's Transfer of Custody form app.
 
 ## Current app status
 
-The current uploaded `index.html` is only the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
+The current uploaded `index.html` is the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
 
 ## Credit and starting point
 
