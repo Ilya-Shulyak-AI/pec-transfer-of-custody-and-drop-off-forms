@@ -1,17 +1,161 @@
-@page { size: letter portrait; margin: 0.3in; }
-html, body { background: white !important; padding: 0 !important; margin: 0 !important; width: 100% !important; min-height: 0 !important; display: block !important; }
-.toolbar, .sig-clear, .today-btn, .sig-tap-hint { display: none !important; }
-.page { box-shadow: none !important; border: 2px solid #29abe2 !important; width: 7.3in !important; max-width: 7.3in !important; height: 9.9in !important; margin: 0 auto !important; display: flex !important; flex-direction: column !important; }
-.doc-header { padding: 0.16in 0.18in 0.13in !important; border-bottom: 2px solid #29abe2 !important; text-align: center !important; }
-.brand-title { font-size: 36px !important; line-height: .95 !important; }
-.brand-subtitle { font-size: 15px !important; letter-spacing: 2.8px !important; }
-.brand-note { font-size: 10px !important; }
-.meta-row { grid-template-columns: 1fr 1fr !important; }
-.field-grid { display: grid !important; align-items: stretch !important; }
-.fg-2 { grid-template-columns: 1fr 1fr !important; }
-.fg-3 { grid-template-columns: 1fr 1fr 1fr !important; }
-.fg-city { grid-template-columns: 2fr 1fr 1fr 1.3fr !important; }
-.fld { min-height: 0.39in !important; border-right: 1px solid #9f9f9f !important; border-bottom: 1px solid #9f9f9f !important; }
-.fld:last-child { border-right: none !important; }
-.sig-grid { grid-template-columns: 1fr 1fr !important; }
-.sec-header, .sig-panel-title, .page-footer { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+@page {
+  size: letter portrait;
+  margin: 0.18in;
+}
+
+html,
+body {
+  background: white !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: block !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+.toolbar,
+.sig-clear,
+.today-btn,
+.sig-tap-hint,
+.validation-banner,
+.print-warning-modal {
+  display: none !important;
+}
+
+.page {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 2px solid #29abe2 !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  page-break-after: avoid !important;
+  page-break-inside: avoid !important;
+  transform: scale(.965);
+  transform-origin: top center;
+}
+
+.doc-header {
+  padding: 0.12in 0.16in 0.1in !important;
+  border-bottom: 2px solid #29abe2 !important;
+  text-align: center !important;
+}
+
+.brand-title {
+  font-size: 32px !important;
+  line-height: .95 !important;
+}
+
+.brand-subtitle {
+  font-size: 14px !important;
+  letter-spacing: 2.4px !important;
+}
+
+.brand-note {
+  font-size: 9px !important;
+}
+
+.meta-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.meta-item {
+  min-height: 0.34in !important;
+}
+
+.field-grid {
+  display: grid !important;
+  align-items: stretch !important;
+}
+
+.fg-2 {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.fg-3 {
+  grid-template-columns: 1fr 1fr 1fr !important;
+}
+
+.fg-city {
+  grid-template-columns: 2fr 1fr 1fr 1.3fr !important;
+}
+
+.fld {
+  min-height: 0.34in !important;
+  padding: 0.05in 0.08in !important;
+  border-right: 1px solid #9f9f9f !important;
+  border-bottom: 1px solid #9f9f9f !important;
+  overflow: hidden !important;
+}
+
+.fld:last-child {
+  border-right: none !important;
+}
+
+.fld label,
+.sig-label,
+.sig-date-row label {
+  font-size: 8px !important;
+}
+
+.fld input,
+.fld select,
+.meta-item input,
+.sig-date-row input {
+  font-size: 12px !important;
+  min-height: 22px !important;
+}
+
+.sec-header {
+  padding: 0.06in 0.12in !important;
+  font-size: 11px !important;
+}
+
+.checkbox-row {
+  gap: 10px !important;
+  padding-top: 2px !important;
+}
+
+.cb-opt span {
+  font-size: 11px !important;
+}
+
+.note-box {
+  padding: 0.07in 0.12in !important;
+  font-size: 9px !important;
+}
+
+.sig-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.sig-panel {
+  padding: 0.08in 0.12in !important;
+}
+
+.sig-panel-title {
+  margin: -0.08in -0.12in 0.08in !important;
+  padding: 0.05in 0.08in !important;
+  font-size: 10px !important;
+}
+
+.sig-canvas-wrap {
+  height: 0.8in !important;
+}
+
+.sig-preview {
+  max-height: calc(100% - 6px) !important;
+}
+
+.page-footer {
+  height: 0.08in !important;
+}
