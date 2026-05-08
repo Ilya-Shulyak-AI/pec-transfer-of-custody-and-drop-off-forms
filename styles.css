@@ -70,40 +70,42 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; 
 .sig-modal-done.ready { opacity:1; pointer-events:all; }
 @media(max-width:540px){ .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } }
 @media print {
-  @page { size: letter portrait; margin: 0.32in; }
+  @page { size: letter portrait; margin: 0.3in; }
   html, body { background:white!important; padding:0!important; margin:0!important; width:100%!important; min-height:0!important; display:block!important; }
   .toolbar, .sig-clear { display:none!important; }
-  .page { box-shadow:none!important; border:2px solid #29abe2!important; width:7.2in!important; max-width:7.2in!important; height:9.85in!important; margin:0 auto!important; display:flex!important; flex-direction:column!important; transform:none!important; }
-  .doc-header { padding:0.14in 0.16in 0.12in!important; border-bottom:2px solid #29abe2!important; }
-  .brand-title { font-size:26px!important; letter-spacing:.8px!important; }
-  .brand-subtitle { font-size:11px!important; margin-top:3px!important; letter-spacing:1.8px!important; }
-  .brand-note { font-size:8.5px!important; margin-top:3px!important; }
-  .meta-row { grid-template-columns:1fr 1fr!important; padding:0.055in 0.13in!important; }
+  .page { box-shadow:none!important; border:2px solid #29abe2!important; width:7.3in!important; max-width:7.3in!important; height:9.9in!important; margin:0 auto!important; display:flex!important; flex-direction:column!important; transform:none!important; }
+  .doc-header { padding:0.18in 0.18in 0.15in!important; border-bottom:2px solid #29abe2!important; text-align:center!important; }
+  .brand-title { font-size:29px!important; letter-spacing:.9px!important; }
+  .brand-subtitle { font-size:12px!important; margin-top:3px!important; letter-spacing:2.4px!important; }
+  .brand-note { font-size:8.8px!important; margin-top:4px!important; }
+  .meta-row { grid-template-columns:1fr 1fr!important; padding:0.06in 0.13in!important; }
   .meta-label { font-size:9px!important; letter-spacing:.8px!important; }
-  .meta-item input { font-size:10px!important; min-height:0.16in!important; }
+  .meta-item input { font-size:10px!important; min-height:0.17in!important; }
   .today-btn { display:none!important; }
   .field-grid { display:grid!important; align-items:stretch!important; }
   .fg-2 { grid-template-columns:1fr 1fr!important; }
   .fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
-  .fg-city { grid-template-columns:2fr 1fr 1fr 1.35fr!important; }
+  .fg-city { grid-template-columns:2fr 1fr 1fr 1.3fr!important; }
   .sec-header { padding:0.05in 0.13in!important; font-size:9px!important; letter-spacing:1px!important; }
-  .fld { padding:0.055in 0.1in!important; gap:0.015in!important; min-height:0.43in!important; border-right:1px solid #c5c5c5!important; border-bottom:1px solid #c5c5c5!important; }
+  .fld { padding:0.06in 0.1in!important; gap:0.015in!important; min-height:0.40in!important; border-right:1px solid #c5c5c5!important; border-bottom:1px solid #c5c5c5!important; }
   .fld:last-child { border-right:none!important; }
   .fld label { font-size:6.6px!important; letter-spacing:.8px!important; }
-  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:9.2px!important; min-height:0.18in!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
+  .fld input:not([type="checkbox"]):not([type="radio"]), .fld select, .fld textarea { font-size:9px!important; min-height:0.16in!important; padding:0!important; border-bottom:1px solid #ddd!important; background:white!important; }
   .note-box { padding:0.055in 0.13in!important; font-size:8px!important; border-top:1px solid #c5c5c5!important; }
   .checkbox-row { padding-top:0.015in!important; gap:0.11in!important; }
   .cb-opt span { font-size:9px!important; }
   .cb-opt input[type="radio"] { width:10px!important; height:10px!important; min-height:10px!important; }
-  .sig-grid { grid-template-columns:1fr 1fr!important; margin-top:auto!important; min-height:1.55in!important; }
-  .sig-panel { padding:0.09in 0.12in!important; border-right:1px solid #c5c5c5!important; border-bottom:none!important; }
+  .sig-grid { grid-template-columns:1fr 1fr!important; margin-top:0!important; min-height:1.48in!important; }
+  .sig-panel { padding:0.08in 0.12in!important; border-right:1px solid #c5c5c5!important; border-bottom:none!important; }
   .sig-panel:last-child { border-right:none!important; }
-  .sig-panel-title { padding:0.045in 0.1in!important; font-size:8.5px!important; margin:-0.09in -0.12in 0.09in!important; letter-spacing:1px!important; }
-  .sig-date-row { margin-bottom:0.06in!important; }
+  .sig-panel-title { padding:0.045in 0.1in!important; font-size:8.5px!important; margin:-0.08in -0.12in 0.08in!important; letter-spacing:1px!important; }
+  .sig-date-row { margin-bottom:0.055in!important; }
   .sig-date-row label { font-size:7.2px!important; }
-  .sig-date-row input { font-size:9px!important; min-height:0.15in!important; }
+  .sig-date-row input { font-size:9px!important; min-height:0.14in!important; }
   .sig-label { font-size:6.8px!important; }
-  .sig-canvas-wrap { height:0.78in!important; }
-  .page-footer { height:0.065in!important; }
+  .sig-canvas-wrap { height:0.74in!important; }
+  .page-footer { height:0.06in!important; }
+  .page > .field-grid { flex:1 1 auto!important; }
+  .page > .field-grid .fld { justify-content:flex-start!important; }
   .sec-header, .sig-panel-title, .page-footer { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
 }
