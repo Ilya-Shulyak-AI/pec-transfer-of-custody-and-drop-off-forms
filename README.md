@@ -27,6 +27,18 @@ Use the New button after finishing a form to clear local form data and signature
 
 Use the Print button to print or save as PDF. The print layout is controlled by `print.css` and is intended to fit on one Letter-size page.
 
+### Repeatable print regression check
+
+Run the Playwright print-output check before merging print-related changes:
+
+```sh
+npm install
+npx playwright install chromium
+npm run test:print
+```
+
+The test loads the local static `index.html`, fills representative values including long names, Other fields, radio buttons, manual weight, and signatures, then generates a Letter-size PDF and asserts that it has exactly one page. It also writes `test-artifacts/print-output.pdf` and `test-artifacts/print-output.png` for optional manual review of borders and divider quality.
+
 ## Current app status
 
 The current app is the Transfer of Custody form. The Drop-Off form / multi-form selection page is not currently present in this repository.
