@@ -209,7 +209,28 @@
   function readStoredPayload() { return safeLocalStorage((storage) => { const current = storage.getItem(APP.storageKey); if (current) return current; for (const key of APP.oldStorageKeys) { const oldValue = storage.getItem(key); if (oldValue) return oldValue; } return null; }, null, { operation: 'read saved form data' }); }
   function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setTodayAllDates(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); saveToStorage(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; if (parsed && parsed.savedAt) setSavedAtDisplay(parsed.savedAt); getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setTodayAllDates(); } formatRestoredFields(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); validateAllFields(false); saveToStorage(); }
   function clearStoredFormData() { return safeLocalStorage((storage) => { storage.removeItem(APP.storageKey); APP.oldStorageKeys.forEach((key) => storage.removeItem(key)); APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id)); return true; }, false, { operation: 'clear saved form data and signatures' }); }
-  function resetForm() { if (!confirm('Clear saved form data and signatures from this browser, then start a new blank form?')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); state.signatureStorageFailed = false; clearStoredFormData(); clearMissingHighlights(); hideValidationBanner(); toggleAllOtherFields(); setTodayAllDates(); ensureTocFormNumber(); saveToStorage(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function resetForm() {
+    getSaveFields().forEach((el) => {
+      if (el.type === 'radio') el.checked = false;
+      else el.value = '';
+      setValidity(el, '');
+      markField(el, false);
+    });
+    APP.radioGroups.forEach((groupName) => $$(`input[name="${groupName}"]`).forEach((el) => {
+      el.checked = false;
+      setValidity(el, '');
+      markField(el, false);
+    }));
+    APP.signatureIds.forEach(clearSigBox);
+    state.signatureStorageFailed = false;
+    clearStoredFormData();
+    hideStorageWarning();
+    setSavedAtDisplay(null);
+    clearMissingHighlights();
+    hideValidationBanner();
+    toggleAllOtherFields();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   function initSigCanvas() { if (!state.sigCanvas) state.sigCanvas = $('sigCanvas'); if (state.sigCanvas && !state.sigCtx) state.sigCtx = state.sigCanvas.getContext('2d', { willReadFrequently: true }); }
   function openSigModal(signatureId, trigger = document.activeElement) { initSigCanvas(); if (!state.sigCanvas || !state.sigCtx) return; state.activeSig = String(signatureId); state.lastSigTrigger = trigger; state.hasMark = false; const doneButton = $('sigModalDone'); doneButton?.classList.remove('ready'); if (doneButton) doneButton.disabled = true; const subtitle = $('sigModalSub'); if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party'; const modal = $('sigModal'); modal?.classList.add('open'); requestAnimationFrame(() => { const wrap = $('sigModalWrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); const scale = window.devicePixelRatio || 1; state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale)); state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale)); state.sigCanvas.style.width = r.width + 'px'; state.sigCanvas.style.height = r.height + 'px'; state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0); state.sigCtx.strokeStyle = '#1a1a1a'; state.sigCtx.lineWidth = 2.5; state.sigCtx.lineCap = 'round'; state.sigCtx.lineJoin = 'round'; focusModal(modal); }); }
   function closeSigModal() { $('sigModal')?.classList.remove('open'); restoreFocus(state.lastSigTrigger || $('sigBox' + state.activeSig)); state.lastSigTrigger = null; }
