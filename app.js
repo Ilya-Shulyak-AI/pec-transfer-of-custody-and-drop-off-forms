@@ -53,8 +53,10 @@
   function hideValidationBanner() { return; }
   function openPrintWarningModal() { $('printWarningModal')?.classList.add('open'); }
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
-  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(); } }
-  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
+  function waitForFontsReady() { return document.fonts?.ready || Promise.resolve(); }
+  async function openPrintPreview() { await waitForFontsReady(); window.print(); }
+  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); openPrintPreview(); } else { openPrintWarningModal(); } }
+  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); openPrintPreview(); }
   function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
