@@ -50,7 +50,7 @@
       { fieldId: 'estimatedWeightOther', controllerId: 'estimatedWeight', requiredValue: 'Other' }
     ],
     receiverPhoneByContact: {
-      'Elliot Shuliak': '(402) 413-1267'
+      'Ilya Shulyak': '(402) 413-1267'
     }
   };
 
