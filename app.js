@@ -73,7 +73,6 @@
       'fromZip',
       'transferMethod',
       'receiverContactName',
-      'receiverPhone',
       'receivedBy',
       'reasonSelect',
       'estimatedWeight',
@@ -92,17 +91,24 @@
     ],
     conditionalRequiredFields: [
       { fieldId: 'transferMethodOther', controllerId: 'transferMethod', requiredValue: 'Other' },
+      { fieldId: 'receiverContactNameOther', controllerId: 'receiverContactName', requiredValue: 'Other' },
       { fieldId: 'receivedByOther', controllerId: 'receivedBy', requiredValue: 'Other' },
-      { fieldId: 'receiverPhone', controllerId: 'receivedBy', requiredValue: 'Other' },
+      { fieldId: 'receiverPhone', controllerId: 'receiverContactName', requiredValue: 'Other' },
       { fieldId: 'reasonOther', controllerId: 'reasonSelect', requiredValue: 'Other' },
       { fieldId: 'estimatedWeightOther', controllerId: 'estimatedWeight', requiredValue: 'Other' }
     ],
     receiverPhoneByContact: {
-      'Ilya Shulyak': '(402) 413-1267',
-      'Slavic Brychka': '(402) 413-1267'
+      'Elliot Shuliak': '(402) 413-1267'
     },
     defaultReceiverPhone: '(402) 413-1267',
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
+  };
+
+  const APP = {
+    ...CONFIG,
+    storageKey: CONFIG.storage.formKey,
+    oldStorageKeys: CONFIG.storage.oldFormKeys,
+    signatureKeyPrefix: CONFIG.storage.signatureKeyPrefix
   };
 
   const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1', activePointerId: null, signatureStorageFailed: false };
@@ -162,6 +168,14 @@
     return fieldIsListed(el.id, 'requiredFieldIds') || fieldIsListed(el.id, 'prefilledRequiredFieldIds') || isConditionallyRequired(el.id);
   }
   function isEmptyRequiredField(el) { return isRequiredField(el) && !String(el.value || '').trim(); }
+  function isEmptyExpectedField(el) { return isEmptyRequiredField(el); }
+  function isValidFormattedDate(value) { return /^(0[1-9]|1[0-2])\/? ?([0-2]\d|3[01])\/? ?\d{4}$/.test(value.replace(/\s/g, '')); }
+  function formatDateInputValue(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length >= 5) return digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+    if (digits.length >= 3) return digits.slice(0, 2) + '/' + digits.slice(2);
+    return digits;
+  }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
     if (!value) return false;
@@ -193,9 +207,11 @@
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
-  function syncReceiverPhone() { const selectedContact = $('receivedBy')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { phone.value = APP.defaultReceiverPhone; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly); setValidity(phone, ''); markField(phone, false); }
+  function syncReceiverPhone(options = {}) { const selectedContact = $('receiverContactName')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (options.clearPhone || phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { if (options.clearPhone || phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly && Boolean(phone.value)); if (phone.dataset.format) formatFieldValue(phone); setValidity(phone, ''); markField(phone, false); }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
-  function applyReceiverContactWorkflow(options = {}) { const contact = $('receiverContactName'); const phone = $('receiverPhone'); if (!contact || !phone) return; phone.readOnly = false; if (contact.value === APP.receiverContacts.ilya.name) phone.value = APP.receiverContacts.ilya.phone; if ((contact.value === 'Other' || contact.value === '') && options.clearPhone) phone.value = ''; if (phone.dataset.format) formatFieldValue(phone); validateField(phone, false); }
+  function applyReceiverContactWorkflow(options = {}) { syncReceiverPhone(options); validateConditionalFieldsForController('receiverContactName', false); }
+  function validateConditionalFieldsForController(controllerId, mark = false) { APP.conditionalRequiredFields.filter((rule) => rule.controllerId === controllerId).forEach((rule) => validateField($(rule.fieldId), mark)); }
+  function ensureTocFormNumber() { const el = $(APP.ids.tocFormNumber); if (el && !String(el.value || '').trim()) el.value = 'O-' + new Date().toISOString().slice(0, 10).replace(/-/g, ''); }
   function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
   function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
@@ -207,9 +223,9 @@
     return saved;
   }
   function readStoredPayload() { return safeLocalStorage((storage) => { const current = storage.getItem(APP.storageKey); if (current) return current; for (const key of APP.oldStorageKeys) { const oldValue = storage.getItem(key); if (oldValue) return oldValue; } return null; }, null, { operation: 'read saved form data' }); }
-  function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setTodayAllDates(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); saveToStorage(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; if (parsed && parsed.savedAt) setSavedAtDisplay(parsed.savedAt); getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setTodayAllDates(); } formatRestoredFields(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); validateAllFields(false); saveToStorage(); }
+  function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setTodayAllDates(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); applyReceiverContactWorkflow({ clearPhone: false }); saveToStorage(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; if (parsed && parsed.savedAt) setSavedAtDisplay(parsed.savedAt); getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setTodayAllDates(); } formatRestoredFields(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); applyReceiverContactWorkflow({ clearPhone: false }); validateAllFields(false); saveToStorage(); }
   function clearStoredFormData() { return safeLocalStorage((storage) => { storage.removeItem(APP.storageKey); APP.oldStorageKeys.forEach((key) => storage.removeItem(key)); APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id)); return true; }, false, { operation: 'clear saved form data and signatures' }); }
-  function resetForm() { if (!confirm('Clear saved form data and signatures from this browser, then start a new blank form?')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); state.signatureStorageFailed = false; clearStoredFormData(); clearMissingHighlights(); hideValidationBanner(); toggleAllOtherFields(); setTodayAllDates(); ensureTocFormNumber(); saveToStorage(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function resetForm() { if (!confirm('Clear saved form data and signatures from this browser, then start a new blank form?')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); state.signatureStorageFailed = false; clearStoredFormData(); clearMissingHighlights(); hideValidationBanner(); toggleAllOtherFields(); applyReceiverContactWorkflow({ clearPhone: true }); setTodayAllDates(); ensureTocFormNumber(); saveToStorage(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   function initSigCanvas() { if (!state.sigCanvas) state.sigCanvas = $('sigCanvas'); if (state.sigCanvas && !state.sigCtx) state.sigCtx = state.sigCanvas.getContext('2d', { willReadFrequently: true }); }
   function openSigModal(signatureId, trigger = document.activeElement) { initSigCanvas(); if (!state.sigCanvas || !state.sigCtx) return; state.activeSig = String(signatureId); state.lastSigTrigger = trigger; state.hasMark = false; const doneButton = $('sigModalDone'); doneButton?.classList.remove('ready'); if (doneButton) doneButton.disabled = true; const subtitle = $('sigModalSub'); if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party'; const modal = $('sigModal'); modal?.classList.add('open'); requestAnimationFrame(() => { const wrap = $('sigModalWrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); const scale = window.devicePixelRatio || 1; state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale)); state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale)); state.sigCanvas.style.width = r.width + 'px'; state.sigCanvas.style.height = r.height + 'px'; state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0); state.sigCtx.strokeStyle = '#1a1a1a'; state.sigCtx.lineWidth = 2.5; state.sigCtx.lineCap = 'round'; state.sigCtx.lineJoin = 'round'; focusModal(modal); }); }
   function closeSigModal() { $('sigModal')?.classList.remove('open'); restoreFocus(state.lastSigTrigger || $('sigBox' + state.activeSig)); state.lastSigTrigger = null; }
@@ -229,7 +245,7 @@
   function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') setTodayAllDates(); if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
   function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
   function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
-  function handleChange(event) { const el = event.target; if (el.id === 'receivedBy') syncReceiverPhone(); if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); validateConditionalFieldsForController(el.id, true); saveToStorage(); }
+  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); if (el.id === 'receiverContactName') applyReceiverContactWorkflow({ clearPhone: true }); validateField(el, true); validateConditionalFieldsForController(el.id, true); saveToStorage(); }
   function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
   document.addEventListener('DOMContentLoaded', init);
 })();
