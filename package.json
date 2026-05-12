@@ -2,12 +2,12 @@
   "name": "pec-transfer-of-custody",
   "version": "1.0.0",
   "private": true,
-  "description": "Print validation checks for the PEC Transfer of Custody form.",
+  "description": "Public GitHub Pages project for the Precision E-Cycle Transfer of Custody form.",
+  "type": "commonjs",
   "scripts": {
-    "test:print": "playwright test tests/print-validation.spec.js --project=chromium"
+    "test:print": "node tests/print-output.test.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
-    "pdf-lib": "^1.17.1"
+    "playwright": "^1.52.0"
   }
 }
