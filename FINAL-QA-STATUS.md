@@ -1,59 +1,56 @@
-# Final QA Status
+# Final QA Status — 2026-05-11
 
-Primary branch tested:
-- main
+This note replaces the older static completion summary with the current documented QA status as of May 11, 2026.
 
-## Completed verification areas
+## Scope reviewed
 
-### Architecture
-- Inline handlers removed
-- Centralized event delegation implemented
-- Storage versioning implemented
-- Validation architecture implemented
-- Print CSS separated from screen CSS
-- PWA manifest implemented
+Documentation was reviewed against the current static application structure:
 
-### Form behavior
-- TOC field supports flexible text input
-- Today button updates all date fields
-- Other-field conditional logic works
-- Weight selector generated dynamically
-- State normalization implemented
-- Reset/New behavior hardened
+- Transfer of Custody form only.
+- Static HTML/CSS/vanilla JavaScript app.
+- Local-only browser storage.
+- Canvas signatures.
+- Print-only CSS layer for one-page Letter output.
+- PWA/Home Screen metadata without an offline service worker.
 
-### Storage
-- LocalStorage versioning implemented
-- Corrupted storage recovery implemented
-- Signature persistence implemented
-- Full reset clearing implemented
+## Current documented status
 
-### Signature handling
-- Signature scaling improved
-- Signature cropping implemented
-- Touch support implemented
-- Signature persistence implemented
+The documentation has been updated to describe the current implementation and expected QA focus areas:
 
-### Print system
-- Dedicated print stylesheet implemented
-- One-page print architecture implemented
-- Header scaling improved
-- Divider consistency improved
-- Signature print handling improved
+- README now describes the actual TOC workflow, storage behavior, print/PDF workflow, and PWA behavior.
+- QA checklist now includes Receiving Party / Received By contact dropdown behavior.
+- QA checklist now includes print/PDF checks for border quality and one-page output.
+- Technical notes now describe the current file/module structure and the print-only render layer.
 
-### GitHub / maintenance
-- QA checklist added
-- Changelog added
-- Technical notes added
-- PR template added
-- Issue templates added
-- Version tracking added
+## Verified by code/document review
 
-## Recommended manual checks
+The following items were verified by reviewing repository files, not by running a browser session:
 
-1. Test on iPhone Safari
-2. Test Add to Home Screen
-3. Test Print to PDF
-4. Test signatures on touch device
-5. Test New button reset flow
-6. Verify no stale cache after refresh
-7. Verify GitHub Pages deployment
+- The app is a single Transfer of Custody page.
+- Receiving Party company/address/phone/email/city/state/zip values are readonly and prefilled for Precision E-Cycle.
+- The Receiving Party / Received By dropdown includes Ilya Shulyak, Slavic Brychka, and Other.
+- Other fields are shown only when their dropdown value is Other, and are cleared when hidden.
+- Current form payload storage key is `pec_toc_form_v6`.
+- Signatures use the `pec_toc_sig_` localStorage prefix.
+- Print styles live in `print.css` and are loaded as print media.
+- PWA metadata is present in `manifest.webmanifest` and iOS meta tags are present in `index.html`.
+- No service worker is currently present.
+
+## Manual verification still required before release
+
+The following checks require an actual browser/device and should be completed before treating a release as final QA passed:
+
+1. Open the live GitHub Pages app.
+2. Complete a representative TOC record.
+3. Verify validation and the print warning modal.
+4. Save/refresh and confirm form data plus signatures persist.
+5. Use New and confirm all customer-entered data plus signatures are cleared.
+6. Print or save to PDF at 100% scale.
+7. Confirm the PDF remains one Letter-size page.
+8. Confirm border quality/divider lines are clear and consistent in preview and saved PDF.
+9. Test signature capture on an iPhone touch screen.
+10. Add to iPhone Home Screen and verify standalone-mode use.
+
+## Status conclusion
+
+Current status: documentation synchronized with the application by repository review. Final release QA is not marked fully passed until the manual browser, print/PDF, and iPhone checks above are completed.
