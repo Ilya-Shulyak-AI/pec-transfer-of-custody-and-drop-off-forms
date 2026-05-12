@@ -11,48 +11,504 @@
   <title>PEC Transfer of Custody</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEmklEQVR42u3dv2ocVxQHYD1H3iBFqryAH0CQIm2qFIZ0qQSuVDukUBdcLGpUKY0lAupUKbhYg1EVpVGRsJVcLQS2Uw4sCEesnJnR3Jn75zv8GoFtrHM/Znbuubu798U3P4nszJ4WCBwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgc0gyOl6/PDheX51c3MkqimdHSsnF8/f0vb94u71WyivZGk8vDEbRXd2vrl7qiyemuInuJZFi2KSuRj70UdxOrNX2luL+Mj+P9HytLNX1F23PHsX9wYp3mqmh+1jg8nsz78JI1DveUmu4sI+OwQvMWHAoOBYeCQ8Gh4IADDjjggAOOrHBc/P2PdExDOD583Lz4bfXlr39Jx0S7omlN4CBjmI8mcFjpYYFD4BA44IADDjjggAMOOOCAIz8cx3+urXTfRNNama18+Lj58d2ddEzHvXNTWQWHgkPBoeCAAw444IADDjjggAMOOOAoGcdms7lRPSua1gSO5XL5u+pZ0bQmcFjpYQWHgkPBsbPi5ZWV7lvRtFYeZVerlQeQ7hXtss+hbIIpOBQccMABBxxwwAEHHHDAURyO9Xp9pzpXtKsVHLe3t61tfp9fXP68OIsM/heiaQZvtdXx6cWLH/7zvY3xY1gxeGsdR1wqdnbpq++OAg0c7eJ4SsaDj77XD8cEm5CxzaujU8cEH1e8/K7bR1wSuvQqXnx0lxFNs89RfK3u1t2/Odw+Bxm7E38SDjJ25+XrMzjImO7bu+GoQcbh4tJspYnaPzjp1aUUNxQ4cqxY6UxkwEEGHGS0iWOz2VxfX5f+/rO+MlLsapit5FjfHiz6yognGjjqn8q+OjrNUwYcBYxb55IBBxlV4yj0Ixjyl1HJo2xx57+Pz676tiLF6MQ+R3Z1fnXTtw/xV2b5r8Ix9VCtFBlw5D5unVEGHGTAQQYc1chIdHgHjuJlTDBuhSOLKlcGHM0d0YCDDDjIgKN6GfsHJ3n+InDMLGOWcSscM9Th4rIaGXCMWX3HrZnLgIMMOJ7Yu4wVjTx/kaqU0SiOWJhH70eNHwcftRpweKcIGS3i+MxaDhiEFnSsC47njsF6rVxcbCqW0RyOLo+aHdev0CMacDxZHT/64n9XsQUZzeEYZS0bkdEcjl6LunNFB8h483Z5X2a1haPv4OORj6KPdcGR9vmiKRkt7nP0nY09+KjjiAYcI99ctluorclod7YywEdrMpoevCXyke2xLjhm9lHKuBWOqX1UJgOO0XzUJwOOcXxUKQOOEXzUKgOO5/qoWAYcIw9f4Kj89Hl3H3XLyB3HLJ+v2NFH9TIGDCknxTHjSYjP+6heRlQ0P2sc825FPzW/bUHGff9vE5sax4x3lodL66eXkOBS8bNJ0ntKEhzTfOuMelR9jzXNg6OmCXgplWhenQTH1kcj1/N5K5qc7qRLKhzb+0u5x7hLeTxJcTeZAsenV5F4Ybh9g7w8P9HMpOfiJsUhhQYOgUPgEDgEDoFD4BA4BA6BQ+AQgUPgEDgEDoFD4BA4BA6BQ+AQgUPgEDgEDoFD8si/otZJX2+5hWgAAAAASUVORK5CYII=">
   <link rel="stylesheet" href="base.css?v=2">
-  <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="print.css?v=5" media="print">
-  <script defer src="app.js?v=6"></script>
+  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="print.css?v=6" media="print">
+  <script defer src="app.js?v=7"></script>
 </head>
 <body>
   <div class="toolbar">
     <span class="toolbar-label">PEC Transfer of Custody</span>
-    <button class="btn btn-new" type="button" data-action="new-form">↺ New</button>
+    <button class="btn btn-new" type="button" data-action="new-form">↺ Clear Saved Data</button>
     <button class="btn btn-print" type="button" data-action="print">🖨 Print</button>
   </div>
 
   <div class="validation-banner" id="validationBanner" role="alert"></div>
+  <div class="storage-warning" id="storageWarning" role="alert"></div>
 
   <main class="page">
-    <header class="doc-header"><div class="brand-title">Precision E-Cycle</div><div class="brand-subtitle">Transfer of Custody</div><div class="brand-note">Secure IT recycling, electronics recycling, and data destruction documentation</div></header>
-    <section class="meta-row"><div class="meta-item"><span class="meta-label">TOC Form Number:</span><input type="text" id="tocFormNumber" data-save="true" placeholder="e.g. O-100123" inputmode="text"></div><div class="meta-item"><span class="meta-label">Date:</span><input type="text" id="formDate" data-save="true" placeholder="MM / DD / YYYY" inputmode="text"><button class="today-btn" type="button" data-action="today">Today</button></div></section>
-    <section class="field-grid fg-2 po-row"><div class="fld full-row"><label for="poNumber">PO #</label><input type="text" id="poNumber" data-save="true" inputmode="text"></div></section>
+    <!-- Document header -->
+    <header class="doc-header">
+      <div class="brand-title">Precision E-Cycle</div>
+      <div class="brand-subtitle">Transfer of Custody</div>
+      <div class="brand-note">
+        Secure IT recycling, electronics recycling, and data destruction documentation
+      </div>
+    </header>
+
+    <div class="local-data-note">
+      Entries and signatures are saved only in this browser on this device until you clear saved data.
+    </div>
+
+    <!-- Metadata -->
+    <section class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">TOC Form Number:</span>
+        <input
+          type="text"
+          id="tocFormNumber"
+          data-save="true"
+          placeholder="e.g. O-100123"
+          inputmode="text"
+        >
+      </div>
+
+      <div class="meta-item">
+        <span class="meta-label">Date:</span>
+        <input
+          type="text"
+          id="formDate"
+          data-save="true"
+          placeholder="MM / DD / YYYY"
+          inputmode="text"
+        >
+        <button class="today-btn" type="button" data-action="today">Today</button>
+      </div>
+    </section>
+
+    <section class="field-grid fg-2 po-row">
+      <div class="fld full-row">
+        <label for="poNumber">PO #</label>
+        <input type="text" id="poNumber" data-save="true" inputmode="text">
+      </div>
+    </section>
+
+    <!-- Transferring party -->
     <section class="sec-header">Transferring Party (From)</section>
-    <section class="field-grid fg-2"><div class="fld"><label for="fromCompanyName">Company Name</label><input type="text" id="fromCompanyName" data-save="true" inputmode="text"></div><div class="fld"><label for="fromContactName">Contact Name</label><input type="text" id="fromContactName" data-save="true" inputmode="text" autocomplete="name"></div></section>
-    <section class="field-grid fg-3"><div class="fld"><label for="fromAddress">Address</label><input type="text" id="fromAddress" data-save="true" inputmode="text" autocomplete="street-address"></div><div class="fld"><label for="fromPhone">Phone</label><input type="tel" id="fromPhone" data-save="true" inputmode="tel" autocomplete="tel" placeholder="(___) ___-____" data-format="phone"></div><div class="fld"><label for="fromEmail">Email</label><input type="email" id="fromEmail" data-save="true" inputmode="email" autocomplete="email"></div></section>
-    <section class="field-grid fg-city"><div class="fld"><label for="fromCity">City</label><input type="text" id="fromCity" data-save="true" inputmode="text" autocomplete="address-level2"></div><div class="fld"><label for="fromState">State</label><input type="text" id="fromState" data-save="true" list="stateOptions" inputmode="text" autocomplete="address-level1" maxlength="2" placeholder="NE" data-format="state"><datalist id="stateOptions"></datalist></div><div class="fld"><label for="fromZip">Zip</label><input type="text" id="fromZip" data-save="true" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div><div class="fld"><label for="transferMethod">Transfer Method</label><select id="transferMethod" data-save="true" data-other-target="transferMethodOtherWrap"><option value="">— Select —</option><option>In-Person</option><option>Shipped</option><option>Dropped Off</option><option>Other</option></select><div class="other-wrap" id="transferMethodOtherWrap"><input type="text" id="transferMethodOther" data-save="true" inputmode="text" placeholder="Specify transfer method…"></div></div></section>
+
+    <section class="field-grid fg-2">
+      <div class="fld">
+        <label for="fromCompanyName">Company Name</label>
+        <input type="text" id="fromCompanyName" data-save="true" inputmode="text">
+      </div>
+
+      <div class="fld">
+        <label for="fromContactName">Contact Name</label>
+        <input
+          type="text"
+          id="fromContactName"
+          data-save="true"
+          inputmode="text"
+          autocomplete="name"
+        >
+      </div>
+    </section>
+
+    <section class="field-grid fg-3">
+      <div class="fld">
+        <label for="fromAddress">Address</label>
+        <input
+          type="text"
+          id="fromAddress"
+          data-save="true"
+          inputmode="text"
+          autocomplete="street-address"
+        >
+      </div>
+
+      <div class="fld">
+        <label for="fromPhone">Phone</label>
+        <input
+          type="tel"
+          id="fromPhone"
+          data-save="true"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="(___) ___-____"
+          data-format="phone"
+        >
+      </div>
+
+      <div class="fld">
+        <label for="fromEmail">Email</label>
+        <input
+          type="email"
+          id="fromEmail"
+          data-save="true"
+          inputmode="email"
+          autocomplete="email"
+        >
+      </div>
+    </section>
+
+    <section class="field-grid fg-city">
+      <div class="fld">
+        <label for="fromCity">City</label>
+        <input
+          type="text"
+          id="fromCity"
+          data-save="true"
+          inputmode="text"
+          autocomplete="address-level2"
+        >
+      </div>
+
+      <div class="fld">
+        <label for="fromState">State</label>
+        <input
+          type="text"
+          id="fromState"
+          data-save="true"
+          list="stateOptions"
+          inputmode="text"
+          autocomplete="address-level1"
+          maxlength="2"
+          placeholder="NE"
+          data-format="state"
+        >
+        <datalist id="stateOptions"></datalist>
+      </div>
+
+      <div class="fld">
+        <label for="fromZip">Zip</label>
+        <input
+          type="text"
+          id="fromZip"
+          data-save="true"
+          inputmode="numeric"
+          autocomplete="postal-code"
+          maxlength="10"
+        >
+      </div>
+
+      <div class="fld">
+        <label for="transferMethod">Transfer Method</label>
+        <select
+          id="transferMethod"
+          data-save="true"
+          data-other-target="transferMethodOtherWrap"
+        >
+          <option value="">— Select —</option>
+          <option>In-Person</option>
+          <option>Shipped</option>
+          <option>Dropped Off</option>
+          <option>Other</option>
+        </select>
+        <div class="other-wrap" id="transferMethodOtherWrap">
+          <input
+            type="text"
+            id="transferMethodOther"
+            data-save="true"
+            inputmode="text"
+            placeholder="Specify transfer method…"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Receiving party -->
     <section class="sec-header mt-small">Receiving Party (To) — Precision E-Cycle</section>
-    <section class="field-grid fg-2"><div class="fld pre-fill"><label>Company Name</label><input type="text" value="Precision E-Cycle" readonly></div><div class="fld"><label for="receiverContactName">Contact Name</label><input type="text" id="receiverContactName" data-save="true" inputmode="text" autocomplete="name"></div></section>
-    <section class="field-grid fg-3"><div class="fld pre-fill"><label>Address</label><input type="text" value="4100 Industrial Ave, STE D" readonly></div><div class="fld pre-fill"><label>Phone</label><input type="tel" value="(402) 413-1267" readonly></div><div class="fld pre-fill"><label>Email</label><input type="email" value="info@precisionecycle.com" readonly></div></section>
-    <section class="field-grid fg-city"><div class="fld pre-fill"><label>City</label><input type="text" value="Lincoln" readonly></div><div class="fld pre-fill"><label>State</label><input type="text" value="NE" readonly></div><div class="fld pre-fill"><label>Zip</label><input type="text" value="68504" readonly></div><div class="fld"><label for="receivedBy">Received By</label><select id="receivedBy" data-save="true" data-other-target="receivedByOtherWrap"><option value="">— Select —</option><option>Ilya Shulyak</option><option>Slavic Brychka</option><option>Other</option></select><div class="other-wrap" id="receivedByOtherWrap"><input type="text" id="receivedByOther" data-save="true" inputmode="text" placeholder="Enter receiver name…"></div></div></section>
+
+    <section class="field-grid fg-2">
+      <div class="fld pre-fill">
+        <label>Company Name</label>
+        <input type="text" value="Precision E-Cycle" readonly>
+      </div>
+
+      <div class="fld">
+        <label for="receiverContactName">Contact Name</label>
+        <input
+          type="text"
+          id="receiverContactName"
+          data-save="true"
+          inputmode="text"
+          autocomplete="name"
+        >
+      </div>
+    </section>
+
+    <section class="field-grid fg-3">
+      <div class="fld pre-fill">
+        <label>Address</label>
+        <input type="text" value="4100 Industrial Ave, STE D" readonly>
+      </div>
+
+      <div class="fld pre-fill">
+        <label>Phone</label>
+        <input type="tel" value="(402) 413-1267" readonly>
+      </div>
+
+      <div class="fld pre-fill">
+        <label>Email</label>
+        <input type="email" value="info@precisionecycle.com" readonly>
+      </div>
+    </section>
+
+    <section class="field-grid fg-city">
+      <div class="fld pre-fill">
+        <label>City</label>
+        <input type="text" value="Lincoln" readonly>
+      </div>
+
+      <div class="fld pre-fill">
+        <label>State</label>
+        <input type="text" value="NE" readonly>
+      </div>
+
+      <div class="fld pre-fill">
+        <label>Zip</label>
+        <input type="text" value="68504" readonly>
+      </div>
+
+      <div class="fld">
+        <label for="receivedBy">Received By</label>
+        <select id="receivedBy" data-save="true" data-other-target="receivedByOtherWrap">
+          <option value="">— Select —</option>
+          <option>Ilya Shulyak</option>
+          <option>Slavic Brychka</option>
+          <option>Other</option>
+        </select>
+        <div class="other-wrap" id="receivedByOtherWrap">
+          <input
+            type="text"
+            id="receivedByOther"
+            data-save="true"
+            inputmode="text"
+            placeholder="Enter receiver name…"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Transfer details -->
     <section class="sec-header mt-small">Transfer Details</section>
-    <section class="field-grid fg-2"><div class="fld"><label for="reasonSelect">Reason for Transfer</label><select id="reasonSelect" data-save="true" data-other-target="reasonOtherWrap"><option value="">— Select —</option><option>IT Recycling</option><option>Electronics Recycling</option><option>Data Destruction</option><option>Total Device Shredding</option><option>Other</option></select><div class="other-wrap" id="reasonOtherWrap"><input type="text" id="reasonOther" data-save="true" inputmode="text" placeholder="Specify reason…"></div></div><div class="fld"><label>Data Destruction Required</label><div class="checkbox-row"><label class="cb-opt"><input type="radio" id="dataDestructionYes" name="dataDestruction" data-save="true" value="Yes"><span>Yes</span></label><label class="cb-opt"><input type="radio" id="dataDestructionNo" name="dataDestruction" data-save="true" value="No"><span>No</span></label><label class="cb-opt"><input type="radio" id="dataDestructionNA" name="dataDestruction" data-save="true" value="N/A"><span>N/A</span></label></div></div></section>
-    <section class="field-grid fg-3"><div class="fld"><label>Certificate Required</label><div class="checkbox-row"><label class="cb-opt"><input type="radio" id="certificateYes" name="certificateRequired" data-save="true" value="Yes"><span>Yes</span></label><label class="cb-opt"><input type="radio" id="certificateNo" name="certificateRequired" data-save="true" value="No"><span>No</span></label></div></div><div class="fld"><label for="estimatedWeight">Est. Total Weight (lbs)</label><select id="estimatedWeight" data-save="true" data-other-target="estimatedWeightOtherWrap"><option value="">— Select —</option><option>Less than 100 lbs</option></select><div class="other-wrap" id="estimatedWeightOtherWrap"><div class="with-suffix"><input type="text" id="estimatedWeightOther" data-save="true" inputmode="numeric" placeholder="Enter weight" data-format="weight"><span class="suffix">lbs</span></div></div></div><div class="fld"><label for="totalUnits">Total Units</label><input type="text" id="totalUnits" data-save="true" inputmode="text" placeholder="e.g. 2 pallets, 3 laptops"></div></section>
+
+    <section class="field-grid fg-2">
+      <div class="fld">
+        <label for="reasonSelect">Reason for Transfer</label>
+        <select id="reasonSelect" data-save="true" data-other-target="reasonOtherWrap">
+          <option value="">— Select —</option>
+          <option>IT Recycling</option>
+          <option>Electronics Recycling</option>
+          <option>Data Destruction</option>
+          <option>Total Device Shredding</option>
+          <option>Other</option>
+        </select>
+        <div class="other-wrap" id="reasonOtherWrap">
+          <input
+            type="text"
+            id="reasonOther"
+            data-save="true"
+            inputmode="text"
+            placeholder="Specify reason…"
+          >
+        </div>
+      </div>
+
+      <div class="fld">
+        <label>Data Destruction Required</label>
+        <div class="checkbox-row">
+          <label class="cb-opt">
+            <input
+              type="radio"
+              id="dataDestructionYes"
+              name="dataDestruction"
+              data-save="true"
+              value="Yes"
+            >
+            <span>Yes</span>
+          </label>
+
+          <label class="cb-opt">
+            <input
+              type="radio"
+              id="dataDestructionNo"
+              name="dataDestruction"
+              data-save="true"
+              value="No"
+            >
+            <span>No</span>
+          </label>
+
+          <label class="cb-opt">
+            <input
+              type="radio"
+              id="dataDestructionNA"
+              name="dataDestruction"
+              data-save="true"
+              value="N/A"
+            >
+            <span>N/A</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="field-grid fg-3">
+      <div class="fld">
+        <label>Certificate Required</label>
+        <div class="checkbox-row">
+          <label class="cb-opt">
+            <input
+              type="radio"
+              id="certificateYes"
+              name="certificateRequired"
+              data-save="true"
+              value="Yes"
+            >
+            <span>Yes</span>
+          </label>
+
+          <label class="cb-opt">
+            <input
+              type="radio"
+              id="certificateNo"
+              name="certificateRequired"
+              data-save="true"
+              value="No"
+            >
+            <span>No</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="estimatedWeight">Est. Total Weight (lbs)</label>
+        <select id="estimatedWeight" data-save="true" data-other-target="estimatedWeightOtherWrap">
+          <option value="">— Select —</option>
+          <option>Less than 100 lbs</option>
+        </select>
+        <div class="other-wrap" id="estimatedWeightOtherWrap">
+          <div class="with-suffix">
+            <input
+              type="text"
+              id="estimatedWeightOther"
+              data-save="true"
+              inputmode="numeric"
+              placeholder="Enter weight"
+              data-format="weight"
+            >
+            <span class="suffix">lbs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <label for="totalUnits">Total Units</label>
+        <input
+          type="text"
+          id="totalUnits"
+          data-save="true"
+          inputmode="text"
+          placeholder="e.g. 2 pallets, 3 laptops"
+        >
+      </div>
+    </section>
+
     <div class="note-box">* See attached appendix for serialized audit report.</div>
-    <section class="sig-grid sig-section"><div class="sig-panel"><div class="sig-panel-title">Transferring Party</div><div class="sig-date-row"><label for="transferSignatureDate">Date:</label><input type="text" id="transferSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox1" class="sig-canvas-wrap" data-signature-box="1" role="button" tabindex="0" aria-label="Open transferring party signature pad"><img id="sigPreview1" class="sig-preview" alt="Transferring Party Signature"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" type="button" data-action="clear-signature" data-signature="1">✕ Clear</button></div></div><div class="sig-panel"><div class="sig-panel-title">Receiving Party — Precision E-Cycle</div><div class="sig-date-row"><label for="receiverSignatureDate">Date:</label><input type="text" id="receiverSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox2" class="sig-canvas-wrap" data-signature-box="2" role="button" tabindex="0" aria-label="Open receiving party signature pad"><img id="sigPreview2" class="sig-preview" alt="Receiving Party Signature"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" type="button" data-action="clear-signature" data-signature="2">✕ Clear</button></div></div></section>
+
+    <!-- Signatures -->
+    <section class="sig-grid sig-section">
+      <div class="sig-panel">
+        <div class="sig-panel-title">Transferring Party</div>
+        <div class="sig-date-row">
+          <label for="transferSignatureDate">Date:</label>
+          <input
+            type="text"
+            id="transferSignatureDate"
+            data-save="true"
+            placeholder="MM/DD/YYYY"
+            inputmode="text"
+          >
+        </div>
+        <div class="sig-label">Signature</div>
+        <div
+          id="sigBox1"
+          class="sig-canvas-wrap"
+          data-signature-box="1"
+          role="button"
+          tabindex="0"
+          aria-label="Open transferring party signature pad"
+        >
+          <img id="sigPreview1" class="sig-preview" alt="Transferring Party Signature">
+          <div class="sig-tap-hint">✏️ Tap to Sign</div>
+          <button class="sig-clear" type="button" data-action="clear-signature" data-signature="1">
+            ✕ Clear
+          </button>
+        </div>
+      </div>
+
+      <div class="sig-panel">
+        <div class="sig-panel-title">Receiving Party — Precision E-Cycle</div>
+        <div class="sig-date-row">
+          <label for="receiverSignatureDate">Date:</label>
+          <input
+            type="text"
+            id="receiverSignatureDate"
+            data-save="true"
+            placeholder="MM/DD/YYYY"
+            inputmode="text"
+          >
+        </div>
+        <div class="sig-label">Signature</div>
+        <div
+          id="sigBox2"
+          class="sig-canvas-wrap"
+          data-signature-box="2"
+          role="button"
+          tabindex="0"
+          aria-label="Open receiving party signature pad"
+        >
+          <img id="sigPreview2" class="sig-preview" alt="Receiving Party Signature">
+          <div class="sig-tap-hint">✏️ Tap to Sign</div>
+          <button class="sig-clear" type="button" data-action="clear-signature" data-signature="2">
+            ✕ Clear
+          </button>
+        </div>
+      </div>
+    </section>
+
     <div class="page-footer"></div>
   </main>
-  <div class="sig-modal" id="sigModal"><div class="sig-modal-header"><div class="sig-modal-title" id="sigModalTitle">✏️ Sign Here</div><span class="sig-modal-sub" id="sigModalSub"></span></div><div class="sig-modal-canvas-wrap" id="sigModalWrap"><canvas id="sigCanvas"></canvas><div class="sig-modal-baseline"></div><div class="sig-modal-x">✕</div></div><div class="sig-modal-actions"><button class="sig-modal-clear" type="button" data-action="modal-clear-signature">Clear</button><button class="sig-modal-done" type="button" id="sigModalDone" data-action="modal-save-signature">✓ Done</button></div></div>
-  <div class="print-warning-modal" id="printWarningModal" role="dialog" aria-modal="true" aria-labelledby="printWarningTitle">
+
+  <!-- Modals -->
+  <div class="sig-modal" id="sigModal">
+    <div class="sig-modal-header">
+      <div class="sig-modal-title" id="sigModalTitle">✏️ Sign Here</div>
+      <span class="sig-modal-sub" id="sigModalSub"></span>
+    </div>
+
+    <div class="sig-modal-canvas-wrap" id="sigModalWrap">
+      <canvas id="sigCanvas"></canvas>
+      <div class="sig-modal-baseline"></div>
+      <div class="sig-modal-x">✕</div>
+    </div>
+
+    <div class="sig-modal-actions">
+      <button class="sig-modal-clear" type="button" data-action="modal-clear-signature">
+        Clear
+      </button>
+      <button
+        class="sig-modal-done"
+        type="button"
+        id="sigModalDone"
+        data-action="modal-save-signature"
+      >
+        ✓ Done
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="print-warning-modal"
+    id="printWarningModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="printWarningTitle"
+  >
     <div class="print-warning-card">
       <div class="print-warning-title" id="printWarningTitle">Some fields are not filled out</div>
-      <div class="print-warning-body">You can continue filling out the form, or print it with the information currently entered.</div>
+      <div class="print-warning-body">
+        You can continue filling out the form, or print it with the information currently entered.
+      </div>
       <div class="print-warning-actions">
-        <button type="button" class="print-warning-secondary" data-action="continue-editing">Continue Filling Out</button>
-        <button type="button" class="print-warning-primary" data-action="force-print">Print Anyway</button>
+        <button type="button" class="print-warning-secondary" data-action="continue-editing">
+          Continue Filling Out
+        </button>
+        <button type="button" class="print-warning-primary" data-action="force-print">
+          Print Anyway
+        </button>
       </div>
     </div>
   </div>
