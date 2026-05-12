@@ -53,8 +53,75 @@
   function hideValidationBanner() { return; }
   function openPrintWarningModal() { $('printWarningModal')?.classList.add('open'); }
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
-  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(); } }
-  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
+  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); renderPrintPage(); window.print(); } else { openPrintWarningModal(); } }
+  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); renderPrintPage(); window.print(); }
+  function readValue(id) { return String($(id)?.value || '').trim(); }
+  function readFinalSelectValue(selectId, otherId, suffix = '') { const selected = readValue(selectId); if (selected !== 'Other') return selected; const otherValue = readValue(otherId); return otherValue ? otherValue + suffix : 'Other'; }
+  function readSignature(id) { const preview = $('sigPreview' + id); return preview && preview.src && preview.style.display !== 'none' ? preview.src : ''; }
+  function appendPrintCell(parent, label, value, className = '') { const cell = document.createElement('div'); cell.className = 'print-cell' + (className ? ' ' + className : ''); const labelEl = document.createElement('div'); labelEl.className = 'print-label'; labelEl.textContent = label; const valueEl = document.createElement('div'); valueEl.className = 'print-value'; valueEl.textContent = value || '\u00a0'; cell.append(labelEl, valueEl); parent.appendChild(cell); return cell; }
+  function appendPrintGrid(parent, className, cells) { const grid = document.createElement('section'); grid.className = 'print-grid ' + className; cells.forEach((cell) => appendPrintCell(grid, cell[0], cell[1], cell[2] || '')); parent.appendChild(grid); return grid; }
+  function appendPrintSectionTitle(parent, title) { const section = document.createElement('section'); section.className = 'print-section-title'; section.textContent = title; parent.appendChild(section); return section; }
+  function createPrintSignature(title, date, signatureSrc) { const panel = document.createElement('div'); panel.className = 'print-signature-panel'; const heading = document.createElement('div'); heading.className = 'print-signature-title'; heading.textContent = title; const dateRow = document.createElement('div'); dateRow.className = 'print-signature-date'; const dateLabel = document.createElement('span'); dateLabel.textContent = 'Date:'; const dateValue = document.createElement('strong'); dateValue.textContent = date || '\u00a0'; dateRow.append(dateLabel, dateValue); const sigLabel = document.createElement('div'); sigLabel.className = 'print-label'; sigLabel.textContent = 'Signature'; const sigBox = document.createElement('div'); sigBox.className = 'print-signature-box'; if (signatureSrc) { const img = document.createElement('img'); img.src = signatureSrc; img.alt = title + ' signature'; sigBox.appendChild(img); } panel.append(heading, dateRow, sigLabel, sigBox); return panel; }
+  function renderPrintPage() {
+    const printPage = document.querySelector('.print-page');
+    if (!printPage) return;
+    const data = {
+      toc: readValue('tocFormNumber'),
+      date: readValue('formDate'),
+      po: readValue('poNumber'),
+      transferMethod: readFinalSelectValue('transferMethod', 'transferMethodOther'),
+      receivedBy: readFinalSelectValue('receivedBy', 'receivedByOther'),
+      reason: readFinalSelectValue('reasonSelect', 'reasonOther'),
+      weight: readFinalSelectValue('estimatedWeight', 'estimatedWeightOther', ' lbs'),
+      dataDestruction: getRadioGroupValue('dataDestruction'),
+      certificate: getRadioGroupValue('certificateRequired')
+    };
+    printPage.textContent = '';
+
+    const header = document.createElement('header');
+    header.className = 'print-doc-header';
+    const brandTitle = document.createElement('div');
+    brandTitle.className = 'print-brand-title';
+    brandTitle.textContent = 'Precision E-Cycle';
+    const brandSubtitle = document.createElement('div');
+    brandSubtitle.className = 'print-brand-subtitle';
+    brandSubtitle.textContent = 'Transfer of Custody';
+    const brandNote = document.createElement('div');
+    brandNote.className = 'print-brand-note';
+    brandNote.textContent = 'Secure IT recycling, electronics recycling, and data destruction documentation';
+    header.append(brandTitle, brandSubtitle, brandNote);
+    printPage.appendChild(header);
+
+    appendPrintGrid(printPage, 'print-grid-2 print-meta-grid', [['TOC Form Number', data.toc], ['Date', data.date]]);
+    appendPrintGrid(printPage, 'print-grid-1 print-po-grid', [['PO #', data.po]]);
+
+    appendPrintSectionTitle(printPage, 'Transferring Party (From)');
+    appendPrintGrid(printPage, 'print-grid-2', [['Company Name', readValue('fromCompanyName')], ['Contact Name', readValue('fromContactName')]]);
+    appendPrintGrid(printPage, 'print-grid-3', [['Address', readValue('fromAddress')], ['Phone', readValue('fromPhone')], ['Email', readValue('fromEmail')]]);
+    appendPrintGrid(printPage, 'print-grid-city', [['City', readValue('fromCity')], ['State', readValue('fromState')], ['Zip', readValue('fromZip')], ['Transfer Method', data.transferMethod]]);
+
+    appendPrintSectionTitle(printPage, 'Receiving Party (To) — Precision E-Cycle');
+    appendPrintGrid(printPage, 'print-grid-2', [['Company Name', 'Precision E-Cycle', 'print-prefill'], ['Contact Name', readValue('receiverContactName')]]);
+    appendPrintGrid(printPage, 'print-grid-3', [['Address', '4100 Industrial Ave, STE D', 'print-prefill'], ['Phone', '(402) 413-1267', 'print-prefill'], ['Email', 'info@precisionecycle.com', 'print-prefill']]);
+    appendPrintGrid(printPage, 'print-grid-city', [['City', 'Lincoln', 'print-prefill'], ['State', 'NE', 'print-prefill'], ['Zip', '68504', 'print-prefill'], ['Received By', data.receivedBy]]);
+
+    appendPrintSectionTitle(printPage, 'Transfer Details');
+    appendPrintGrid(printPage, 'print-grid-2', [['Reason for Transfer', data.reason], ['Data Destruction Required', data.dataDestruction]]);
+    appendPrintGrid(printPage, 'print-grid-3', [['Certificate Required', data.certificate], ['Est. Total Weight (lbs)', data.weight], ['Total Units', readValue('totalUnits')]]);
+
+    const note = document.createElement('div');
+    note.className = 'print-note-box';
+    note.textContent = '* See attached appendix for serialized audit report.';
+    printPage.appendChild(note);
+
+    const signatures = document.createElement('section');
+    signatures.className = 'print-signature-grid';
+    signatures.append(
+      createPrintSignature('Transferring Party', readValue('transferSignatureDate'), readSignature('1')),
+      createPrintSignature('Receiving Party — Precision E-Cycle', readValue('receiverSignatureDate'), readSignature('2'))
+    );
+    printPage.appendChild(signatures);
+  }
   function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
@@ -85,6 +152,6 @@
   function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
   function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
   function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); saveToStorage(); }
-  function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
+  function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); window.addEventListener('beforeprint', renderPrintPage); renderPrintPage(); }
   document.addEventListener('DOMContentLoaded', init);
 })();

@@ -13,9 +13,9 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
   <link rel="stylesheet" href="base.css?v=2">
-  <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="print.css?v=4" media="print">
-  <script defer src="app.js?v=6"></script>
+  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="print.css?v=5" media="print">
+  <script defer src="app.js?v=7"></script>
 </head>
 <body>
   <div class="toolbar">
@@ -45,6 +45,9 @@
     <section class="sig-grid sig-section"><div class="sig-panel"><div class="sig-panel-title">Transferring Party</div><div class="sig-date-row"><label for="transferSignatureDate">Date:</label><input type="text" id="transferSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox1" class="sig-canvas-wrap" data-signature-box="1" role="button" tabindex="0" aria-label="Open transferring party signature pad"><img id="sigPreview1" class="sig-preview" alt="Transferring Party Signature"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" type="button" data-action="clear-signature" data-signature="1">✕ Clear</button></div></div><div class="sig-panel"><div class="sig-panel-title">Receiving Party — Precision E-Cycle</div><div class="sig-date-row"><label for="receiverSignatureDate">Date:</label><input type="text" id="receiverSignatureDate" data-save="true" placeholder="MM/DD/YYYY" inputmode="text"></div><div class="sig-label">Signature</div><div id="sigBox2" class="sig-canvas-wrap" data-signature-box="2" role="button" tabindex="0" aria-label="Open receiving party signature pad"><img id="sigPreview2" class="sig-preview" alt="Receiving Party Signature"><div class="sig-tap-hint">✏️ Tap to Sign</div><button class="sig-clear" type="button" data-action="clear-signature" data-signature="2">✕ Clear</button></div></div></section>
     <div class="page-footer"></div>
   </main>
+
+  <main class="print-page" aria-hidden="true"></main>
+
   <div class="sig-modal" id="sigModal"><div class="sig-modal-header"><div class="sig-modal-title" id="sigModalTitle">✏️ Sign Here</div><span class="sig-modal-sub" id="sigModalSub"></span></div><div class="sig-modal-canvas-wrap" id="sigModalWrap"><canvas id="sigCanvas"></canvas><div class="sig-modal-baseline"></div><div class="sig-modal-x">✕</div></div><div class="sig-modal-actions"><button class="sig-modal-clear" type="button" data-action="modal-clear-signature">Clear</button><button class="sig-modal-done" type="button" id="sigModalDone" data-action="modal-save-signature">✓ Done</button></div></div>
   <div class="print-warning-modal" id="printWarningModal" role="dialog" aria-modal="true" aria-labelledby="printWarningTitle">
     <div class="print-warning-card">
