@@ -46,6 +46,9 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .fld.field-missing label, .meta-item.field-missing .meta-label { color:var(--warn-text)!important; }
 .fld.field-missing input, .fld.field-missing select, .meta-item.field-missing input { border-bottom-color:var(--warn-border)!important; }
 .other-wrap { display:none; margin-top:6px; }
+.select-other-row { display:grid; grid-template-columns:1fr; gap:10px; align-items:end; }
+.select-other-row.other-visible { grid-template-columns:minmax(0, 1fr) minmax(150px, .9fr); }
+.select-other-row .other-wrap { margin-top:0; }
 .with-suffix { display:flex; align-items:center; gap:6px; }
 .with-suffix input { flex:1; }
 .suffix { font-size:13px; color:var(--mid); white-space:nowrap; }
