@@ -215,7 +215,39 @@
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
   function applyReceiverContactWorkflow(options = {}) { const contact = $('receiverContactName'); const phone = $('receiverPhone'); if (!contact || !phone) return; const knownPhone = APP.receiverPhoneByContact[contact.value]; phone.readOnly = Boolean(knownPhone); if (knownPhone) phone.value = knownPhone; if ((contact.value === 'Other' || contact.value === '') && options.clearPhone) phone.value = ''; if (phone.dataset.format) formatFieldValue(phone); validateField(phone, false); }
   function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
-  function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
+  function populateWeightOptions() {
+    const select = $(CONFIG.ids.estimatedWeight);
+    if (!select || select.dataset.populated === 'true') return;
+
+    const selectedValue = select.value;
+    const optionLabels = [
+      '— Select —',
+      'Less than 100 lbs',
+      ...Array.from({ length: 100 }, (_, index) => ((index + 1) * 100).toLocaleString('en-US') + ' lbs'),
+      'Other'
+    ];
+
+    select.replaceChildren(...optionLabels.map((label) => {
+      const option = document.createElement('option');
+      option.value = label === '— Select —' ? '' : label;
+      option.textContent = label;
+      return option;
+    }));
+    if (optionLabels.includes(selectedValue)) select.value = selectedValue;
+    select.dataset.populated = 'true';
+  }
+  function validateConditionalFieldsForController(controllerId, mark = false) {
+    APP.conditionalRequiredFields
+      .filter((rule) => rule.controllerId === controllerId)
+      .forEach((rule) => validateField($(rule.fieldId), mark));
+  }
+  function ensureTocFormNumber() {
+    const el = $(CONFIG.ids.tocFormNumber);
+    if (!el || String(el.value || '').trim()) return;
+    const date = new Date();
+    const stamp = String(date.getFullYear()).slice(2) + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0');
+    el.value = 'O-' + stamp;
+  }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
   function getFormData() { const data = {}; getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; }); APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); }); return data; }
   function saveToStorage() {
