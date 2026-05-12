@@ -9,7 +9,48 @@
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
     radioGroups: ['dataDestruction', 'certificateRequired'],
-    optionalEmptyFields: ['poNumber'],
+    requiredFieldIds: [
+      'tocFormNumber',
+      'formDate',
+      'fromCompanyName',
+      'fromContactName',
+      'fromAddress',
+      'fromPhone',
+      'fromEmail',
+      'fromCity',
+      'fromState',
+      'fromZip',
+      'transferMethod',
+      'receiverContactName',
+      'receiverPhone',
+      'receivedBy',
+      'reasonSelect',
+      'estimatedWeight',
+      'totalUnits',
+      'transferSignatureDate',
+      'receiverSignatureDate'
+    ],
+    optionalFieldIds: ['poNumber'],
+    prefilledRequiredFieldIds: [
+      'receiverCompanyName',
+      'receiverAddress',
+      'receiverEmail',
+      'receiverCity',
+      'receiverState',
+      'receiverZip'
+    ],
+    conditionalRequiredFields: [
+      { fieldId: 'transferMethodOther', controllerId: 'transferMethod', requiredValue: 'Other' },
+      { fieldId: 'receivedByOther', controllerId: 'receivedBy', requiredValue: 'Other' },
+      { fieldId: 'receiverPhone', controllerId: 'receivedBy', requiredValue: 'Other' },
+      { fieldId: 'reasonOther', controllerId: 'reasonSelect', requiredValue: 'Other' },
+      { fieldId: 'estimatedWeightOther', controllerId: 'estimatedWeight', requiredValue: 'Other' }
+    ],
+    receiverPhoneByContact: {
+      'Ilya Shulyak': '(402) 413-1267',
+      'Slavic Brychka': '(402) 413-1267'
+    },
+    defaultReceiverPhone: '(402) 413-1267',
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
@@ -62,7 +103,16 @@
   function isHiddenByOtherWrap(el) { const wrap = el.closest('.other-wrap'); return wrap && getComputedStyle(wrap).display === 'none'; }
   function signatureIsMissing(id) { const preview = $('sigPreview' + id); return !preview || !preview.src || preview.style.display === 'none'; }
   function markSignatureBoxes(mark) { const missing = []; APP.signatureIds.forEach((id) => { const isMissing = signatureIsMissing(id); if (isMissing) missing.push(id); if (mark) $('sigBox' + id)?.classList.toggle('field-missing', isMissing); }); return missing; }
-  function isEmptyExpectedField(el) { if (!el || !el.id || APP.optionalEmptyFields.includes(el.id) || el.type === 'radio' || el.readOnly || el.disabled || isHiddenByOtherWrap(el)) return false; return !String(el.value || '').trim(); }
+  function fieldIsListed(id, listName) { return APP[listName].includes(id); }
+  function conditionalRuleApplies(rule) { const controller = $(rule.controllerId); return controller && controller.value === rule.requiredValue; }
+  function isConditionallyRequired(id) { return APP.conditionalRequiredFields.some((rule) => rule.fieldId === id && conditionalRuleApplies(rule)); }
+  function isRequiredField(el) {
+    if (!el || !el.id || el.type === 'radio' || el.disabled) return false;
+    if (fieldIsListed(el.id, 'optionalFieldIds')) return false;
+    if (isHiddenByOtherWrap(el) && !isConditionallyRequired(el.id)) return false;
+    return fieldIsListed(el.id, 'requiredFieldIds') || fieldIsListed(el.id, 'prefilledRequiredFieldIds') || isConditionallyRequired(el.id);
+  }
+  function isEmptyRequiredField(el) { return isRequiredField(el) && !String(el.value || '').trim(); }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
     if (!value) return false;
@@ -90,6 +140,7 @@
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
+  function syncReceiverPhone() { const selectedContact = $('receivedBy')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { phone.value = APP.defaultReceiverPhone; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly); setValidity(phone, ''); markField(phone, false); }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
   function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
   function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
@@ -124,7 +175,7 @@
   function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') setTodayAllDates(); if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
   function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
   function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
-  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); saveToStorage(); }
+  function handleChange(event) { const el = event.target; if (el.id === 'receivedBy') syncReceiverPhone(); if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); validateConditionalFieldsForController(el.id, true); saveToStorage(); }
   function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
   document.addEventListener('DOMContentLoaded', init);
 })();

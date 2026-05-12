@@ -33,9 +33,11 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Receiving Party / Received By Other field clears when the dropdown changes away from Other.
 - [ ] Reason for Transfer dropdown works.
 - [ ] Reason Other field appears only when Other is selected.
+- [ ] Reason Other field is required only when Reason for Transfer is Other.
 - [ ] Estimated Weight dropdown includes Less than 100 lbs.
 - [ ] Estimated Weight dropdown includes 100-lb increments through 10,000 lbs.
 - [ ] Estimated Weight Other field appears only when Other is selected.
+- [ ] Estimated Weight Other field is required only when Estimated Weight is Other.
 - [ ] Manual weight formats correctly.
 
 ## Validation
