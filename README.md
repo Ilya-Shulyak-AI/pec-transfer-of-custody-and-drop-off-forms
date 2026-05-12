@@ -19,13 +19,23 @@ This repository holds the working code for Precision E-Cycle's Transfer of Custo
 
 ## Data storage
 
-The form stores entered data locally in the browser on the device being used. It does not use a backend database.
+The form stores entered data and signatures locally in the browser on the device being used. It does not use a backend database.
 
-Use the New button after finishing a form to clear local form data and signatures before starting another form.
+Use the New button after finishing a form to clear local form data and signatures before starting another form. The New button does not create a TOC number; the TOC Form # is intentionally entered manually.
+
+## Form behavior
+
+- TOC Form # starts blank and must be entered manually.
+- The main Date and both signature dates use MM/DD/YYYY.
+- Receiving Party Contact Name is selected from a dropdown.
+- Selecting Ilya Shulyak fills the Receiving Party phone as `(402) 413-1267`.
+- Selecting Other exposes a manual contact-name field and leaves the phone field editable.
 
 ## Printing
 
-Use the Print button to print or save as PDF. The print layout is controlled by `print.css` and is intended to fit on one Letter-size page.
+Use the Print button to print or save as PDF. Before printing, the app renders a print-only version of the form so the PDF does not depend on browser-native input and select control rendering.
+
+The print layout is controlled by `print.css`, uses Letter portrait paper with a safe page margin, and is intended to fit on one page at 100% scale.
 
 ## Current app status
 
@@ -33,10 +43,10 @@ The current app is the Transfer of Custody form. The Drop-Off form / multi-form 
 
 ## Current architecture
 
-- `index.html` contains the form structure.
+- `index.html` contains the screen form, modal structure, and print-only container.
 - `styles.css` controls screen/app styling.
 - `print.css` controls print/PDF styling.
-- `app.js` controls form behavior, local storage, validation, and signatures.
+- `app.js` controls form behavior, local storage, validation, print rendering, and signatures.
 - `manifest.webmanifest` controls PWA/Home Screen metadata.
 - `icon.svg` provides the app icon.
 
