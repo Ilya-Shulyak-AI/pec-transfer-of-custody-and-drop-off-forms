@@ -49,6 +49,26 @@ body {
 .storage-warning,
 .local-data-note { display:none!important; }
 
+
+.field-missing,
+.fld.field-missing,
+.meta-item.field-missing,
+.sig-canvas-wrap.field-missing {
+  background:transparent!important;
+  outline:0!important;
+}
+
+.fld.field-missing label,
+.meta-item.field-missing .meta-label {
+  color:inherit!important;
+}
+
+.fld.field-missing input,
+.fld.field-missing select,
+.meta-item.field-missing input {
+  border-bottom-color:transparent!important;
+}
+
 .page {
   width:8.5in!important;
   height:11in!important;
