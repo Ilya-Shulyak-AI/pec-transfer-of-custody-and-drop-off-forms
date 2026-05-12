@@ -93,7 +93,8 @@ async function main() {
     await fillText(page, '#fromZip', '69101-1234');
     await selectOther(page, '#transferMethod', '#transferMethodOther', 'Customer-arranged freight with dock appointment');
 
-    await fillText(page, '#receiverContactName', 'Precision E-Cycle Receiving Specialist With Long Name');
+    await selectOther(page, '#receiverContactName', '#receiverContactNameOther', 'Precision E-Cycle Receiving Specialist With Long Name');
+    await fillText(page, '#receiverPhone', '4025551267');
     await selectOther(page, '#receivedBy', '#receivedByOther', 'Jordan Avery Longname Receiver');
 
     await selectOther(page, '#reasonSelect', '#reasonOther', 'Secure electronics recycling and serialized asset transfer');

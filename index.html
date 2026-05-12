@@ -208,13 +208,21 @@
 
       <div class="fld">
         <label for="receiverContactName">Contact Name</label>
-        <input
-          type="text"
-          id="receiverContactName"
-          data-save="true"
-          inputmode="text"
-          autocomplete="name"
-        >
+        <select id="receiverContactName" data-save="true" data-other-target="receiverContactNameOtherWrap">
+          <option value="">— Select —</option>
+          <option>Elliot Shuliak</option>
+          <option>Other</option>
+        </select>
+        <div class="other-wrap" id="receiverContactNameOtherWrap">
+          <input
+            type="text"
+            id="receiverContactNameOther"
+            data-save="true"
+            inputmode="text"
+            autocomplete="name"
+            placeholder="Enter contact name…"
+          >
+        </div>
       </div>
     </section>
 
@@ -224,9 +232,18 @@
         <input type="text" value="4100 Industrial Ave, STE D" readonly>
       </div>
 
-      <div class="fld pre-fill">
-        <label>Phone</label>
-        <input type="tel" value="(402) 413-1267" readonly>
+      <div class="fld">
+        <label for="receiverPhone">Phone</label>
+        <input
+          type="tel"
+          id="receiverPhone"
+          data-save="true"
+          data-format="phone"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="(___) ___-____"
+          readonly
+        >
       </div>
 
       <div class="fld pre-fill">
@@ -498,13 +515,13 @@
     aria-labelledby="printWarningTitle"
   >
     <div class="print-warning-card">
-      <div class="print-warning-title" id="printWarningTitle">Some fields are not filled out</div>
+      <div class="print-warning-title" id="printWarningTitle">Not all fields are filled out</div>
       <div class="print-warning-body">
-        You can continue filling out the form, or print it with the information currently entered.
+        Continue editing, or print as is.
       </div>
       <div class="print-warning-actions">
         <button type="button" class="print-warning-secondary" data-action="continue-editing">
-          Continue Filling Out
+          Continue Editing
         </button>
         <button type="button" class="print-warning-primary" data-action="force-print">
           Print Anyway
