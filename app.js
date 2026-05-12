@@ -105,6 +105,18 @@
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
+  const APP = {
+    ...CONFIG,
+    storageKey: CONFIG.storage.formKey,
+    oldStorageKeys: CONFIG.storage.oldFormKeys,
+    signatureKeyPrefix: CONFIG.storage.signatureKeyPrefix,
+    payloadVersion: CONFIG.storage.payloadVersion,
+    receiverContacts: {
+      ilya: { name: 'Ilya Shulyak', phone: CONFIG.receiverPhoneByContact['Ilya Shulyak'] },
+      slavic: { name: 'Slavic Brychka', phone: CONFIG.receiverPhoneByContact['Slavic Brychka'] }
+    }
+  };
+
   const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1', activePointerId: null, signatureStorageFailed: false };
   const $ = (id) => document.getElementById(id);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -136,6 +148,8 @@
   function hideStorageWarning() { const el = $('storageWarning'); if (el) el.classList.remove('show'); }
   function formatDate() { const n = new Date(); return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear(); }
   function formatDateCompact() { return formatDate().replace(/\s/g, ''); }
+  function formatDateInputValue(value) { const digits = value.replace(/\D/g, '').slice(0, 8); if (digits.length >= 5) return digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4); if (digits.length >= 3) return digits.slice(0, 2) + '/' + digits.slice(2); return digits; }
+  function isValidFormattedDate(value) { const match = String(value || '').trim().match(/^(0[1-9]|1[0-2])\s*\/\s*(0[1-9]|[12]\d|3[01])\s*\/\s*(\d{4})$/); if (!match) return false; const month = Number(match[1]); const day = Number(match[2]); const year = Number(match[3]); const date = new Date(year, month - 1, day); return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day; }
   function setTodayAllDates() { const today = formatDate(); APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; }); saveToStorage(); }
   function getSignatureDateFieldId(signatureId) { const id = String(signatureId); if (id === '1') return 'transferSignatureDate'; if (id === '2') return 'receiverSignatureDate'; return ''; }
   function stampSignatureDate(signatureId) { const targetId = getSignatureDateFieldId(signatureId); const el = targetId ? $(targetId) : null; if (el && !String(el.value || '').trim()) el.value = formatDateCompact(); }
@@ -162,6 +176,7 @@
     return fieldIsListed(el.id, 'requiredFieldIds') || fieldIsListed(el.id, 'prefilledRequiredFieldIds') || isConditionallyRequired(el.id);
   }
   function isEmptyRequiredField(el) { return isRequiredField(el) && !String(el.value || '').trim(); }
+  function isEmptyExpectedField(el) { return isEmptyRequiredField(el); }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
     if (!value) return false;
@@ -193,6 +208,7 @@
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
+  function ensureTocFormNumber() { return; }
   function syncReceiverPhone() { const selectedContact = $('receivedBy')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { phone.value = APP.defaultReceiverPhone; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly); setValidity(phone, ''); markField(phone, false); }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
   function applyReceiverContactWorkflow(options = {}) { const contact = $('receiverContactName'); const phone = $('receiverPhone'); if (!contact || !phone) return; phone.readOnly = false; if (contact.value === APP.receiverContacts.ilya.name) phone.value = APP.receiverContacts.ilya.phone; if ((contact.value === 'Other' || contact.value === '') && options.clearPhone) phone.value = ''; if (phone.dataset.format) formatFieldValue(phone); validateField(phone, false); }
@@ -223,7 +239,7 @@
   function releasePointer(canvas, pointerId) { if (!canvas || pointerId == null || typeof canvas.releasePointerCapture !== 'function') return; try { if (typeof canvas.hasPointerCapture !== 'function' || canvas.hasPointerCapture(pointerId)) canvas.releasePointerCapture(pointerId); } catch (error) { console.warn('Pointer release unavailable:', error); } }
   function shouldIgnorePointer(e, requirePrimaryButton = false) { return (requirePrimaryButton && typeof e.button === 'number' && e.button !== 0) || e.isPrimary === false || (state.activePointerId !== null && e.pointerId !== state.activePointerId); }
   function startSig(e) { if (shouldIgnorePointer(e, true)) return; e.preventDefault(); initSigCanvas(); if (!state.sigCtx || !state.sigCanvas) return; state.isSigning = true; state.activePointerId = e.pointerId; capturePointer(state.sigCanvas, e.pointerId); const p = sigPos(e); state.sigCtx.beginPath(); state.sigCtx.moveTo(p.x, p.y); }
-  function moveSig(e) { if (!state.isSigning || !state.sigCtx || shouldIgnorePointer(e)) return; e.preventDefault(); const p = sigPos(e); state.sigCtx.lineTo(p.x, p.y); state.sigCtx.stroke(); state.hasMark = true; $('sigModalDone')?.classList.add('ready'); }
+  function moveSig(e) { if (!state.isSigning || !state.sigCtx || shouldIgnorePointer(e)) return; e.preventDefault(); const p = sigPos(e); state.sigCtx.lineTo(p.x, p.y); state.sigCtx.stroke(); state.hasMark = true; const doneButton = $('sigModalDone'); doneButton?.classList.add('ready'); if (doneButton) doneButton.disabled = false; }
   function endSig(e) { if (!state.isSigning || (e && shouldIgnorePointer(e))) return; if (e) e.preventDefault(); if (e?.type === 'pointerleave' && typeof state.sigCanvas?.hasPointerCapture === 'function' && state.sigCanvas.hasPointerCapture(e.pointerId)) return; releasePointer(state.sigCanvas, e?.pointerId); state.isSigning = false; state.activePointerId = null; }
   function bindSignatureCanvas() { const canvas = $('sigCanvas'); if (!canvas || canvas.dataset.bound === 'true') return; canvas.dataset.bound = 'true'; canvas.addEventListener('pointerdown', startSig); canvas.addEventListener('pointermove', moveSig); canvas.addEventListener('pointerup', endSig); canvas.addEventListener('pointercancel', endSig); canvas.addEventListener('pointerleave', endSig); }
   function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') setTodayAllDates(); if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
