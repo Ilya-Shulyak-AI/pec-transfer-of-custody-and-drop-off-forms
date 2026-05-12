@@ -9,6 +9,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Toolbar displays correctly.
 - [ ] Form displays correctly on desktop.
 - [ ] Form displays correctly on iPhone Safari.
+- [ ] Validation banner is hidden until validation is needed.
 
 ## Form fields
 
@@ -23,6 +24,15 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Receiving Party prefilled company/address/phone/email/city/state/zip fields remain readonly.
 - [ ] Receiving Party contact fields save and restore.
 - [ ] Transfer Details fields save and restore.
+
+## Receiving Party contact workflow
+
+- [ ] Contact Name is a dropdown.
+- [ ] Selecting Ilya Shulyak fills Receiving Party phone as (402) 413-1267.
+- [ ] Selecting Ilya Shulyak makes the Receiving Party phone read-only.
+- [ ] Selecting Other shows the manual contact-name field beside the dropdown on desktop.
+- [ ] Selecting Other clears the default phone and allows manual phone entry.
+- [ ] Other contact name and manual phone persist after refresh.
 
 ## Dropdowns and Other fields
 
@@ -52,6 +62,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] State field rejects invalid abbreviations.
 - [ ] Phone fields format consistently.
 - [ ] Email fields behave as email inputs.
+- [ ] Date fields validate MM/DD/YYYY format.
 - [ ] Radio button groups allow only one selected option.
 - [ ] Print warning modal appears when required information is missing.
 - [ ] Continue Filling Out closes the warning modal without printing.
@@ -107,10 +118,12 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Print preview does not require custom scaling.
 - [ ] Printed/PDF output remains one page after all fields are completed.
 - [ ] Header is centered and visually balanced.
+- [ ] TOC/date row is visually separated from PO row.
 - [ ] All boxes have clear divider lines.
 - [ ] Border weight is consistent and visible in browser print preview.
 - [ ] Border quality remains clean in saved PDF output.
 - [ ] Receiving Party section has uniform boxes.
+- [ ] Pre-filled Receiving Party fields are not blue-highlighted.
 - [ ] Transfer Details section has proper divider lines.
 - [ ] Signature section is clean and proportional.
 - [ ] App toolbar does not print.

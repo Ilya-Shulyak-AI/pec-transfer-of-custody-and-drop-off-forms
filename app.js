@@ -166,8 +166,12 @@
     const value = String(el.value || '').trim();
     if (!value) return false;
     if (el.dataset.format === 'state') return !APP.states.includes(value.toUpperCase());
+    if (el.dataset.format === 'date') return !/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/.test(value);
     if (el.type === 'email') return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    if (el.type === 'tel') { const digits = value.replace(/\D/g, ''); return digits.length > 0 && digits.length !== 10; }
+    if (el.type === 'tel') {
+      const digits = value.replace(/\D/g, '');
+      return digits.length > 0 && digits.length !== 10;
+    }
     if (el.dataset.format === 'weight') return Number(value.replace(/\D/g, '')) <= 0;
     if (APP.dateFields.includes(el.id)) return !isValidFormattedDate(value);
     return false;
