@@ -20,6 +20,9 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] PO field works.
 - [ ] Transferring Party fields save and restore.
 - [ ] Receiving Party fields save and restore.
+- [ ] Receiving Party Contact Name saves and restores the dropdown value.
+- [ ] Receiving Party Contact Name saves and restores the Other name.
+- [ ] Receiving Party Phone saves and restores manually entered phone numbers.
 - [ ] Transfer Details fields save and restore.
 
 ## Dropdowns and Other fields
@@ -28,6 +31,9 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Transfer Method Other field appears only when Other is selected.
 - [ ] Received By dropdown works.
 - [ ] Received By Other field appears only when Other is selected.
+- [ ] Receiving Party Contact Name autofills `(402) 413-1267` when Ilya Shulyak is selected.
+- [ ] Receiving Party Contact Name Other field appears only when Other is selected and accepts a manual name.
+- [ ] Receiving Party Phone clears and accepts a manually entered phone when Contact Name is Other.
 - [ ] Reason for Transfer dropdown works.
 - [ ] Reason Other field appears only when Other is selected.
 - [ ] Estimated Weight dropdown includes Less than 100 lbs.
