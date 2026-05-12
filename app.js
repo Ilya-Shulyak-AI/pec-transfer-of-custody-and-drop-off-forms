@@ -12,6 +12,9 @@
       signatureKeyPrefix: 'pec_toc_sig_',
       payloadVersion: 6
     },
+    get storageKey() { return this.storage.formKey; },
+    get oldStorageKeys() { return this.storage.oldFormKeys; },
+    get signatureKeyPrefix() { return this.storage.signatureKeyPrefix; },
     ids: {
       tocFormNumber: 'tocFormNumber',
       validationBanner: 'validationBanner',
@@ -204,6 +207,12 @@
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); restoreFocus(state.lastPrintTrigger); state.lastPrintTrigger = null; }
   function requestPrint(trigger = document.activeElement) { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(trigger); } }
   function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
+  function formatDateInputValue(value) {
+    const digits = String(value || '').replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return digits.slice(0, 2) + '/' + digits.slice(2);
+    return digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+  }
   function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); if (type === 'date') el.value = formatDateInputValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
