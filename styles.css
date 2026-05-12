@@ -12,14 +12,16 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .page { width:100%; max-width:760px; background:#fff; border:2px solid var(--blue-light); box-shadow:0 2px 16px rgba(26,79,138,.12); }
 .validation-banner { display:none!important; }
 .validation-banner.show { display:none!important; }
-.storage-warning { display:none; width:100%; max-width:760px; margin:12px 16px 0; padding:10px 14px; border:1px solid var(--warn-border); background:var(--warn); color:var(--warn-text); font-size:13px; font-weight:700; }
+.storage-warning { display:none; width:100%; max-width:760px; margin:10px 16px 0; padding:10px 14px; background:var(--warn); border:2px solid var(--warn-border); color:var(--warn-text); font-size:14px; line-height:1.35; font-weight:600; box-shadow:0 2px 10px rgba(0,0,0,.12); }
 .storage-warning.show { display:block; }
 @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
 .doc-header { border-bottom:3px solid var(--blue-light); padding:16px 20px; background:#fff; }
 .brand-title { font-family:var(--font-display); font-size:34px; font-weight:800; color:var(--ink); letter-spacing:1px; text-transform:uppercase; line-height:1; }
 .brand-subtitle { font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--blue); letter-spacing:2px; text-transform:uppercase; margin-top:5px; }
 .brand-note { font-size:11px; color:var(--mid); margin-top:6px; }
-.local-data-note { padding:8px 16px; border-bottom:1px solid var(--border); background:#fff8e6; color:#6b4b00; font-size:12px; line-height:1.35; }
+.local-data-note { padding:8px 16px; background:#fff9e6; border-bottom:1px solid #e6cc80; color:#5f4500; font-size:11px; line-height:1.35; }
+.local-data-note strong { font-weight:700; }
+#savedAtStatus { display:block; margin-top:2px; color:#765a12; font-size:10px; }
 .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid var(--border); background:#f8fafc; }
 .meta-item { display:flex; align-items:center; gap:8px; padding:10px 16px; border-right:1px solid var(--border); }
 .meta-item:last-child { border-right:none; }
