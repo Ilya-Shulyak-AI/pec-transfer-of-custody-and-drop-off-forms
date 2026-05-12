@@ -1,11 +1,62 @@
 (() => {
   'use strict';
 
-  const APP = {
-    storageKey: 'pec_toc_form_v6',
-    oldStorageKeys: ['pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
-    signatureKeyPrefix: 'pec_toc_sig_',
-    states: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'],
+  // ---------------------------------------------------------------------------
+  // Constants and application configuration
+  // ---------------------------------------------------------------------------
+
+  const CONFIG = {
+    storage: {
+      formKey: 'pec_toc_form_v6',
+      oldFormKeys: ['pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
+      signatureKeyPrefix: 'pec_toc_sig_',
+      payloadVersion: 6
+    },
+    ids: {
+      tocFormNumber: 'tocFormNumber',
+      validationBanner: 'validationBanner',
+      printWarningModal: 'printWarningModal',
+      stateOptions: 'stateOptions',
+      estimatedWeight: 'estimatedWeight',
+      signatureModal: 'sigModal',
+      signatureModalDone: 'sigModalDone',
+      signatureModalSubtitle: 'sigModalSub',
+      signatureModalWrap: 'sigModalWrap',
+      signatureCanvas: 'sigCanvas',
+      signaturePreviewPrefix: 'sigPreview',
+      signatureBoxPrefix: 'sigBox',
+      signatureDates: {
+        1: 'transferSignatureDate',
+        2: 'receiverSignatureDate'
+      }
+    },
+    selectors: {
+      fieldContainer: '.fld, .meta-item',
+      missingField: '.field-missing',
+      otherWrap: '.other-wrap',
+      saveField: '[data-save="true"]',
+      otherSelect: 'select[data-other-target]',
+      formattedField: '[data-format]',
+      action: '[data-action]',
+      signatureBox: '[data-signature-box]'
+    },
+    actions: {
+      newForm: 'new-form',
+      print: 'print',
+      forcePrint: 'force-print',
+      continueEditing: 'continue-editing',
+      today: 'today',
+      clearSignature: 'clear-signature',
+      modalClearSignature: 'modal-clear-signature',
+      modalSaveSignature: 'modal-save-signature'
+    },
+    states: [
+      'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+      'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+      'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+      'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+      'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+    ],
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
     radioGroups: ['dataDestruction', 'certificateRequired'],
