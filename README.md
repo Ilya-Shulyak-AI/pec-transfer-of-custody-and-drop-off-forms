@@ -86,6 +86,18 @@ Expected PWA behavior:
 - Local form data persists in the same Safari/Home Screen storage context when storage is available.
 - No service worker is currently registered, so offline caching is not guaranteed.
 
+### Repeatable print regression check
+
+Run the Playwright print-output check before merging print-related changes:
+
+```sh
+npm install
+npx playwright install chromium
+npm run test:print
+```
+
+The test loads the local static `index.html`, fills representative values including long names, Other fields, radio buttons, manual weight, and signatures, then generates a Letter-size PDF and asserts that it has exactly one page. It also writes `test-artifacts/print-output.pdf` and `test-artifacts/print-output.png` for optional manual review of borders and divider quality.
+
 ## Current app status
 
 The current app is the Transfer of Custody form only. The Drop-Off form and any multi-form selection page are not currently present in this repository.

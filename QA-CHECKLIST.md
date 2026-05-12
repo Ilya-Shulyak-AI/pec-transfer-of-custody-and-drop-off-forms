@@ -82,6 +82,8 @@ Use this checklist before merging any meaningful change into `main`.
 
 ## Print/PDF
 
+- [ ] Run `npm run test:print` before merging print-related changes.
+- [ ] Review `test-artifacts/print-output.pdf` or `test-artifacts/print-output.png` manually when border/divider quality changes.
 - [ ] Print preview fits on one Letter page at 100% scale.
 - [ ] Print preview does not require custom scaling.
 - [ ] Printed/PDF output remains one page after all fields are completed.
