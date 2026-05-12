@@ -136,8 +136,6 @@
   function hideStorageWarning() { const el = $('storageWarning'); if (el) el.classList.remove('show'); }
   function formatDate() { const n = new Date(); return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear(); }
   function formatDateCompact() { return formatDate().replace(/\s/g, ''); }
-  function generateTocNumber() { const n = new Date(); const y = n.getFullYear(); const m = String(n.getMonth() + 1).padStart(2, '0'); const d = String(n.getDate()).padStart(2, '0'); const suffix = String(Math.floor(1000 + Math.random() * 9000)); return 'TOC-' + y + m + d + '-' + suffix; }
-  function ensureTocFormNumber() { const el = $('tocFormNumber'); if (el && !String(el.value || '').trim()) el.value = generateTocNumber(); }
   function setTodayAllDates() { const today = formatDate(); APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; }); saveToStorage(); }
   function getSignatureDateFieldId(signatureId) { const id = String(signatureId); if (id === '1') return 'transferSignatureDate'; if (id === '2') return 'receiverSignatureDate'; return ''; }
   function stampSignatureDate(signatureId) { const targetId = getSignatureDateFieldId(signatureId); const el = targetId ? $(targetId) : null; if (el && !String(el.value || '').trim()) el.value = formatDateCompact(); }

@@ -14,6 +14,7 @@ Use this checklist before merging any meaningful change into `main`.
 
 - [ ] TOC Form Number starts with a generated value on a fresh form.
 - [ ] TOC Form Number allows letters, numbers, dashes, and symbols.
+- [ ] New button clears the TOC Form Number and does not repopulate it.
 - [ ] Date field populates correctly.
 - [ ] Today button updates the main date.
 - [ ] Today button updates both signature dates.
