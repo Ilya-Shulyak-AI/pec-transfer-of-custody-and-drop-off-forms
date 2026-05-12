@@ -65,6 +65,14 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] New button repopulates today’s date fields.
 - [ ] No stale customer data reappears after reset.
 
+## Automated print validation
+
+- [ ] Run `npm install` if Node dependencies are not already installed.
+- [ ] Run `npx playwright install chromium` if the Playwright Chromium browser has not already been installed.
+- [ ] Run `npm run test:print` before deployment.
+- [ ] Confirm the Playwright check reports one passing test.
+- [ ] Review `test-results/print-validation/toc-print-validation.pdf` and `test-results/print-validation/toc-print-validation.png` if a visual spot-check is needed.
+
 ## Print/PDF
 
 - [ ] Print preview fits on one Letter page at 100% scale.
