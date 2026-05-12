@@ -13,18 +13,20 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
   <link rel="stylesheet" href="base.css?v=2">
-  <link rel="stylesheet" href="styles.css?v=9">
-  <link rel="stylesheet" href="print.css?v=5" media="print">
-  <script defer src="app.js?v=6"></script>
+  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="print.css?v=6" media="print">
+  <script defer src="app.js?v=7"></script>
 </head>
 <body>
   <div class="toolbar">
     <span class="toolbar-label">PEC Transfer of Custody</span>
-    <button class="btn btn-new" type="button" data-action="new-form">↺ New</button>
+    <button class="btn btn-new" type="button" data-action="new-form">↺ Clear Saved Data</button>
+    <span class="saved-status" id="savedAtStatus">Not saved yet</span>
     <button class="btn btn-print" type="button" data-action="print">🖨 Print</button>
   </div>
 
   <div class="validation-banner" id="validationBanner" role="alert"></div>
+  <div class="storage-warning" id="storageWarning" role="alert"></div>
 
   <main class="page">
     <!-- Document header -->
@@ -35,6 +37,10 @@
         Secure IT recycling, electronics recycling, and data destruction documentation
       </div>
     </header>
+
+    <div class="local-data-note">
+      Entries and signatures are saved only in this browser on this device until you clear saved data.
+    </div>
 
     <!-- Metadata -->
     <section class="meta-row">
