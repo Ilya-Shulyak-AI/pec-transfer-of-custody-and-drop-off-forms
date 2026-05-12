@@ -64,7 +64,7 @@ Print behavior:
 
 - The browser print dialog is launched with `window.print()`.
 - Print-specific layout lives in `print.css` and is loaded only for print media.
-- The toolbar, signature modal, print warning modal, validation banner, tap hints, clear-signature buttons, Today button, and screen-only footer are hidden in print.
+- The toolbar, signature modal, print warning modal, validation banner, storage warning, local-data note, tap hints, clear-signature buttons, Today button, and screen-only footer are hidden in print.
 - The target output is one Letter-size portrait page at normal/100% scale.
 - Print CSS uses a fixed 8.5in by 11in page, compact typography, and explicit grid/table borders to preserve clear divider lines in the generated PDF.
 - Signature previews print from the saved cropped PNG data URLs.
