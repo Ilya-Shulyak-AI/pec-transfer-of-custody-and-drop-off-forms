@@ -114,7 +114,9 @@ The current app is the Transfer of Custody form only. The Drop-Off form and any 
 - `print.css` controls the print-only render layer for the one-page Letter PDF output.
 - `app.js` controls form initialization, event delegation, generated dropdown options, validation, local storage, reset behavior, print gating, and signatures.
 - `manifest.webmanifest` controls PWA/Home Screen metadata.
-- `icon.svg` provides the app icon.
+- `icon.svg` provides the SVG favicon.
+- Embedded 192x192 and 512x512 PNG data icons in `manifest.webmanifest` provide installable app icons without adding binary files.
+- The embedded 180x180 PNG data icon in `index.html` provides the iPhone/iPad Home Screen icon without adding binary files.
 
 ## Credit and starting point
 
