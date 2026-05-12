@@ -70,10 +70,11 @@
     if (el.type === 'email') return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     if (el.type === 'tel') { const digits = value.replace(/\D/g, ''); return digits.length > 0 && digits.length !== 10; }
     if (el.dataset.format === 'weight') return Number(value.replace(/\D/g, '')) <= 0;
+    if (APP.dateFields.includes(el.id)) return !isValidFormattedDate(value);
     return false;
   }
   function validateRequiredRadioGroups(mark = false) { const missing = []; Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => { const checked = Boolean(getRadioGroupValue(groupName)); if (!checked) missing.push(label); if (mark) $$(`input[name="${groupName}"]`).forEach((el) => markField(el, !checked)); }); return missing; }
-  function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); setValidity(el, invalid ? 'Please check this field.' : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
+  function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); const message = APP.dateFields.includes(el.id) && invalid ? 'Use MM/DD/YYYY.' : 'Please check this field.'; setValidity(el, invalid ? message : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
   function validateAllFields(mark = false) { if (mark) clearMissingHighlights(); const fieldResults = getSaveFields().map((el) => validateField(el, mark)); const missingRadioGroups = validateRequiredRadioGroups(mark); const missingSignatures = markSignatureBoxes(mark); return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0 && missingSignatures.length === 0, missingRadioGroups, missingSignatures }; }
   function showValidationBanner() { return; }
   function hideValidationBanner() { return; }
@@ -85,7 +86,7 @@
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); restoreFocus(state.lastPrintTrigger); state.lastPrintTrigger = null; }
   function requestPrint(trigger = document.activeElement) { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(trigger); } }
   function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
-  function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); }
+  function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); if (type === 'date') el.value = formatDateInputValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
