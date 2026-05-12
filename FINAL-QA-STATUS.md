@@ -1,6 +1,6 @@
-# Final QA Status — 2026-05-11
+# Final QA Status — 2026-05-12
 
-This note replaces the older static completion summary with the current documented QA status as of May 11, 2026.
+This note replaces the older static completion summary with the current documented QA status as of May 12, 2026.
 
 ## Scope reviewed
 
@@ -30,7 +30,7 @@ The following items were verified by reviewing repository files, not by running 
 - Receiving Party company/address/phone/email/city/state/zip values are readonly and prefilled for Precision E-Cycle.
 - The Receiving Party / Received By dropdown includes Ilya Shulyak, Slavic Brychka, and Other.
 - Other fields are shown only when their dropdown value is Other, and are cleared when hidden.
-- Current form payload storage key is `pec_toc_form_v6`.
+- Current form payload storage key is `pec_toc_form_v7`.
 - Signatures use the `pec_toc_sig_` localStorage prefix.
 - Print styles live in `print.css` and are loaded as print media.
 - PWA metadata is present in `manifest.webmanifest` and iOS meta tags are present in `index.html`.
@@ -44,7 +44,7 @@ The following checks require an actual browser/device and should be completed be
 2. Complete a representative TOC record.
 3. Verify validation and the print warning modal.
 4. Save/refresh and confirm form data plus signatures persist.
-5. Use New and confirm all customer-entered data plus signatures are cleared.
+5. Use Clear Saved Data, accept the confirmation, and confirm all customer-entered data plus signatures are cleared.
 6. Print or save to PDF at 100% scale.
 7. Confirm the PDF remains one Letter-size page.
 8. Confirm border quality/divider lines are clear and consistent in preview and saved PDF.
@@ -53,4 +53,4 @@ The following checks require an actual browser/device and should be completed be
 
 ## Status conclusion
 
-Current status: documentation synchronized with the application by repository review. Final release QA is not marked fully passed until the manual browser, print/PDF, and iPhone checks above are completed.
+Current status: documentation and automated checks have been synchronized with the application by repository review. Final release QA is not marked fully passed until the manual browser, print/PDF, and iPhone checks above are completed.

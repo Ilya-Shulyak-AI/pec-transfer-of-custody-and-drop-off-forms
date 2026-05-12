@@ -12,7 +12,7 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
 
 ## Current TOC workflow
 
-1. Open the app and start with the generated TOC form number and today's date, or edit those fields as needed.
+1. Open the app and enter the TOC form number and date, or use the Today button to fill the date fields.
 2. Enter the optional PO number.
 3. Complete the Transferring Party information, including company, contact, address, phone, email, city, state, zip, and transfer method.
 4. Review the Receiving Party section, which is prefilled for Precision E-Cycle. Select the receiving contact from the Received By dropdown, or choose Other to reveal a custom receiver-name field.
@@ -23,27 +23,27 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
    - Estimated Total Weight dropdown, including Less than 100 lbs, 100-lb increments up to 10,000 lbs, and an Other/manual weight entry.
    - Total Units free-text summary.
 6. Capture both signatures by tapping/clicking each signature box, drawing in the signature modal, and selecting Done.
-7. Use Print to open browser print/PDF output, or use the New/Clear Saved Data reset flow after the record is complete to clear the device for the next TOC.
+7. Use Print to open browser print/PDF output, or use the Clear Saved Data reset flow after the record is complete to clear the device for the next TOC.
 
 ## Field behavior and validation
 
-- The TOC Form Number is flexible text and can be edited.
+- The TOC Form Number is flexible text and must be entered by the user.
 - The Today button updates the main form date and both signature dates.
 - State input normalizes to two uppercase letters and validates against supported U.S. state abbreviations.
 - Phone inputs format as U.S. 10-digit phone numbers.
 - Email inputs validate as email fields.
 - Required radio groups and signatures are checked before printing.
-- If required information is missing when Print is selected, the app shows a warning modal with options to keep editing or print anyway.
+- If required information is missing or invalid when Print is selected, the app shows a validation banner and warning modal with options to keep editing or print anyway.
 
 ## Storage behavior
 
-The app stores entered form data and signatures locally in the browser on the device being used. They stay in that browser/device until the saved data is cleared. Signature images are stored separately in `localStorage` as cropped PNG data URLs.
+The app stores entered form data, the saved-at timestamp, and signatures locally in the browser on the device being used. They stay in that browser/device until the saved data is cleared. Signature images are stored separately in `localStorage` as cropped PNG data URLs.
 
 The app does not use a backend database, cloud sync, or server-side customer-data storage, and it does not send customer form entries or signatures to a server. Data saved on one browser/device does not automatically appear on another browser/device.
 
 Storage details:
 
-- Current form payload key: `pec_toc_form_v6`.
+- Current form payload key: `pec_toc_form_v7`.
 - Older form keys are checked for compatibility and cleaned during reset.
 - Signature keys use the `pec_toc_sig_` prefix.
 - Local storage reads/writes are wrapped so the app can continue functioning if browser storage is unavailable, full, or blocked.
@@ -52,13 +52,13 @@ Storage details:
 
 ### Clear Saved Data / New behavior
 
-Use the app's New/Clear Saved Data reset flow only after the custody record has been printed, saved as a PDF, or otherwise finalized. The reset flow asks for confirmation, clears saved editable fields and signatures from browser storage, clears hidden Other values, repopulates date fields, generates a new TOC number, and scrolls back to the top so the device is ready for the next TOC.
+Use the app's Clear Saved Data reset flow only after the custody record has been printed, saved as a PDF, or otherwise finalized. The reset flow asks for confirmation, clears saved editable fields and signatures from browser storage, clears hidden Other values, clears validation/storage warnings, and scrolls back to the top so the device is ready for the next TOC.
 
 Because the repository is public and the app is local-first, do not commit private customer data, credentials, API keys, or internal-only process details to the source code.
 
 ## Print/PDF workflow
 
-Use the Print button in the toolbar to print or save as PDF. The app validates the form first; if required items are missing, the print warning modal lets the user either continue editing or print the current information anyway.
+Use the Print button in the toolbar to print or save as PDF. The app validates the form first; if required items are missing or invalid, the validation banner and print warning modal summarize what needs attention and let the user either continue editing or print the current information anyway.
 
 Print behavior:
 
@@ -92,15 +92,15 @@ Expected PWA behavior:
 
 ### Repeatable print regression check
 
-Run the Playwright print-output check before merging print-related changes:
+Run the standalone Playwright print checks before merging print-related changes:
 
 ```sh
 npm install
 npx playwright install chromium
-npm run test:print
+npm test
 ```
 
-The test loads the local static `index.html`, fills representative values including long names, Other fields, radio buttons, manual weight, and signatures, then generates a Letter-size PDF and asserts that it has exactly one page. It also writes `test-artifacts/print-output.pdf` and `test-artifacts/print-output.png` for optional manual review of borders and divider quality.
+The tests load the local static `index.html`, fill representative values including long names, Other fields, radio buttons, manual weight, and signatures, then generate Letter-size PDFs and assert that they have exactly one page. They also write `test-artifacts/print-output.pdf`, `test-artifacts/print-output.png`, `test-results/print-validation/toc-print-validation.pdf`, and `test-results/print-validation/toc-print-validation.png` for optional manual review of borders and divider quality.
 
 ## Automated print validation
 
@@ -109,10 +109,10 @@ Run the lightweight Playwright print regression check before deployment:
 ```sh
 npm install
 npx playwright install chromium
-npm run test:print
+npm test
 ```
 
-The test opens `index.html` locally, fills representative long values, selects active Other fields, checks radio buttons, draws both signatures, and generates a PDF at Letter format with 100% scale. Expected output is one passing Playwright test. The generated PDF must contain exactly one page with Letter portrait media size (612 × 792 points).
+The test opens `index.html` locally, fills representative long values, selects active Other fields, checks radio buttons, draws both signatures, and generates a PDF at Letter format with 100% scale. Expected output is passing standalone Playwright checks. The generated PDF must contain exactly one page with Letter portrait media size (612 × 792 points).
 
 For visual review, the test writes artifacts to:
 

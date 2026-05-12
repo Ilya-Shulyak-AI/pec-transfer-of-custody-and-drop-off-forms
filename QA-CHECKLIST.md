@@ -13,10 +13,9 @@ Use this checklist before merging any meaningful change into `main`.
 
 ## Form fields
 
-- [ ] TOC Form Number starts with a generated value on a fresh form.
 - [ ] TOC Form Number allows letters, numbers, dashes, and symbols.
-- [ ] New button clears the TOC Form Number and does not repopulate it.
-- [ ] Date field populates correctly.
+- [ ] Clear Saved Data clears the TOC Form Number after confirmation and does not repopulate it.
+- [ ] Date fields can be entered manually in MM/DD/YYYY format.
 - [ ] Today button updates the main date.
 - [ ] Today button updates both signature dates.
 - [ ] PO field works and may remain blank.
@@ -65,7 +64,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Date fields validate MM/DD/YYYY format.
 - [ ] Radio button groups allow only one selected option.
 - [ ] Print warning modal appears when required information is missing.
-- [ ] Continue Filling Out closes the warning modal without printing.
+- [ ] Continue Editing closes the warning modal without printing.
 - [ ] Print Anyway opens print despite missing information.
 
 ## Signatures
@@ -83,22 +82,20 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Done button saves signature.
 - [ ] Signature date stamps when a signature is saved and the date field is blank.
 - [ ] Saved signature persists after refresh.
-- [ ] Clear Saved Data/New button clears both signatures.
+- [ ] Clear Saved Data button clears both signatures.
 
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
 - [ ] Signatures persist after refresh.
-- [ ] Clear Saved Data/New confirmation mentions local saved form data and signatures.
-- [ ] Clear Saved Data/New clears all editable fields.
-- [ ] Clear Saved Data/New clears all hidden Other values.
-- [ ] Clear Saved Data/New clears signatures.
-- [ ] Clear Saved Data/New repopulates today’s date fields.
-- [ ] Clear Saved Data/New generates a fresh TOC Form Number.
+- [ ] Clear Saved Data confirmation mentions local saved form data and signatures.
+- [ ] Clear Saved Data clears all editable fields.
+- [ ] Clear Saved Data clears all hidden Other values.
+- [ ] Clear Saved Data clears signatures.
 - [ ] Local data note is visible and accurately explains local saved data behavior.
-- [ ] Saved-at timestamp updates after a successful save.
+- [ ] Saved-at timestamp is visible and updates after a successful save.
 - [ ] Visible warning appears when storage is blocked or full.
-- [ ] Console distinguishes quota and security storage failures where practical.
+- [ ] Console logs storage failures without breaking the form workflow.
 - [ ] No stale customer data reappears after reset.
 - [ ] App recovers gracefully if stored JSON is corrupted where practical.
 
@@ -106,13 +103,13 @@ Use this checklist before merging any meaningful change into `main`.
 
 - [ ] Run `npm install` if Node dependencies are not already installed.
 - [ ] Run `npx playwright install chromium` if the Playwright Chromium browser has not already been installed.
-- [ ] Run `npm run test:print` before deployment.
-- [ ] Confirm the Playwright check reports one passing test.
+- [ ] Run `npm test` before deployment.
+- [ ] Confirm the standalone Playwright checks report passing output.
 - [ ] Review `test-results/print-validation/toc-print-validation.pdf` and `test-results/print-validation/toc-print-validation.png` if a visual spot-check is needed.
 
 ## Print/PDF
 
-- [ ] Run `npm run test:print` before merging print-related changes.
+- [ ] Run `npm test` before merging print-related changes.
 - [ ] Review `test-artifacts/print-output.pdf` or `test-artifacts/print-output.png` manually when border/divider quality changes.
 - [ ] Print preview fits on one Letter page at 100% scale.
 - [ ] Print preview does not require custom scaling.

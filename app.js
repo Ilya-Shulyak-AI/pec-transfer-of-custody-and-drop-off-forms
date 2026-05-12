@@ -20,6 +20,32 @@
       dataDestruction: 'Data Destruction Required',
       certificateRequired: 'Certificate Required'
     },
+    fieldLabels: {
+      tocFormNumber: 'TOC Form #',
+      formDate: 'Date',
+      fromCompanyName: 'Transferring Party Company Name',
+      fromContactName: 'Transferring Party Contact Name',
+      fromAddress: 'Transferring Party Address',
+      fromPhone: 'Transferring Party Phone',
+      fromEmail: 'Transferring Party Email',
+      fromCity: 'Transferring Party City',
+      fromState: 'Transferring Party State',
+      fromZip: 'Transferring Party Zip',
+      transferMethod: 'Transfer Method',
+      transferMethodOther: 'Transfer Method Other',
+      receiverContactName: 'Receiving Party Contact Name',
+      receiverContactNameOther: 'Receiving Party Contact Name Other',
+      receiverPhone: 'Receiving Party Phone',
+      receivedBy: 'Received By',
+      receivedByOther: 'Received By Other',
+      reasonSelect: 'Reason for Transfer',
+      reasonOther: 'Reason for Transfer Other',
+      estimatedWeight: 'Estimated Total Weight',
+      estimatedWeightOther: 'Estimated Total Weight Other',
+      totalUnits: 'Total Units',
+      transferSignatureDate: 'Transferring Party Signature Date',
+      receiverSignatureDate: 'Receiving Party Signature Date'
+    },
     requiredFieldIds: [
       'tocFormNumber',
       'formDate',
@@ -115,7 +141,13 @@
   }
 
   function isValidFormattedDate(value) {
-    return /^(0[1-9]|1[0-2])\s*\/\s*(0[1-9]|[12]\d|3[01])\s*\/\s*\d{4}$/.test(String(value || '').trim());
+    const match = String(value || '').trim().match(/^(0[1-9]|1[0-2])\s*\/\s*(0[1-9]|[12]\d|3[01])\s*\/\s*(\d{4})$/);
+    if (!match) return false;
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 
   function setTodayAllDates() {
@@ -129,6 +161,7 @@
       }
     });
     saveToStorage();
+    refreshValidationBannerIfShown();
   }
 
   function formatPhoneValue(value) {
@@ -213,10 +246,17 @@
     if (!el || !el.id) return true;
     const missing = isRequiredField(el) && !String(el.value || '').trim();
     const invalid = fieldHasInvalidValue(el);
-    const message = invalid && (el.dataset.format === 'date' || APP.dateFields.includes(el.id)) ? 'Use MM/DD/YYYY.' : 'Please check this field.';
+    const message = invalid && (el.dataset.format === 'date' || APP.dateFields.includes(el.id)) ? 'Use a real date in MM/DD/YYYY format.' : 'Please check this field.';
     setValidity(el, invalid ? message : '');
     if (mark) markField(el, missing || invalid);
     return !missing && !invalid;
+  }
+
+  function getFieldLabel(el) {
+    if (!el?.id) return 'Unknown field';
+    if (APP.fieldLabels[el.id]) return APP.fieldLabels[el.id];
+    const label = document.querySelector(`label[for="${el.id}"]`);
+    return label?.textContent?.trim() || el.id;
   }
 
   function validateRequiredRadioGroups(mark = false) {
@@ -246,14 +286,65 @@
 
   function validateAllFields(mark = false) {
     if (mark) clearMissingHighlights();
-    const fieldsValid = getSaveFields().map((el) => validateField(el, mark)).every(Boolean);
+    const missingFields = [];
+    const invalidFields = [];
+    const fieldsValid = getSaveFields().map((el) => {
+      const missing = isRequiredField(el) && !String(el.value || '').trim();
+      const invalid = fieldHasInvalidValue(el);
+      if (missing) missingFields.push(getFieldLabel(el));
+      if (invalid) invalidFields.push(getFieldLabel(el));
+      return validateField(el, mark);
+    }).every(Boolean);
     const radiosMissing = validateRequiredRadioGroups(mark);
     const signaturesMissing = markSignatureBoxes(mark);
     return {
       isValid: fieldsValid && radiosMissing.length === 0 && signaturesMissing.length === 0,
+      missingFields,
+      invalidFields,
       radiosMissing,
       signaturesMissing
     };
+  }
+
+  function getValidationMessages(result) {
+    const messages = [];
+    if (result.missingFields?.length) messages.push('Missing: ' + result.missingFields.join(', ') + '.');
+    if (result.invalidFields?.length) messages.push('Needs correction: ' + result.invalidFields.join(', ') + '.');
+    if (result.radiosMissing?.length) messages.push('Select: ' + result.radiosMissing.join(', ') + '.');
+    if (result.signaturesMissing?.length) {
+      const labels = result.signaturesMissing.map((id) => id === '1' ? 'Transferring Party Signature' : 'Receiving Party Signature');
+      messages.push('Missing signatures: ' + labels.join(', ') + '.');
+    }
+    return messages;
+  }
+
+  function setValidationBanner(messages = []) {
+    const banner = $('validationBanner');
+    if (!banner) return;
+    if (!messages.length) {
+      banner.textContent = '';
+      banner.classList.remove('show');
+      return;
+    }
+    banner.textContent = messages.join(' ');
+    banner.classList.add('show');
+  }
+
+  function setPrintWarningDetails(messages = []) {
+    const body = $('printWarningBody');
+    if (!body) return;
+    body.textContent = messages.length
+      ? messages.join(' ') + ' Continue editing, or print as is.'
+      : 'Continue editing, or print as is.';
+  }
+
+  function refreshValidationBannerIfShown() {
+    const banner = $('validationBanner');
+    if (!banner?.classList.contains('show')) return;
+    const result = validateAllFields(false);
+    const messages = getValidationMessages(result);
+    setValidationBanner(messages);
+    setPrintWarningDetails(messages);
   }
 
   function validateConditionalFieldsForController(controllerId, mark = false) {
@@ -308,17 +399,22 @@
 
   function requestPrint(trigger = document.activeElement) {
     const result = validateAllFields(true);
+    const messages = getValidationMessages(result);
     if (result.isValid) {
       clearMissingHighlights();
+      setValidationBanner();
       window.print();
       return;
     }
+    setValidationBanner(messages);
+    setPrintWarningDetails(messages);
     openPrintWarningModal(trigger);
   }
 
   function printAnyway() {
     closePrintWarningModal();
     clearMissingHighlights();
+    setValidationBanner();
     window.print();
   }
 
@@ -453,6 +549,9 @@
   }
 
   function resetForm() {
+    const confirmed = window.confirm('Clear all locally saved Transfer of Custody form data and signatures from this browser/device? This cannot be undone.');
+    if (!confirmed) return;
+
     getSaveFields().forEach((el) => {
       if (el.type === 'radio') el.checked = false;
       else el.value = '';
@@ -463,6 +562,7 @@
     state.signatureStorageFailed = false;
     clearStoredFormData();
     clearMissingHighlights();
+    setValidationBanner();
     closePrintWarningModal();
     hideStorageWarning();
     toggleAllOtherFields();
@@ -588,17 +688,27 @@
     state.signatureStorageFailed = !saved;
     if (!saved) showStorageWarning();
     saveToStorage();
+    refreshValidationBannerIfShown();
     closeSigModal();
   }
 
-  function clearSigBox(signatureId) {
+  function clearSigBox(signatureId, options = {}) {
     const id = String(signatureId);
+    const shouldClearDate = options.clearDate !== false;
     const preview = $('sigPreview' + id);
     if (preview) {
       preview.style.display = 'none';
       preview.src = '';
     }
     $('sigBox' + id)?.classList.remove('sig-has-data', 'field-missing');
+    if (shouldClearDate) {
+      const dateField = $(getSignatureDateFieldId(id));
+      if (dateField) {
+        dateField.value = '';
+        setValidity(dateField, '');
+        markField(dateField, false);
+      }
+    }
     safeLocalStorage((storage) => {
       storage.removeItem(APP.signatureKeyPrefix + id);
       return true;
@@ -687,6 +797,7 @@
     formatFieldValue(el);
     validateField(el, true);
     saveToStorage();
+    refreshValidationBannerIfShown();
   }
 
   function handleChange(event) {
@@ -699,6 +810,7 @@
     validateConditionalFieldsForController(el.id, true);
     if (el.type === 'radio') validateRequiredRadioGroups(true);
     saveToStorage();
+    refreshValidationBannerIfShown();
   }
 
   function handleClick(event) {
@@ -714,6 +826,7 @@
         event.stopPropagation();
         clearSigBox(actionEl.dataset.signature);
         saveToStorage();
+        refreshValidationBannerIfShown();
       }
       if (action === 'modal-clear-signature') sigModalClear();
       if (action === 'modal-save-signature') sigModalDone();

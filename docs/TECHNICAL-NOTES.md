@@ -21,7 +21,7 @@ Primary goals:
 - Browser `localStorage` persistence.
 - Canvas-based signatures saved as PNG data URLs.
 
-No build step, package manager, backend service, service worker, or external runtime dependency is currently required.
+No build step, backend service, service worker, or external runtime dependency is currently required. Node/Playwright dependencies are used only for repeatable print regression checks.
 
 ## Current file/module structure
 
@@ -49,13 +49,13 @@ The app is still intentionally small and uses file-level separation instead of J
 Although `app.js` is not split into separate files, it is organized around these responsibilities:
 
 - App constants:
-  - Current storage key: `pec_toc_form_v6`.
+  - Current storage key: `pec_toc_form_v7`.
   - Backward-compatible old storage keys.
   - Signature key prefix.
   - Supported state abbreviations.
   - Date fields, signature IDs, radio groups, optional fields, and required radio labels.
 - Initialization:
-  - Populates the state datalist.
+  - Populates the state select options.
   - Generates estimated-weight dropdown options from 100 lbs through 10,000 lbs.
   - Binds the reusable signature canvas once.
   - Loads stored form/signature data.
@@ -63,7 +63,7 @@ Although `app.js` is not split into separate files, it is organized around these
 - Validation:
   - Required editable fields are identified from `[data-save="true"]` except optional, readonly, disabled, radio, and hidden Other fields.
   - State, phone, email, manual weight, required radio groups, and signatures are validated before normal print.
-  - Missing/invalid fields are highlighted when validation is run with marking enabled.
+  - Missing/invalid fields are highlighted when validation is run with marking enabled, and the validation banner/modal summarize the issues before printing.
 - Storage:
   - Editable fields and radio group values are serialized into a versioned payload.
   - Signatures are stored separately by signature ID.
@@ -74,11 +74,11 @@ Although `app.js` is not split into separate files, it is organized around these
   - Canvas size accounts for `devicePixelRatio`.
   - Mouse and touch drawing are supported.
   - Saved signatures are cropped before being written to preview images and storage.
-  - Signature date fields are stamped only when blank.
+  - Signature date fields are stamped only when blank; clearing a saved signature also clears that signature date.
 - Print gating:
   - Print validates the form first.
   - Valid forms call `window.print()` immediately.
-  - Incomplete forms open a modal with Continue Filling Out and Print Anyway actions.
+  - Incomplete or invalid forms show a validation banner and open a modal with Continue Editing and Print Anyway actions.
 
 ## Receiving Party contact behavior
 
@@ -92,15 +92,15 @@ Form data is stored in browser `localStorage` only. There is no backend database
 
 Current keys:
 
-- `pec_toc_form_v6` for the versioned form payload.
+- `pec_toc_form_v7` for the versioned form payload.
 - `pec_toc_sig_1` for the Transferring Party signature image.
 - `pec_toc_sig_2` for the Receiving Party signature image.
 
 Compatibility/reset behavior:
 
-- Older form keys from v2 through v5 are checked during load.
+- Older form keys from v2 through v6 are checked during load.
 - Reset removes the current key, known old form keys, and signature keys.
-- Fresh forms populate date fields and generate a TOC number.
+- Reset confirms destructive clearing, removes locally saved data/signatures, clears editable fields, and leaves date and TOC fields blank for the next record.
 - The app logs storage errors to the console but avoids breaking the UI when storage is unavailable.
 
 ## Print-only render layer
