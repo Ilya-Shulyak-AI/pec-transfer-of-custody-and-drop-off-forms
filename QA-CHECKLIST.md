@@ -12,8 +12,9 @@ Use this checklist before merging any meaningful change into `main`.
 
 ## Form fields
 
-- [ ] TOC Form Number starts blank.
-- [ ] TOC Form Number allows letters, numbers, dashes, and symbols.
+- [ ] TOC Form # starts blank on a new form.
+- [ ] TOC Form # only changes when typed manually.
+- [ ] TOC Form # allows letters, numbers, dashes, and symbols.
 - [ ] Date field populates correctly.
 - [ ] Today button updates the main date.
 - [ ] Today button updates both signature dates.
