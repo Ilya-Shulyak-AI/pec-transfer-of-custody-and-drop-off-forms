@@ -23,11 +23,11 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
    - Estimated Total Weight dropdown, including Less than 100 lbs, 100-lb increments up to 10,000 lbs, and an Other/manual weight entry.
    - Total Units free-text summary.
 6. Capture both signatures by tapping/clicking each signature box, drawing in the signature modal, and selecting Done.
-7. Use Print to open browser print/PDF output, or use Clear Saved Data after the record is complete to clear the device for the next TOC.
+7. Use Print to open browser print/PDF output, or use New after the record is complete to clear the device for the next TOC.
 
 ## Field behavior and validation
 
-- The TOC Form Number is generated for fresh forms and can be edited.
+- The TOC Form Number is flexible text and can be edited.
 - The Today button updates the main form date and both signature dates.
 - State input normalizes to two uppercase letters and validates against supported U.S. state abbreviations.
 - Phone inputs format as U.S. 10-digit phone numbers.
@@ -37,20 +37,18 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
 
 ## Storage behavior
 
-The app stores entered form data and signatures locally in the browser on the device being used. They stay in that browser until the saved data is cleared. There is no backend database, cloud sync, or server-side customer-data storage, and the app does not send form entries/signatures to a server.
+The app stores entered form data in the browser's `localStorage` on the device being used. Signature images are stored separately in `localStorage` as cropped PNG data URLs.
 
-Data saved on one browser/device does not automatically appear on another browser/device.
+There is no backend database, cloud sync, or server-side customer-data storage. Data saved on one browser/device does not automatically appear on another browser/device.
 
 Storage details:
 
 - Current form payload key: `pec_toc_form_v6`.
 - Older form keys are checked for compatibility and cleaned during reset.
-- Signature keys use the `pec_toc_sig_` prefix and are stored separately as cropped PNG data URLs.
-- Local storage reads/writes are wrapped so the app can continue functioning if storage is unavailable, full, or blocked.
-- Quota and security storage failures are logged separately in the console for troubleshooting.
-- If the browser cannot save because storage is blocked or full, the app shows a warning so the user can print/save a PDF before leaving the page.
+- Signature keys use the `pec_toc_sig_` prefix.
+- Local storage reads/writes are wrapped so the app can continue functioning if storage is unavailable or blocked.
 - Corrupted stored form data is cleared and replaced with a fresh form.
-- Clear Saved Data asks for confirmation, clears saved fields and signatures, repopulates date fields, generates a new TOC number, and scrolls back to the top.
+- New asks for confirmation, clears saved fields and signatures, repopulates date fields, generates a new TOC number, and scrolls back to the top.
 
 Because the repository is public and the app is local-first, do not commit private customer data, credentials, API keys, or internal-only process details to the source code.
 
@@ -62,7 +60,7 @@ Print behavior:
 
 - The browser print dialog is launched with `window.print()`.
 - Print-specific layout lives in `print.css` and is loaded only for print media.
-- The toolbar, signature modal, print warning modal, validation banner, storage warning, local-data note, tap hints, clear-signature buttons, Today button, and screen-only footer are hidden in print.
+- The toolbar, signature modal, print warning modal, validation banner, tap hints, clear-signature buttons, Today button, and screen-only footer are hidden in print.
 - The target output is one Letter-size portrait page at normal/100% scale.
 - Print CSS uses a fixed 8.5in by 11in page, compact typography, and explicit grid/table borders to preserve clear divider lines in the generated PDF.
 - Signature previews print from the saved cropped PNG data URLs.
