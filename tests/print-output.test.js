@@ -89,7 +89,7 @@ async function main() {
     await fillText(page, '#fromPhone', '4025550199');
     await fillText(page, '#fromEmail', 'long.contact.name@example-customer-domain.test');
     await fillText(page, '#fromCity', 'North Platte Industrial District');
-    await fillText(page, '#fromState', 'ne');
+    await page.selectOption('#fromState', 'NE');
     await fillText(page, '#fromZip', '69101-1234');
     await selectOther(page, '#transferMethod', '#transferMethodOther', 'Customer-arranged freight with dock appointment');
 
