@@ -5,13 +5,16 @@
   // Constants and application configuration
   // ---------------------------------------------------------------------------
 
-  const CONFIG = {
+  const APP = {
     storage: {
       formKey: 'pec_toc_form_v6',
       oldFormKeys: ['pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
       signatureKeyPrefix: 'pec_toc_sig_',
       payloadVersion: 6
     },
+    get storageKey() { return this.storage.formKey; },
+    get oldStorageKeys() { return this.storage.oldFormKeys; },
+    get signatureKeyPrefix() { return this.storage.signatureKeyPrefix; },
     ids: {
       tocFormNumber: 'tocFormNumber',
       validationBanner: 'validationBanner',
@@ -162,6 +165,8 @@
     return fieldIsListed(el.id, 'requiredFieldIds') || fieldIsListed(el.id, 'prefilledRequiredFieldIds') || isConditionallyRequired(el.id);
   }
   function isEmptyRequiredField(el) { return isRequiredField(el) && !String(el.value || '').trim(); }
+  function isEmptyExpectedField(el) { return isEmptyRequiredField(el); }
+  function isValidFormattedDate(value) { return /^(0[1-9]|1[0-2])\s*\/\s*(0[1-9]|[12]\d|3[01])\s*\/\s*\d{4}$/.test(String(value || '').trim()); }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
     if (!value) return false;
@@ -189,6 +194,12 @@
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); restoreFocus(state.lastPrintTrigger); state.lastPrintTrigger = null; }
   function requestPrint(trigger = document.activeElement) { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(trigger); } }
   function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
+  function formatDateInputValue(value) {
+    const digits = String(value || '').replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return digits.slice(0, 2) + '/' + digits.slice(2);
+    return digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+  }
   function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); if (type === 'date') el.value = formatDateInputValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
@@ -196,6 +207,8 @@
   function syncReceiverPhone() { const selectedContact = $('receivedBy')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { phone.value = APP.defaultReceiverPhone; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly); setValidity(phone, ''); markField(phone, false); }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
   function applyReceiverContactWorkflow(options = {}) { const contact = $('receiverContactName'); const phone = $('receiverPhone'); if (!contact || !phone) return; phone.readOnly = false; if (contact.value === APP.receiverContacts.ilya.name) phone.value = APP.receiverContacts.ilya.phone; if ((contact.value === 'Other' || contact.value === '') && options.clearPhone) phone.value = ''; if (phone.dataset.format) formatFieldValue(phone); validateField(phone, false); }
+  function ensureTocFormNumber() { return; }
+  function validateConditionalFieldsForController(controllerId, mark = false) { APP.conditionalRequiredFields.filter((rule) => rule.controllerId === controllerId).forEach((rule) => validateField($(rule.fieldId), mark)); }
   function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
   function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
