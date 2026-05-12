@@ -2,78 +2,167 @@
 
 ## Project purpose
 
-This application is a lightweight browser-based Transfer of Custody form for Precision E-Cycle.
+This application is a lightweight browser-based Transfer of Custody (TOC) form for Precision E-Cycle.
 
 Primary goals:
-- Mobile-first workflow.
-- Fast in-field use.
-- Local-only storage of customer data.
-- Printable one-page PDF output.
-- iPhone Home Screen compatibility.
 
-## Current architecture
+- Mobile-first workflow for desktop and iPhone field use.
+- Fast local entry with no backend dependency.
+- Local-only browser storage of customer-entered form data and signatures.
+- Printable one-page Letter PDF output.
+- iPhone Home Screen compatibility through PWA metadata.
 
-Current application stack:
-- Static HTML
-- CSS
-- Vanilla JavaScript
-- GitHub Pages hosting
-- LocalStorage persistence
+## Current stack
 
-Current files:
-- `index.html` provides the data-entry form, print container, and modals.
-- `styles.css` provides screen/mobile styling.
-- `print.css` provides the Letter-size print stylesheet.
-- `app.js` provides constants, formatting, validation, storage, conditional fields, signatures, modal handling, and print rendering.
+- Static HTML.
+- CSS split by purpose.
+- Vanilla JavaScript in a single deferred script.
+- GitHub Pages hosting.
+- Browser `localStorage` persistence.
+- Canvas-based signatures saved as PNG data URLs.
+
+No build step, package manager, backend service, service worker, or external runtime dependency is currently required.
+
+## Current file/module structure
+
+The app is still intentionally small and uses file-level separation instead of JavaScript modules:
+
+- `index.html`
+  - Document shell, PWA/iOS metadata, toolbar, TOC form sections, signature modal, and print warning modal.
+  - Asset references include query-string cache busters.
+- `base.css`
+  - Placeholder for the stylesheet split. It is intentionally minimal today.
+- `styles.css`
+  - Screen-only application styling, responsive layout, toolbar, field grids, signature modal, print warning modal, and mobile adjustments.
+- `print.css`
+  - Print-only render layer loaded with `media="print"`.
+  - Owns one-page Letter sizing, compact print typography, print-only borders, hidden screen controls, and page-break avoidance.
+- `app.js`
+  - Single IIFE module that owns constants, state, helpers, validation, storage, reset, generated dropdown options, print gating, signatures, and event delegation.
+- `manifest.webmanifest`
+  - PWA/Home Screen metadata for the GitHub Pages path.
+- `icon.svg`
+  - Application icon.
+
+## JavaScript organization inside `app.js`
+
+Although `app.js` is not split into separate files, it is organized around these responsibilities:
+
+- App constants:
+  - Current storage key: `pec_toc_form_v6`.
+  - Backward-compatible old storage keys.
+  - Signature key prefix.
+  - Supported state abbreviations.
+  - Date fields, signature IDs, radio groups, optional fields, and required radio labels.
+- Initialization:
+  - Populates the state datalist.
+  - Generates estimated-weight dropdown options from 100 lbs through 10,000 lbs.
+  - Binds the reusable signature canvas once.
+  - Loads stored form/signature data.
+  - Registers document-level event delegation for clicks, keyboard activation, input, and change events.
+- Validation:
+  - Required editable fields are identified from `[data-save="true"]` except optional, readonly, disabled, radio, and hidden Other fields.
+  - State, phone, email, manual weight, required radio groups, and signatures are validated before normal print.
+  - Missing/invalid fields are highlighted when validation is run with marking enabled.
+- Storage:
+  - Editable fields and radio group values are serialized into a versioned payload.
+  - Signatures are stored separately by signature ID.
+  - Storage calls are wrapped to tolerate blocked/unavailable `localStorage`.
+  - Corrupted stored JSON is cleared and replaced with a fresh form.
+- Signatures:
+  - One modal/canvas is reused for both signature boxes.
+  - Canvas size accounts for `devicePixelRatio`.
+  - Mouse and touch drawing are supported.
+  - Saved signatures are cropped before being written to preview images and storage.
+  - Signature date fields are stamped only when blank.
+- Print gating:
+  - Print validates the form first.
+  - Valid forms call `window.print()` immediately.
+  - Incomplete forms open a modal with Continue Filling Out and Print Anyway actions.
+
+## Receiving Party contact behavior
+
+The Receiving Party section is prefilled for Precision E-Cycle and includes a `Received By` contact dropdown. The dropdown currently includes Ilya Shulyak, Slavic Brychka, and Other.
+
+When Other is selected, the custom receiver-name field is displayed. When the dropdown changes away from Other, that custom field is hidden, cleared, and its validation/highlight state is reset. Both the selected contact and the custom Other value participate in local storage when visible/relevant.
 
 ## Storage model
 
-Form data is stored in browser LocalStorage only. There is no backend database.
+Form data is stored in browser `localStorage` only. There is no backend database or cross-device synchronization.
 
-The current storage key is `pec_toc_form_v7`. Older `pec_toc_form_v2` through `pec_toc_form_v6` payloads are read as fallbacks for continuity.
+Current keys:
 
-Signatures are stored separately under the `pec_toc_sig_` key prefix.
+- `pec_toc_form_v6` for the versioned form payload.
+- `pec_toc_sig_1` for the Transferring Party signature image.
+- `pec_toc_sig_2` for the Receiving Party signature image.
 
-## Form workflow
+Compatibility/reset behavior:
 
-The TOC Form # is intentionally manual. The app no longer generates a TOC number.
+- Older form keys from v2 through v5 are checked during load.
+- Reset removes the current key, known old form keys, and signature keys.
+- Fresh forms populate date fields and generate a TOC number.
+- The app logs storage errors to the console but avoids breaking the UI when storage is unavailable.
 
-Receiving Party Contact Name is a dropdown:
-- `Ilya Shulyak` auto-fills `(402) 413-1267` and makes the phone field read-only.
-- `Other` shows a manual contact-name field and leaves the phone field editable.
+## Print-only render layer
 
-## Signature handling
+`print.css` is the dedicated print-only render layer. It is deliberately separate from screen styling so screen/mobile adjustments do not accidentally change the PDF output.
 
-Signature capture uses a canvas modal and Pointer Events for mouse, touch, and stylus support. Saved signatures are cropped before being stored as Base64 PNG data in LocalStorage.
+Current print design:
 
-Clearing a signature removes the stored image and clears the related signature date.
+- `@page` targets Letter portrait with zero browser page margin.
+- `.page` is fixed at 8.5in by 11in with internal padding.
+- Screen-only controls and modals are hidden with print-specific rules.
+- Form sections use compact grid layouts and explicit borders.
+- Borders/dividers are set in print styles to keep the saved PDF visually scannable.
+- Sections and signature panels opt out of internal page breaks where supported.
+- Signature preview images are constrained to the signature box and print from stored PNG data URLs.
 
-## Validation
+Important QA expectations:
 
-Required-field validation is centralized in `app.js`. Conditional Other fields are required only when their related dropdown is set to Other.
+- Print preview should fit on one Letter page at 100% scale.
+- Saved PDF output should remain one page.
+- Borders should be consistent, visible, and clean in both print preview and saved PDF output.
+- Browser print settings can still affect output, so final manual print/PDF review is required before release.
 
-Before printing, missing fields, invalid fields, missing radio groups, and missing signatures are highlighted. A visible validation banner and print-warning modal summarize the issues while still allowing Print Anyway.
+## PWA behavior
 
-## Print system
+The app includes PWA metadata but does not currently include a service worker.
 
-The app renders a dedicated print-only document into `#printPage` before printing and on the browser `beforeprint` event.
+Current PWA characteristics:
 
-The print layer uses plain text and signature images instead of browser-native input/select controls. This keeps print output more stable and avoids control-rendering differences between browsers.
+- Manifest name: `PEC Transfer of Custody`.
+- Short name: `PEC TOC`.
+- Start URL/scope: `/pec-transfer-of-custody/`.
+- Display mode: `standalone`.
+- Orientation: `portrait`.
+- Theme/background colors are defined in the manifest and HTML metadata.
+- iOS-specific Home Screen meta tags are present in `index.html`.
 
-`print.css` uses Letter portrait paper with a safe page margin and a single table-like border system for cleaner dividers.
+Because no service worker is registered, offline behavior should not be treated as guaranteed. The app should be tested from the live GitHub Pages URL and from iPhone Home Screen standalone mode.
 
-## Future improvements
+## Future architecture improvements
 
-Potential next improvements:
-1. Add automated Playwright/Puppeteer PDF regression checks.
-2. Add PNG PWA icons for stronger iPhone Home Screen support.
-3. Consider self-hosting fonts or using a full system-font stack for better offline/print consistency.
-4. Split `app.js` into separate modules if the app grows beyond this single-form workflow.
+Potential improvements if the app grows:
+
+- Split `app.js` into focused JavaScript modules:
+  - `constants.js`
+  - `storage.js`
+  - `validation.js`
+  - `dropdowns.js`
+  - `signatures.js`
+  - `print.js`
+  - `app.js` initializer
+- Add automated browser checks for storage, validation, and print gating.
+- Add an optional service worker only if offline behavior becomes a requirement.
+- Add a print fixture or screenshot/PDF comparison process for border and one-page checks.
+- Consider moving generated dropdown data into explicit constants if staff/contact lists change more often.
 
 ## GitHub workflow
 
 Recommended workflow:
-1. Create feature branch.
+
+1. Create a focused feature branch.
 2. Make changes.
 3. Test against `QA-CHECKLIST.md`.
-4. Merge into main only after validation.
+4. Verify print preview/PDF output manually for one-page layout and border quality.
+5. Merge into `main` only after validation.
