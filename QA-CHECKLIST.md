@@ -51,6 +51,10 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Signature can be drawn with mouse.
 - [ ] Signature can be drawn with touch.
 - [ ] Clear button removes signature.
+- [ ] Clearing the Transferring Party signature removes its image and clears the Transferring Party signature date.
+- [ ] After clearing the Transferring Party signature and refreshing, the Transferring Party signature image and date remain empty and `localStorage.pec_toc_sig_1` is absent.
+- [ ] Clearing the Receiving Party signature removes its image and clears the Receiving Party signature date.
+- [ ] After clearing the Receiving Party signature and refreshing, the Receiving Party signature image and date remain empty and `localStorage.pec_toc_sig_2` is absent.
 - [ ] Done button saves signature.
 - [ ] Saved signature persists after refresh.
 - [ ] New button clears both signatures.
