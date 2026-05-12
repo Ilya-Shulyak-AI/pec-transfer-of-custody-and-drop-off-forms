@@ -23,7 +23,7 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
    - Estimated Total Weight dropdown, including Less than 100 lbs, 100-lb increments up to 10,000 lbs, and an Other/manual weight entry.
    - Total Units free-text summary.
 6. Capture both signatures by tapping/clicking each signature box, drawing in the signature modal, and selecting Done.
-7. Use Print to open browser print/PDF output, or use New after the record is complete to clear the device for the next TOC.
+7. Use Print to open browser print/PDF output, or use the New/Clear Saved Data reset flow after the record is complete to clear the device for the next TOC.
 
 ## Field behavior and validation
 
@@ -37,18 +37,22 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
 
 ## Storage behavior
 
-The app stores entered form data in the browser's `localStorage` on the device being used. Signature images are stored separately in `localStorage` as cropped PNG data URLs.
+The app stores entered form data and signatures locally in the browser on the device being used. They stay in that browser/device until the saved data is cleared. Signature images are stored separately in `localStorage` as cropped PNG data URLs.
 
-There is no backend database, cloud sync, or server-side customer-data storage. Data saved on one browser/device does not automatically appear on another browser/device.
+The app does not use a backend database, cloud sync, or server-side customer-data storage, and it does not send customer form entries or signatures to a server. Data saved on one browser/device does not automatically appear on another browser/device.
 
 Storage details:
 
 - Current form payload key: `pec_toc_form_v6`.
 - Older form keys are checked for compatibility and cleaned during reset.
 - Signature keys use the `pec_toc_sig_` prefix.
-- Local storage reads/writes are wrapped so the app can continue functioning if storage is unavailable or blocked.
+- Local storage reads/writes are wrapped so the app can continue functioning if browser storage is unavailable, full, or blocked.
+- If the browser cannot save because storage is blocked or full, the app shows a warning so the user can print or save a PDF before leaving the page.
 - Corrupted stored form data is cleared and replaced with a fresh form.
-- New asks for confirmation, clears saved fields and signatures, repopulates date fields, generates a new TOC number, and scrolls back to the top.
+
+### Clear Saved Data / New behavior
+
+Use the app's New/Clear Saved Data reset flow only after the custody record has been printed, saved as a PDF, or otherwise finalized. The reset flow asks for confirmation, clears saved editable fields and signatures from browser storage, clears hidden Other values, repopulates date fields, generates a new TOC number, and scrolls back to the top so the device is ready for the next TOC.
 
 Because the repository is public and the app is local-first, do not commit private customer data, credentials, API keys, or internal-only process details to the source code.
 
