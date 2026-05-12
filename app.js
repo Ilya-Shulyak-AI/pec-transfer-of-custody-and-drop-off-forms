@@ -105,6 +105,17 @@
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
+  const APP = {
+    ...CONFIG,
+    storageKey: CONFIG.storage.formKey,
+    oldStorageKeys: CONFIG.storage.oldFormKeys,
+    signatureKeyPrefix: CONFIG.storage.signatureKeyPrefix,
+    payloadVersion: CONFIG.storage.payloadVersion,
+    receiverContacts: {
+      ilya: { name: 'Ilya Shulyak', phone: CONFIG.receiverPhoneByContact['Ilya Shulyak'] }
+    }
+  };
+
   const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1', activePointerId: null, signatureStorageFailed: false };
   const $ = (id) => document.getElementById(id);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -162,6 +173,16 @@
     return fieldIsListed(el.id, 'requiredFieldIds') || fieldIsListed(el.id, 'prefilledRequiredFieldIds') || isConditionallyRequired(el.id);
   }
   function isEmptyRequiredField(el) { return isRequiredField(el) && !String(el.value || '').trim(); }
+  function isEmptyExpectedField(el) { return isEmptyRequiredField(el); }
+  function isValidFormattedDate(value) {
+    const match = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/(\d{4})$/.exec(String(value || '').trim());
+    if (!match) return false;
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+    const parsed = new Date(year, month - 1, day);
+    return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day;
+  }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
     if (!value) return false;
@@ -179,6 +200,7 @@
   function validateRequiredRadioGroups(mark = false) { const missing = []; Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => { const checked = Boolean(getRadioGroupValue(groupName)); if (!checked) missing.push(label); if (mark) $$(`input[name="${groupName}"]`).forEach((el) => markField(el, !checked)); }); return missing; }
   function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); const message = APP.dateFields.includes(el.id) && invalid ? 'Use MM/DD/YYYY.' : 'Please check this field.'; setValidity(el, invalid ? message : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
   function validateAllFields(mark = false) { if (mark) clearMissingHighlights(); const fieldResults = getSaveFields().map((el) => validateField(el, mark)); const missingRadioGroups = validateRequiredRadioGroups(mark); const missingSignatures = markSignatureBoxes(mark); return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0 && missingSignatures.length === 0, missingRadioGroups, missingSignatures }; }
+  function validateConditionalFieldsForController(controllerId, mark = false) { APP.conditionalRequiredFields.filter((rule) => rule.controllerId === controllerId).forEach((rule) => { const field = $(rule.fieldId); if (field) validateField(field, mark); }); }
   function showValidationBanner() { return; }
   function hideValidationBanner() { return; }
   function getFocusableElements(container) { return $$('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])', container).filter((el) => !el.hidden && el.offsetParent !== null); }
@@ -196,7 +218,7 @@
   function syncReceiverPhone() { const selectedContact = $('receivedBy')?.value || ''; const phone = $('receiverPhone'); if (!phone) return; const knownPhone = APP.receiverPhoneByContact[selectedContact]; if (knownPhone) { phone.value = knownPhone; phone.readOnly = true; } else if (selectedContact === 'Other') { if (phone.value === APP.defaultReceiverPhone || Object.values(APP.receiverPhoneByContact).includes(phone.value)) phone.value = ''; phone.readOnly = false; } else { phone.value = APP.defaultReceiverPhone; phone.readOnly = true; } findFieldContainer(phone)?.classList.toggle('pre-fill', phone.readOnly); setValidity(phone, ''); markField(phone, false); }
   function toggleAllOtherFields() { $$('select[data-other-target]').forEach(toggleOtherForSelect); }
   function applyReceiverContactWorkflow(options = {}) { const contact = $('receiverContactName'); const phone = $('receiverPhone'); if (!contact || !phone) return; phone.readOnly = false; if (contact.value === APP.receiverContacts.ilya.name) phone.value = APP.receiverContacts.ilya.phone; if ((contact.value === 'Other' || contact.value === '') && options.clearPhone) phone.value = ''; if (phone.dataset.format) formatFieldValue(phone); validateField(phone, false); }
-  function populateStateOptions() { const list = $('stateOptions'); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
+  function populateStateOptions() { const list = $(APP.ids.stateOptions); if (!list || list.children.length) return; APP.states.forEach((stateAbbr) => { const option = document.createElement('option'); option.value = stateAbbr; list.appendChild(option); }); }
   function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
   function getFormData() { const data = {}; getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; }); APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); }); return data; }
