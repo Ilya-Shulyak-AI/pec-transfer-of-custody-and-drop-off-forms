@@ -18,6 +18,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Today button updates the main date.
 - [ ] Today button updates both signature dates.
 - [ ] PO field works.
+- [ ] Blank PO field remains valid and does not block print.
 - [ ] Transferring Party fields save and restore.
 - [ ] Receiving Party fields save and restore.
 - [ ] Transfer Details fields save and restore.
@@ -26,17 +27,26 @@ Use this checklist before merging any meaningful change into `main`.
 
 - [ ] Transfer Method dropdown works.
 - [ ] Transfer Method Other field appears only when Other is selected.
+- [ ] Transfer Method Other field is required only when Transfer Method is Other.
 - [ ] Received By dropdown works.
 - [ ] Received By Other field appears only when Other is selected.
+- [ ] Received By Other field is required only when Received By is Other.
+- [ ] Receiver phone is prefilled/read-only for listed contacts.
+- [ ] Receiver phone is editable and required when Received By is Other.
 - [ ] Reason for Transfer dropdown works.
 - [ ] Reason Other field appears only when Other is selected.
+- [ ] Reason Other field is required only when Reason for Transfer is Other.
 - [ ] Estimated Weight dropdown includes Less than 100 lbs.
 - [ ] Estimated Weight dropdown includes 100-lb increments through 10,000 lbs.
 - [ ] Estimated Weight Other field appears only when Other is selected.
+- [ ] Estimated Weight Other field is required only when Estimated Weight is Other.
 - [ ] Manual weight formats correctly.
 
 ## Validation
 
+- [ ] Print warns when any explicitly required blank field is empty.
+- [ ] Blank optional fields do not trigger required-field warnings.
+- [ ] Prefilled/read-only Precision E-Cycle fields remain populated and validate intentionally.
 - [ ] State field accepts valid two-letter state abbreviations.
 - [ ] State field uppercases entries.
 - [ ] State field rejects invalid abbreviations.
