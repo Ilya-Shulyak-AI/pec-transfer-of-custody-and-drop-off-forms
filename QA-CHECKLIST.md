@@ -91,6 +91,14 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] No stale customer data reappears after reset.
 - [ ] App recovers gracefully if stored JSON is corrupted where practical.
 
+## Automated print validation
+
+- [ ] Run `npm install` if Node dependencies are not already installed.
+- [ ] Run `npx playwright install chromium` if the Playwright Chromium browser has not already been installed.
+- [ ] Run `npm run test:print` before deployment.
+- [ ] Confirm the Playwright check reports one passing test.
+- [ ] Review `test-results/print-validation/toc-print-validation.pdf` and `test-results/print-validation/toc-print-validation.png` if a visual spot-check is needed.
+
 ## Print/PDF
 
 - [ ] Run `npm run test:print` before merging print-related changes.

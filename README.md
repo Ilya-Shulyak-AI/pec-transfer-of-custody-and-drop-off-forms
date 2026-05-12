@@ -102,6 +102,23 @@ npm run test:print
 
 The test loads the local static `index.html`, fills representative values including long names, Other fields, radio buttons, manual weight, and signatures, then generates a Letter-size PDF and asserts that it has exactly one page. It also writes `test-artifacts/print-output.pdf` and `test-artifacts/print-output.png` for optional manual review of borders and divider quality.
 
+## Automated print validation
+
+Run the lightweight Playwright print regression check before deployment:
+
+```sh
+npm install
+npx playwright install chromium
+npm run test:print
+```
+
+The test opens `index.html` locally, fills representative long values, selects active Other fields, checks radio buttons, draws both signatures, and generates a PDF at Letter format with 100% scale. Expected output is one passing Playwright test. The generated PDF must contain exactly one page with Letter portrait media size (612 × 792 points).
+
+For visual review, the test writes artifacts to:
+
+- `test-results/print-validation/toc-print-validation.pdf`
+- `test-results/print-validation/toc-print-validation.png`
+
 ## Current app status
 
 The current app is the Transfer of Custody form only. The Drop-Off form and any multi-form selection page are not currently present in this repository.
