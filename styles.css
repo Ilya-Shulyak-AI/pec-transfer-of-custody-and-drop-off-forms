@@ -67,7 +67,7 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .sig-label { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--mid); margin-bottom:4px; }
 .sig-canvas-wrap { border:1.5px solid var(--border); background:#fff; position:relative; height:90px; cursor:pointer; }
 .sig-clear { position:absolute; top:4px; right:6px; background:none; border:none; font-size:11px; color:#bbb; cursor:pointer; padding:2px 4px; font-family:var(--font-body); }
-.sig-preview { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); height:calc(100% - 8px); width:auto; max-width:calc(100% - 8px); display:none; }
+.sig-preview { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); max-width:calc(100% - 8px); max-height:calc(100% - 8px); width:auto; height:auto; display:none; }
 .sig-tap-hint { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; font-size:11px; color:#aaa; letter-spacing:.5px; font-family:var(--font-display); text-transform:uppercase; gap:4px; }
 .sig-has-data .sig-tap-hint { display:none; }
 .page-footer { height:6px; background:linear-gradient(90deg, var(--blue) 0%, var(--blue-light) 100%); }
