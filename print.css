@@ -74,8 +74,8 @@ body {
   height:11in!important;
   max-width:none!important;
   margin:0!important;
-  padding:.24in .32in .18in!important;
-  border:2px solid #29abe2!important;
+  padding:.16in .28in .12in!important;
+  border:0!important;
   box-shadow:none!important;
   overflow:hidden!important;
   box-sizing:border-box!important;
@@ -83,18 +83,18 @@ body {
   break-inside:avoid!important;
 }
 
-.doc-header { padding:.06in .1in!important; border:1px solid #999!important; border-bottom:0!important; text-align:center!important; }
+.doc-header { padding:.05in .1in!important; border:1.5px solid #29abe2!important; border-bottom:1px solid #999!important; text-align:center!important; }
 .brand-title { font-size:24pt!important; line-height:.88!important; }
 .brand-subtitle { font-size:10pt!important; letter-spacing:2px!important; }
 .brand-note { font-size:7pt!important; }
-.meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:1px solid #999!important; border-bottom:1px solid #999!important; }
-.meta-item { min-height:.42in!important; padding:.055in .06in!important; border-right:1px solid #999!important; }
+.meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border-left:1.5px solid #29abe2!important; border-right:1.5px solid #29abe2!important; border-bottom:1px solid #999!important; }
+.meta-item { min-height:.36in!important; padding:.045in .06in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
-.field-grid { display:grid!important; align-items:stretch!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.field-grid { display:grid!important; align-items:stretch!important; border-left:1.5px solid #29abe2!important; border-right:1.5px solid #29abe2!important; }
 .fg-2 { grid-template-columns:1fr 1fr!important; }
 .fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
 .fg-city { grid-template-columns:2fr 1fr 1fr 1.3fr!important; }
-.fld { min-height:.48in!important; padding:.06in .065in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; overflow:hidden!important; }
+.fld { min-height:.42in!important; padding:.048in .06in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; overflow:hidden!important; }
 .fld:last-child { border-right:0!important; }
 .fld label,
 .sig-label,
@@ -103,17 +103,17 @@ body {
 .fld select,
 .meta-item input,
 .sig-date-row input { font-size:9pt!important; min-height:.16in!important; }
-.sec-header { padding:.065in .08in!important; font-size:8.4pt!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.sec-header { padding:.052in .08in!important; font-size:8.1pt!important; border-left:1.5px solid #29abe2!important; border-right:1.5px solid #29abe2!important; }
 .checkbox-row { gap:7px!important; padding-top:1px!important; }
 .cb-opt span { font-size:8.4pt!important; }
-.note-box { padding:.065in .08in!important; font-size:7.4pt!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
-.sig-grid { display:grid!important; grid-template-columns:1fr 1fr!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
-.sig-panel { padding:.08in .08in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; break-inside:avoid!important; }
+.note-box { padding:.052in .08in!important; font-size:7.1pt!important; border-left:1.5px solid #29abe2!important; border-right:1.5px solid #29abe2!important; }
+.sig-grid { display:grid!important; grid-template-columns:1fr 1fr!important; border-left:1.5px solid #29abe2!important; border-right:1.5px solid #29abe2!important; }
+.sig-panel { padding:.065in .08in!important; border-right:1px solid #999!important; border-bottom:1.5px solid #29abe2!important; break-inside:auto!important; page-break-inside:auto!important; }
 .sig-panel:last-child { border-right:0!important; }
-.sig-panel-title { margin:-.08in -.08in .08in!important; padding:.055in .06in!important; font-size:8pt!important; }
-.sig-canvas-wrap { height:1.18in!important; }
+.sig-panel-title { margin:-.065in -.08in .065in!important; padding:.05in .06in!important; font-size:7.8pt!important; }
+.sig-canvas-wrap { height:.95in!important; }
 .sig-preview { max-height:calc(100% - 6px)!important; }
 section,
 .sig-grid,
 .note-box,
-.sig-panel { break-inside:avoid!important; page-break-inside:avoid!important; }
+.sig-panel { break-inside:auto!important; page-break-inside:auto!important; }
