@@ -18,17 +18,30 @@
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
   function classifyStorageError(error) {
-    if (!error) return 'unknown';
-    if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014) return 'quota-exceeded';
-    if (error.name === 'SecurityError') return 'blocked';
-    return 'unavailable';
+    if (!error) return 'unexpected';
+    if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014) return 'quota';
+    if (error.name === 'SecurityError' || error.name === 'NotAllowedError' || error.code === 18) return 'security';
+    return 'unexpected';
   }
-  function safeLocalStorage(action, fallback = null, details = {}) { try { return action(window.localStorage); } catch (error) { const reason = classifyStorageError(error); const label = details.label || details.action || 'localStorage action'; console.warn('Local storage unavailable during ' + label + ' (' + reason + '):', error); if (typeof details.onError === 'function') details.onError(error, reason); return fallback; } }
-  function formatSavedAt(savedAt) { if (!savedAt) return ''; const date = new Date(savedAt); if (Number.isNaN(date.getTime())) return ''; return 'Saved ' + date.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }); }
-  function setSavedAtDisplay(savedAt) { const text = formatSavedAt(savedAt); const el = $('savedAt') || $('savedAtDisplay'); if (!el) return; el.textContent = text; el.hidden = !text; }
-  function ensureStorageWarning() { let warning = $('storageWarning'); if (warning) return warning; warning = document.createElement('div'); warning.id = 'storageWarning'; warning.className = 'validation-banner storage-warning'; warning.setAttribute('role', 'alert'); warning.hidden = true; warning.textContent = 'Unable to save this form in local browser storage. Please print or save a PDF before closing this page.'; const anchor = $('validationBanner') || document.querySelector('.toolbar'); if (anchor?.parentNode) anchor.parentNode.insertBefore(warning, anchor.nextSibling); return warning; }
-  function showStorageWarning() { const warning = ensureStorageWarning(); if (warning) warning.hidden = false; }
-  function hideStorageWarning() { const warning = $('storageWarning'); if (warning) warning.hidden = true; }
+  function safeLocalStorage(action, fallback = null, details = {}) {
+    try {
+      return action(window.localStorage);
+    } catch (error) {
+      const failureType = classifyStorageError(error);
+      const operation = details.operation || 'access local storage';
+      console.warn(`Local storage ${failureType} failure during ${operation}:`, error);
+      return fallback;
+    }
+  }
+  function formatSavedAt(isoValue) {
+    if (!isoValue) return 'Not saved yet';
+    const date = new Date(isoValue);
+    if (Number.isNaN(date.getTime())) return 'Saved time unavailable';
+    return date.toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+  }
+  function setSavedAtDisplay(isoValue) { const el = $('savedAtStatus'); if (el) el.textContent = 'Last saved in this browser: ' + formatSavedAt(isoValue); }
+  function showStorageWarning() { const el = $('storageWarning'); if (!el) return; el.textContent = 'Warning: This browser could not save the latest form data/signature. Print or save a PDF before leaving, then clear browser storage or try another browser/device.'; el.classList.add('show'); }
+  function hideStorageWarning() { const el = $('storageWarning'); if (el) el.classList.remove('show'); }
   function formatDate() { const n = new Date(); return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear(); }
   function formatDateCompact() { return formatDate().replace(/\s/g, ''); }
   function generateTocNumber() { const n = new Date(); const y = n.getFullYear(); const m = String(n.getMonth() + 1).padStart(2, '0'); const d = String(n.getDate()).padStart(2, '0'); const suffix = String(Math.floor(1000 + Math.random() * 9000)); return 'TOC-' + y + m + d + '-' + suffix; }
@@ -75,11 +88,16 @@
   function populateWeightOptions() { const select = $('estimatedWeight'); if (!select || select.dataset.populated === 'true') return; for (let weight = 100; weight <= 10000; weight += 100) { const value = weight.toLocaleString('en-US') + ' lbs'; const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option); } const other = document.createElement('option'); other.value = 'Other'; other.textContent = 'Other'; select.appendChild(other); select.dataset.populated = 'true'; }
   function getSaveFields() { return $$('[data-save="true"]').filter((el) => el.id); }
   function getFormData() { const data = {}; getSaveFields().forEach((el) => { if (el.type !== 'radio') data[el.id] = el.value; }); APP.radioGroups.forEach((groupName) => { data[groupName] = getRadioGroupValue(groupName); }); return data; }
-  function saveToStorage() { const savedAt = new Date().toISOString(); const payload = { version: 6, savedAt, data: getFormData() }; const didSave = safeLocalStorage((storage) => { storage.setItem(APP.storageKey, JSON.stringify(payload)); return true; }, false, { label: 'form save' }); if (didSave) { setSavedAtDisplay(savedAt); if (!state.signatureStorageFailed) hideStorageWarning(); } else { showStorageWarning(); } return didSave; }
-  function readStoredPayload() { return safeLocalStorage((storage) => { const current = storage.getItem(APP.storageKey); if (current) return current; for (const key of APP.oldStorageKeys) { const oldValue = storage.getItem(key); if (oldValue) return oldValue; } return null; }, null, { label: 'form load' }); }
-  function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setSavedAtDisplay(null); setTodayAllDates(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); saveToStorage(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; setSavedAtDisplay(parsed?.savedAt); getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setSavedAtDisplay(null); setTodayAllDates(); } formatRestoredFields(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); validateAllFields(false); saveToStorage(); }
-  function clearStoredFormData() { return safeLocalStorage((storage) => { storage.removeItem(APP.storageKey); APP.oldStorageKeys.forEach((key) => storage.removeItem(key)); APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id)); return true; }, false, { label: 'form reset' }); }
-  function resetForm() { if (!confirm('Clear this form and start a new one? This will remove local saved form data and signatures from this browser.')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); clearStoredFormData(); state.signatureStorageFailed = false; setSavedAtDisplay(null); clearMissingHighlights(); hideValidationBanner(); hideStorageWarning(); toggleAllOtherFields(); setTodayAllDates(); ensureTocFormNumber(); saveToStorage(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function saveToStorage() {
+    const payload = { version: 6, savedAt: new Date().toISOString(), data: getFormData() };
+    const saved = safeLocalStorage((storage) => { storage.setItem(APP.storageKey, JSON.stringify(payload)); return true; }, false, { operation: 'save form data' });
+    if (saved) { if (!state.signatureStorageFailed) hideStorageWarning(); setSavedAtDisplay(payload.savedAt); } else { showStorageWarning(); }
+    return saved;
+  }
+  function readStoredPayload() { return safeLocalStorage((storage) => { const current = storage.getItem(APP.storageKey); if (current) return current; for (const key of APP.oldStorageKeys) { const oldValue = storage.getItem(key); if (oldValue) return oldValue; } return null; }, null, { operation: 'read saved form data' }); }
+  function loadFromStorage() { const saved = readStoredPayload(); if (!saved) { setTodayAllDates(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); saveToStorage(); return; } try { const parsed = JSON.parse(saved); const data = parsed && parsed.data ? parsed.data : parsed; if (parsed && parsed.savedAt) setSavedAtDisplay(parsed.savedAt); getSaveFields().forEach((el) => { if (el.type === 'radio') return; if (data[el.id] !== undefined) el.value = data[el.id]; }); APP.radioGroups.forEach((groupName) => { if (data[groupName]) setRadioGroupValue(groupName, data[groupName]); else $$(`input[name="${groupName}"]`).forEach((el) => { if (data[el.id]) el.checked = true; }); }); } catch (error) { console.warn('Stored form data could not be read. Clearing corrupted data.', error); clearStoredFormData(); setTodayAllDates(); } formatRestoredFields(); ensureTocFormNumber(); restoreSignatures(); toggleAllOtherFields(); validateAllFields(false); saveToStorage(); }
+  function clearStoredFormData() { return safeLocalStorage((storage) => { storage.removeItem(APP.storageKey); APP.oldStorageKeys.forEach((key) => storage.removeItem(key)); APP.signatureIds.forEach((id) => storage.removeItem(APP.signatureKeyPrefix + id)); return true; }, false, { operation: 'clear saved form data and signatures' }); }
+  function resetForm() { if (!confirm('Clear saved form data and signatures from this browser, then start a new blank form?')) return; getSaveFields().forEach((el) => { if (el.type === 'radio') el.checked = false; else el.value = ''; setValidity(el, ''); }); APP.signatureIds.forEach(clearSigBox); state.signatureStorageFailed = false; clearStoredFormData(); clearMissingHighlights(); hideValidationBanner(); toggleAllOtherFields(); setTodayAllDates(); ensureTocFormNumber(); saveToStorage(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   function initSigCanvas() { if (!state.sigCanvas) state.sigCanvas = $('sigCanvas'); if (state.sigCanvas && !state.sigCtx) state.sigCtx = state.sigCanvas.getContext('2d', { willReadFrequently: true }); }
   function openSigModal(signatureId) { initSigCanvas(); if (!state.sigCanvas || !state.sigCtx) return; state.activeSig = String(signatureId); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); const subtitle = $('sigModalSub'); if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party'; $('sigModal')?.classList.add('open'); requestAnimationFrame(() => { const wrap = $('sigModalWrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); const scale = window.devicePixelRatio || 1; state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale)); state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale)); state.sigCanvas.style.width = r.width + 'px'; state.sigCanvas.style.height = r.height + 'px'; state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0); state.sigCtx.strokeStyle = '#1a1a1a'; state.sigCtx.lineWidth = 2.5; state.sigCtx.lineCap = 'round'; state.sigCtx.lineJoin = 'round'; }); }
   function sigModalClear() { initSigCanvas(); if (!state.sigCtx || !state.sigCanvas) return; state.sigCtx.save(); state.sigCtx.setTransform(1, 0, 0, 1, 0, 0); state.sigCtx.clearRect(0, 0, state.sigCanvas.width, state.sigCanvas.height); state.sigCtx.restore(); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); }

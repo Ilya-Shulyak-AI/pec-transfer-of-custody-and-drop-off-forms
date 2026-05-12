@@ -65,20 +65,24 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Done button saves signature.
 - [ ] Signature date stamps when a signature is saved and the date field is blank.
 - [ ] Saved signature persists after refresh.
-- [ ] New button clears both signatures.
+- [ ] Clear Saved Data/New button clears both signatures.
 
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
-- [ ] Stored signatures persist after refresh.
-- [ ] New button asks for confirmation.
-- [ ] New button clears all editable fields.
-- [ ] New button clears all hidden Other values.
-- [ ] New button clears signatures.
-- [ ] New button repopulates today’s date fields.
-- [ ] New button generates a fresh TOC Form Number.
+- [ ] Signatures persist after refresh.
+- [ ] Clear Saved Data/New confirmation mentions local saved form data and signatures.
+- [ ] Clear Saved Data/New clears all editable fields.
+- [ ] Clear Saved Data/New clears all hidden Other values.
+- [ ] Clear Saved Data/New clears signatures.
+- [ ] Clear Saved Data/New repopulates today’s date fields.
+- [ ] Clear Saved Data/New generates a fresh TOC Form Number.
+- [ ] Local data note is visible and accurately explains local saved data behavior.
+- [ ] Saved-at timestamp updates after a successful save.
+- [ ] Visible warning appears when storage is blocked or full.
+- [ ] Console distinguishes quota and security storage failures where practical.
 - [ ] No stale customer data reappears after reset.
-- [ ] App recovers gracefully if stored JSON is corrupted.
+- [ ] App recovers gracefully if stored JSON is corrupted where practical.
 
 ## Print/PDF
 
@@ -96,6 +100,8 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Signature section is clean and proportional.
 - [ ] App toolbar does not print.
 - [ ] Print warning modal does not print.
+- [ ] Storage warning does not print.
+- [ ] Local data note does not print.
 - [ ] Signature modal does not print.
 - [ ] Tap hints and clear-signature controls do not print.
 - [ ] Empty signature boxes print cleanly.

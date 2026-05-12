@@ -40,10 +40,14 @@ body {
 .sig-modal,
 .print-warning-modal,
 .validation-banner,
+.storage-warning,
+.local-data-note,
 .sig-tap-hint,
 .sig-clear,
 .today-btn,
-.page-footer { display:none!important; }
+.page-footer,
+.storage-warning,
+.local-data-note { display:none!important; }
 
 .page {
   width:8.5in!important;
