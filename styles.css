@@ -11,6 +11,11 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .page { width:100%; max-width:760px; background:#fff; border:2px solid var(--blue-light); box-shadow:0 2px 16px rgba(26,79,138,.12); }
 .validation-banner { display:none!important; }
 .validation-banner.show { display:none!important; }
+.storage-warning { display:none; width:100%; max-width:760px; margin:10px 16px 0; padding:10px 14px; border:2px solid var(--warn-border); background:var(--warn); color:var(--warn-text); font-size:14px; font-weight:700; line-height:1.35; }
+.storage-warning.show { display:block; }
+.local-data-note { display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:space-between; align-items:center; padding:8px 16px; border-bottom:1px solid var(--border); background:#fff8e1; color:var(--warn-text); font-size:11px; line-height:1.35; }
+.local-data-note span:first-child { font-weight:700; }
+#savedAtStatus { color:var(--mid); font-weight:700; }
 @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
 .doc-header { border-bottom:3px solid var(--blue-light); padding:16px 20px; background:#fff; }
 .brand-title { font-family:var(--font-display); font-size:34px; font-weight:800; color:var(--ink); letter-spacing:1px; text-transform:uppercase; line-height:1; }
@@ -86,4 +91,4 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .po-row { border-bottom:2px solid var(--border); }
 .full-row { grid-column:1/-1; }
 .mt-small { margin-top:2px; }
-@media(max-width:540px){ .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } .meta-item { border-right:none; border-bottom:1px solid var(--border); } .print-warning-actions { flex-direction:column; } }
+@media(max-width:540px){ .storage-warning { margin:8px 10px 0; } .local-data-note { display:block; } .local-data-note span { display:block; } #savedAtStatus { margin-top:4px; }  .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } .meta-item { border-right:none; border-bottom:1px solid var(--border); } .print-warning-actions { flex-direction:column; } }

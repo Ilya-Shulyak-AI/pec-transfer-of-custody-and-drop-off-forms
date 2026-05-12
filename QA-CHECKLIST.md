@@ -65,18 +65,22 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Done button saves signature.
 - [ ] Signature date stamps when a signature is saved and the date field is blank.
 - [ ] Saved signature persists after refresh.
-- [ ] New button clears both signatures.
+- [ ] Clear Saved Data/New button clears both signatures.
 
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
 - [ ] Stored signatures persist after refresh.
-- [ ] New button asks for confirmation.
-- [ ] New button clears all editable fields.
-- [ ] New button clears all hidden Other values.
-- [ ] New button clears signatures.
-- [ ] New button repopulates today’s date fields.
-- [ ] New button generates a fresh TOC Form Number.
+- [ ] Clear Saved Data/New button asks for confirmation that local saved form data and signatures will be cleared.
+- [ ] Clear Saved Data/New button clears all editable fields.
+- [ ] Clear Saved Data/New button clears all hidden Other values.
+- [ ] Clear Saved Data/New button clears signatures.
+- [ ] Clear Saved Data/New button repopulates today’s date fields.
+- [ ] Clear Saved Data/New button generates a fresh TOC Form Number.
+- [ ] Local data note explains that form data and signatures stay in the browser until cleared.
+- [ ] Last-saved timestamp updates after a successful save.
+- [ ] If browser storage is blocked or full, a visible warning appears after editing or saving a signature.
+- [ ] If browser storage is blocked or full, the console message identifies quota/security storage failure where applicable.
 - [ ] No stale customer data reappears after reset.
 - [ ] App recovers gracefully if stored JSON is corrupted.
 
@@ -96,6 +100,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Signature section is clean and proportional.
 - [ ] App toolbar does not print.
 - [ ] Print warning modal does not print.
+- [ ] Storage warning and local-data note do not print.
 - [ ] Signature modal does not print.
 - [ ] Tap hints and clear-signature controls do not print.
 - [ ] Empty signature boxes print cleanly.
