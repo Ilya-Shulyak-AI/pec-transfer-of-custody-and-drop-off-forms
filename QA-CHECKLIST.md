@@ -58,11 +58,15 @@ Use this checklist before merging any meaningful change into `main`.
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
-- [ ] New button asks for confirmation.
-- [ ] New button clears all fields.
-- [ ] New button clears all hidden Other values.
-- [ ] New button clears signatures.
-- [ ] New button repopulates today’s date fields.
+- [ ] Clear Saved Data/New button asks for confirmation that local saved form data and signatures will be cleared.
+- [ ] Clear Saved Data/New button clears all fields.
+- [ ] Clear Saved Data/New button clears all hidden Other values.
+- [ ] Clear Saved Data/New button clears signatures.
+- [ ] Clear Saved Data/New button repopulates today’s date fields.
+- [ ] Local data note explains that form data and signatures stay in the browser until cleared.
+- [ ] Last-saved timestamp updates after a successful save.
+- [ ] If browser storage is blocked or full, a visible warning appears after editing or saving a signature.
+- [ ] If browser storage is blocked or full, the console message identifies quota/security storage failure where applicable.
 - [ ] No stale customer data reappears after reset.
 
 ## Print/PDF

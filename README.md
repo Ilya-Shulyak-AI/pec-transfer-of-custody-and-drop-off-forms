@@ -19,9 +19,9 @@ This repository holds the working code for Precision E-Cycle's Transfer of Custo
 
 ## Data storage
 
-The form stores entered data locally in the browser on the device being used. It does not use a backend database.
+The form stores entered data and signatures locally in the browser on the device being used. They stay in that browser until the saved data is cleared. The app does not use a backend database or send form entries/signatures to a server.
 
-Use the New button after finishing a form to clear local form data and signatures before starting another form.
+Use the **Clear Saved Data** button after finishing a form to clear local form data and signatures before starting another form. If the browser cannot save because storage is blocked or full, the app shows a warning so the user can print/save a PDF before leaving the page.
 
 ## Printing
 
