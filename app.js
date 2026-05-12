@@ -147,7 +147,7 @@
   function isValidFormattedDate(value) { return /^(0[1-9]|1[0-2])\s*\/\s*(0[1-9]|[12]\d|3[01])\s*\/\s*\d{4}$/.test(String(value || '').trim()); }
   function setTodayAllDates() { const today = formatDate(); APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; }); saveToStorage(); }
   function getSignatureDateFieldId(signatureId) { const id = String(signatureId); if (id === '1') return 'transferSignatureDate'; if (id === '2') return 'receiverSignatureDate'; return ''; }
-  function stampSignatureDate(signatureId) { const targetId = getSignatureDateFieldId(signatureId); const el = targetId ? $(targetId) : null; if (el && !String(el.value || '').trim()) el.value = formatDateCompact(); }
+  function stampSignatureDate(signatureId) { const targetId = getSignatureDateFieldId(signatureId); const el = targetId ? $(targetId) : null; if (el && !String(el.value || '').trim()) el.value = formatDate(); }
   function clearSignatureDate(signatureId) { const targetId = getSignatureDateFieldId(signatureId); const el = targetId ? $(targetId) : null; if (el) { el.value = ''; setValidity(el, ''); markField(el, false); } }
   function formatPhoneValue(value) { let v = value.replace(/\D/g, '').substring(0, 10); if (v.length >= 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6); if (v.length >= 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3); return v; }
   function formatManualWeightValue(value) { const digits = value.replace(/\D/g, ''); return digits ? Number(digits).toLocaleString('en-US') : ''; }
