@@ -12,74 +12,104 @@ Use this checklist before merging any meaningful change into `main`.
 
 ## Form fields
 
-- [ ] TOC Form Number starts blank.
+- [ ] TOC Form Number starts with a generated value on a fresh form.
 - [ ] TOC Form Number allows letters, numbers, dashes, and symbols.
 - [ ] Date field populates correctly.
 - [ ] Today button updates the main date.
 - [ ] Today button updates both signature dates.
-- [ ] PO field works.
+- [ ] PO field works and may remain blank.
 - [ ] Transferring Party fields save and restore.
-- [ ] Receiving Party fields save and restore.
+- [ ] Receiving Party prefilled company/address/phone/email/city/state/zip fields remain readonly.
+- [ ] Receiving Party contact fields save and restore.
 - [ ] Transfer Details fields save and restore.
 
 ## Dropdowns and Other fields
 
 - [ ] Transfer Method dropdown works.
 - [ ] Transfer Method Other field appears only when Other is selected.
-- [ ] Received By dropdown works.
-- [ ] Received By Other field appears only when Other is selected.
+- [ ] Receiving Party / Received By contact dropdown includes Ilya Shulyak, Slavic Brychka, and Other.
+- [ ] Receiving Party / Received By contact dropdown saves and restores the selected contact.
+- [ ] Receiving Party / Received By Other field appears only when Other is selected.
+- [ ] Receiving Party / Received By Other field clears when the dropdown changes away from Other.
 - [ ] Reason for Transfer dropdown works.
 - [ ] Reason Other field appears only when Other is selected.
+- [ ] Reason Other field is required only when Reason for Transfer is Other.
 - [ ] Estimated Weight dropdown includes Less than 100 lbs.
 - [ ] Estimated Weight dropdown includes 100-lb increments through 10,000 lbs.
 - [ ] Estimated Weight Other field appears only when Other is selected.
+- [ ] Estimated Weight Other field is required only when Estimated Weight is Other.
 - [ ] Manual weight formats correctly.
 
 ## Validation
 
+- [ ] Empty required fields are highlighted when Print is selected.
+- [ ] Missing signatures are highlighted when Print is selected.
+- [ ] Missing Data Destruction Required choice is highlighted when Print is selected.
+- [ ] Missing Certificate Required choice is highlighted when Print is selected.
 - [ ] State field accepts valid two-letter state abbreviations.
 - [ ] State field uppercases entries.
 - [ ] State field rejects invalid abbreviations.
 - [ ] Phone fields format consistently.
 - [ ] Email fields behave as email inputs.
 - [ ] Radio button groups allow only one selected option.
-- [ ] Print with incomplete required information shows a validation banner above the form.
-- [ ] Validation banner summarizes missing fields, invalid fields, missing radio selections, and missing signatures.
-- [ ] Validation banner appears only after validation is needed and hides after printing anyway, resetting the form, or resolving all highlighted items.
-- [ ] Missing fields remain highlighted while the validation banner is visible.
-- [ ] Print validation still offers Continue Filling Out and Print Anyway options.
+- [ ] Print warning modal appears when required information is missing.
+- [ ] Continue Filling Out closes the warning modal without printing.
+- [ ] Print Anyway opens print despite missing information.
 
 ## Signatures
 
 - [ ] Transferring Party signature modal opens.
 - [ ] Receiving Party signature modal opens.
+- [ ] Signature modal subtitle matches the active signature box.
 - [ ] Signature can be drawn with mouse.
 - [ ] Signature can be drawn with touch.
 - [ ] Clear button removes signature.
+- [ ] Clearing the Transferring Party signature removes its image and clears the Transferring Party signature date.
+- [ ] After clearing the Transferring Party signature and refreshing, the Transferring Party signature image and date remain empty and `localStorage.pec_toc_sig_1` is absent.
+- [ ] Clearing the Receiving Party signature removes its image and clears the Receiving Party signature date.
+- [ ] After clearing the Receiving Party signature and refreshing, the Receiving Party signature image and date remain empty and `localStorage.pec_toc_sig_2` is absent.
 - [ ] Done button saves signature.
+- [ ] Signature date stamps when a signature is saved and the date field is blank.
 - [ ] Saved signature persists after refresh.
-- [ ] New button clears both signatures.
+- [ ] Clear Saved Data/New button clears both signatures.
 
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
-- [ ] New button asks for confirmation.
-- [ ] New button clears all fields.
-- [ ] New button clears all hidden Other values.
-- [ ] New button clears signatures.
-- [ ] New button repopulates today’s date fields.
+- [ ] Signatures persist after refresh.
+- [ ] Clear Saved Data/New confirmation mentions local saved form data and signatures.
+- [ ] Clear Saved Data/New clears all editable fields.
+- [ ] Clear Saved Data/New clears all hidden Other values.
+- [ ] Clear Saved Data/New clears signatures.
+- [ ] Clear Saved Data/New repopulates today’s date fields.
+- [ ] Clear Saved Data/New generates a fresh TOC Form Number.
+- [ ] Local data note is visible and accurately explains local saved data behavior.
+- [ ] Saved-at timestamp updates after a successful save.
+- [ ] Visible warning appears when storage is blocked or full.
+- [ ] Console distinguishes quota and security storage failures where practical.
 - [ ] No stale customer data reappears after reset.
+- [ ] App recovers gracefully if stored JSON is corrupted where practical.
 
 ## Print/PDF
 
+- [ ] Run `npm run test:print` before merging print-related changes.
+- [ ] Review `test-artifacts/print-output.pdf` or `test-artifacts/print-output.png` manually when border/divider quality changes.
 - [ ] Print preview fits on one Letter page at 100% scale.
 - [ ] Print preview does not require custom scaling.
+- [ ] Printed/PDF output remains one page after all fields are completed.
 - [ ] Header is centered and visually balanced.
 - [ ] All boxes have clear divider lines.
+- [ ] Border weight is consistent and visible in browser print preview.
+- [ ] Border quality remains clean in saved PDF output.
 - [ ] Receiving Party section has uniform boxes.
 - [ ] Transfer Details section has proper divider lines.
 - [ ] Signature section is clean and proportional.
 - [ ] App toolbar does not print.
+- [ ] Print warning modal does not print.
+- [ ] Storage warning does not print.
+- [ ] Local data note does not print.
+- [ ] Signature modal does not print.
+- [ ] Tap hints and clear-signature controls do not print.
 - [ ] Empty signature boxes print cleanly.
 - [ ] Completed signature images print cleanly.
 
@@ -90,10 +120,14 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Form remains usable in standalone mode.
 - [ ] Signatures work in standalone mode.
 - [ ] Local data persists in standalone mode.
+- [ ] App remains portrait-oriented in normal field use.
+- [ ] Expected behavior is documented that offline use is not guaranteed because no service worker is registered.
 
 ## Final review
 
 - [ ] README is still accurate.
+- [ ] Technical notes are still accurate.
+- [ ] Final QA status note is current.
 - [ ] No private customer data, credentials, or internal-only secrets are in source code.
 - [ ] Changes were made on a branch.
 - [ ] PR description explains what changed.
