@@ -43,6 +43,11 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Phone fields format consistently.
 - [ ] Email fields behave as email inputs.
 - [ ] Radio button groups allow only one selected option.
+- [ ] Print with incomplete required information shows a validation banner above the form.
+- [ ] Validation banner summarizes missing fields, invalid fields, missing radio selections, and missing signatures.
+- [ ] Validation banner appears only after validation is needed and hides after printing anyway, resetting the form, or resolving all highlighted items.
+- [ ] Missing fields remain highlighted while the validation banner is visible.
+- [ ] Print validation still offers Continue Filling Out and Print Anyway options.
 
 ## Signatures
 

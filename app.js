@@ -10,10 +10,11 @@
     signatureIds: ['1', '2'],
     radioGroups: ['dataDestruction', 'certificateRequired'],
     optionalEmptyFields: ['poNumber'],
-    requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
+    requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' },
+    signatureLabels: { '1': 'Transferring Party Signature', '2': 'Receiving Party Signature' }
   };
 
-  const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1' };
+  const state = { sigCanvas: null, sigCtx: null, isSigning: false, hasMark: false, activeSig: '1', validationBannerActive: false };
   const $ = (id) => document.getElementById(id);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -35,7 +36,8 @@
   function clearMissingHighlights() { $$('.field-missing').forEach((el) => el.classList.remove('field-missing')); }
   function isHiddenByOtherWrap(el) { const wrap = el.closest('.other-wrap'); return wrap && getComputedStyle(wrap).display === 'none'; }
   function signatureIsMissing(id) { const preview = $('sigPreview' + id); return !preview || !preview.src || preview.style.display === 'none'; }
-  function markSignatureBoxes(mark) { const missing = []; APP.signatureIds.forEach((id) => { const isMissing = signatureIsMissing(id); if (isMissing) missing.push(id); if (mark) $('sigBox' + id)?.classList.toggle('field-missing', isMissing); }); return missing; }
+  function markSignatureBoxes(mark) { const missing = []; APP.signatureIds.forEach((id) => { const isMissing = signatureIsMissing(id); if (isMissing) missing.push(APP.signatureLabels[id] || ('Signature ' + id)); if (mark) $('sigBox' + id)?.classList.toggle('field-missing', isMissing); }); return missing; }
+  function getFieldLabel(el) { const label = el?.id ? document.querySelector(`label[for="${el.id}"]`) : null; const container = findFieldContainer(el); const fallbackLabel = container?.querySelector('label, .meta-label'); return (label || fallbackLabel)?.textContent.replace(/[:*]/g, '').trim() || el?.id || 'Field'; }
   function isEmptyExpectedField(el) { if (!el || !el.id || APP.optionalEmptyFields.includes(el.id) || el.type === 'radio' || el.readOnly || el.disabled || isHiddenByOtherWrap(el)) return false; return !String(el.value || '').trim(); }
   function fieldHasInvalidValue(el) {
     const value = String(el.value || '').trim();
@@ -47,14 +49,36 @@
     return false;
   }
   function validateRequiredRadioGroups(mark = false) { const missing = []; Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => { const checked = Boolean(getRadioGroupValue(groupName)); if (!checked) missing.push(label); if (mark) $$(`input[name="${groupName}"]`).forEach((el) => markField(el, !checked)); }); return missing; }
-  function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); setValidity(el, invalid ? 'Please check this field.' : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
-  function validateAllFields(mark = false) { if (mark) clearMissingHighlights(); const fieldResults = getSaveFields().map((el) => validateField(el, mark)); const missingRadioGroups = validateRequiredRadioGroups(mark); const missingSignatures = markSignatureBoxes(mark); return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0 && missingSignatures.length === 0, missingRadioGroups, missingSignatures }; }
-  function showValidationBanner() { return; }
-  function hideValidationBanner() { return; }
+  function validateField(el, mark = false) { if (!el || !el.id) return { isValid: true, missing: false, invalid: false, label: 'Field' }; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); setValidity(el, invalid ? 'Please check this field.' : ''); if (mark) markField(el, missing || invalid); return { isValid: !missing && !invalid, missing, invalid, label: getFieldLabel(el) }; }
+  function validateAllFields(mark = false) {
+    if (mark) clearMissingHighlights();
+    const fieldResults = getSaveFields().map((el) => validateField(el, mark));
+    const missingFields = fieldResults.filter((result) => result.missing).map((result) => result.label);
+    const invalidFields = fieldResults.filter((result) => result.invalid).map((result) => result.label);
+    const missingRadioGroups = validateRequiredRadioGroups(mark);
+    const missingSignatures = markSignatureBoxes(mark);
+    return { isValid: fieldResults.every((result) => result.isValid) && missingRadioGroups.length === 0 && missingSignatures.length === 0, missingFields, invalidFields, missingRadioGroups, missingSignatures };
+  }
+  function summarizeValidationItems(label, items) { if (!items.length) return ''; const shown = items.slice(0, 3).join(', '); const extra = items.length > 3 ? ` +${items.length - 3} more` : ''; return `${label}: ${shown}${extra}`; }
+  function showValidationBanner(result = validateAllFields(false)) {
+    const banner = $('validationBanner');
+    if (!banner) return;
+    if (result.isValid) { hideValidationBanner(); return; }
+    const groups = [
+      summarizeValidationItems('Missing fields', result.missingFields),
+      summarizeValidationItems('Check fields', result.invalidFields),
+      summarizeValidationItems('Select', result.missingRadioGroups),
+      summarizeValidationItems('Signatures', result.missingSignatures)
+    ].filter(Boolean);
+    banner.textContent = 'Before printing, please review highlighted items. ' + groups.join(' • ');
+    banner.classList.add('show');
+    state.validationBannerActive = true;
+  }
+  function hideValidationBanner() { const banner = $('validationBanner'); if (banner) { banner.classList.remove('show'); banner.textContent = ''; } state.validationBannerActive = false; }
   function openPrintWarningModal() { $('printWarningModal')?.classList.add('open'); }
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
-  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(); } }
-  function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
+  function requestPrint() { const result = validateAllFields(true); if (result.isValid) { hideValidationBanner(); clearMissingHighlights(); window.print(); } else { showValidationBanner(result); openPrintWarningModal(); } }
+  function printAnyway() { closePrintWarningModal(); hideValidationBanner(); clearMissingHighlights(); window.print(); }
   function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
@@ -73,18 +97,19 @@
   function openSigModal(signatureId) { initSigCanvas(); if (!state.sigCanvas || !state.sigCtx) return; state.activeSig = String(signatureId); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); const subtitle = $('sigModalSub'); if (subtitle) subtitle.textContent = state.activeSig === '1' ? 'Transferring Party' : 'Receiving Party'; $('sigModal')?.classList.add('open'); requestAnimationFrame(() => { const wrap = $('sigModalWrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); const scale = window.devicePixelRatio || 1; state.sigCanvas.width = Math.max(300, Math.floor(r.width * scale)); state.sigCanvas.height = Math.max(200, Math.floor(r.height * scale)); state.sigCanvas.style.width = r.width + 'px'; state.sigCanvas.style.height = r.height + 'px'; state.sigCtx.setTransform(scale, 0, 0, scale, 0, 0); state.sigCtx.strokeStyle = '#1a1a1a'; state.sigCtx.lineWidth = 2.5; state.sigCtx.lineCap = 'round'; state.sigCtx.lineJoin = 'round'; }); }
   function sigModalClear() { initSigCanvas(); if (!state.sigCtx || !state.sigCanvas) return; state.sigCtx.save(); state.sigCtx.setTransform(1, 0, 0, 1, 0, 0); state.sigCtx.clearRect(0, 0, state.sigCanvas.width, state.sigCanvas.height); state.sigCtx.restore(); state.hasMark = false; $('sigModalDone')?.classList.remove('ready'); }
   function cropSigCanvas(srcCanvas) { const ctx = srcCanvas.getContext('2d', { willReadFrequently: true }); const pixels = ctx.getImageData(0, 0, srcCanvas.width, srcCanvas.height); const data = pixels.data; let minX = srcCanvas.width, minY = srcCanvas.height, maxX = 0, maxY = 0; for (let y = 0; y < srcCanvas.height; y++) { for (let x = 0; x < srcCanvas.width; x++) { const alpha = data[(y * srcCanvas.width + x) * 4 + 3]; if (alpha > 0) { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y); } } } if (maxX <= minX || maxY <= minY) return srcCanvas.toDataURL('image/png'); const pad = 16; minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad); maxX = Math.min(srcCanvas.width, maxX + pad); maxY = Math.min(srcCanvas.height, maxY + pad); const width = maxX - minX; const height = maxY - minY; const out = document.createElement('canvas'); out.width = width; out.height = height; out.getContext('2d').drawImage(srcCanvas, minX, minY, width, height, 0, 0, width, height); return out.toDataURL('image/png'); }
-  function sigModalDone() { if (!state.hasMark || !state.sigCanvas) return; const dataURL = cropSigCanvas(state.sigCanvas); const preview = $('sigPreview' + state.activeSig); const box = $('sigBox' + state.activeSig); if (preview) { preview.src = dataURL; preview.style.display = 'block'; } if (box) box.classList.add('sig-has-data'); box?.classList.remove('field-missing'); stampSignatureDate(state.activeSig); safeLocalStorage((storage) => storage.setItem(APP.signatureKeyPrefix + state.activeSig, dataURL)); saveToStorage(); $('sigModal')?.classList.remove('open'); }
-  function clearSigBox(signatureId) { const id = String(signatureId); const preview = $('sigPreview' + id); if (preview) { preview.style.display = 'none'; preview.src = ''; } $('sigBox' + id)?.classList.remove('sig-has-data'); safeLocalStorage((storage) => storage.removeItem(APP.signatureKeyPrefix + id)); }
+  function sigModalDone() { if (!state.hasMark || !state.sigCanvas) return; const dataURL = cropSigCanvas(state.sigCanvas); const preview = $('sigPreview' + state.activeSig); const box = $('sigBox' + state.activeSig); if (preview) { preview.src = dataURL; preview.style.display = 'block'; } if (box) box.classList.add('sig-has-data'); box?.classList.remove('field-missing'); stampSignatureDate(state.activeSig); safeLocalStorage((storage) => storage.setItem(APP.signatureKeyPrefix + state.activeSig, dataURL)); saveToStorage(); if (state.validationBannerActive) showValidationBanner(validateAllFields(true)); $('sigModal')?.classList.remove('open'); }
+  function clearSigBox(signatureId) { const id = String(signatureId); const preview = $('sigPreview' + id); if (preview) { preview.style.display = 'none'; preview.src = ''; } $('sigBox' + id)?.classList.remove('sig-has-data'); safeLocalStorage((storage) => storage.removeItem(APP.signatureKeyPrefix + id)); if (state.validationBannerActive) showValidationBanner(validateAllFields(true)); }
   function restoreSignatures() { APP.signatureIds.forEach((id) => { const sig = safeLocalStorage((storage) => storage.getItem(APP.signatureKeyPrefix + id)); if (!sig) return; const preview = $('sigPreview' + id); const box = $('sigBox' + id); if (preview) { preview.src = sig; preview.style.display = 'block'; } if (box) box.classList.add('sig-has-data'); }); }
   function sigPos(e) { const r = state.sigCanvas.getBoundingClientRect(); const s = e.touches ? e.touches[0] : e; return { x: s.clientX - r.left, y: s.clientY - r.top }; }
   function startSig(e) { e.preventDefault(); initSigCanvas(); if (!state.sigCtx) return; state.isSigning = true; const p = sigPos(e); state.sigCtx.beginPath(); state.sigCtx.moveTo(p.x, p.y); }
   function moveSig(e) { if (!state.isSigning || !state.sigCtx) return; e.preventDefault(); const p = sigPos(e); state.sigCtx.lineTo(p.x, p.y); state.sigCtx.stroke(); state.hasMark = true; $('sigModalDone')?.classList.add('ready'); }
   function endSig(e) { if (e) e.preventDefault(); state.isSigning = false; }
   function bindSignatureCanvas() { const canvas = $('sigCanvas'); if (!canvas || canvas.dataset.bound === 'true') return; canvas.dataset.bound = 'true'; canvas.addEventListener('mousedown', startSig); canvas.addEventListener('mousemove', moveSig); canvas.addEventListener('mouseup', endSig); canvas.addEventListener('mouseleave', endSig); canvas.addEventListener('touchstart', startSig, { passive: false }); canvas.addEventListener('touchmove', moveSig, { passive: false }); canvas.addEventListener('touchend', endSig, { passive: false }); }
-  function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') setTodayAllDates(); if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
+  function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') { setTodayAllDates(); refreshActiveValidationBanner(); } if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
   function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
-  function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
-  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); saveToStorage(); }
+  function refreshActiveValidationBanner() { if (state.validationBannerActive) showValidationBanner(validateAllFields(true)); }
+  function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); refreshActiveValidationBanner(); }
+  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); saveToStorage(); refreshActiveValidationBanner(); }
   function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
   document.addEventListener('DOMContentLoaded', init);
 })();

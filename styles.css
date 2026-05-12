@@ -10,8 +10,8 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); min-height:100vh; 
 .btn-new { background:rgba(255,255,255,.12); color:#fff; border:1.5px solid rgba(255,255,255,.25); }
 .btn-print { background:var(--blue); color:#fff; }
 .page { width:100%; max-width:760px; background:#fff; border:2px solid var(--blue-light); box-shadow:0 2px 16px rgba(26,79,138,.12); }
-.validation-banner { display:none!important; }
-.validation-banner.show { display:none!important; }
+.validation-banner { display:none; width:100%; max-width:760px; margin:12px 16px 0; padding:12px 16px; border:2px solid var(--warn-border); border-radius:6px; background:var(--warn); color:var(--warn-text); font-size:14px; line-height:1.35; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+.validation-banner.show { display:block; }
 @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
 .doc-header { border-bottom:3px solid var(--blue-light); padding:16px 20px; background:#fff; }
 .brand-title { font-family:'Barlow Condensed',sans-serif; font-size:34px; font-weight:800; color:var(--ink); letter-spacing:1px; text-transform:uppercase; line-height:1; }
