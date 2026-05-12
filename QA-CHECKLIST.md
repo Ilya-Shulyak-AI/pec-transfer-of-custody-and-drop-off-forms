@@ -14,9 +14,11 @@ Use this checklist before merging any meaningful change into `main`.
 
 - [ ] TOC Form Number starts blank.
 - [ ] TOC Form Number allows letters, numbers, dashes, and symbols.
-- [ ] Date field populates correctly.
-- [ ] Today button updates the main date.
-- [ ] Today button updates both signature dates.
+- [ ] Date field populates in `MM/DD/YYYY` format.
+- [ ] Main date field auto-formats typed digits as `MM/DD/YYYY`.
+- [ ] Main date field rejects invalid dates.
+- [ ] Today button updates the main date in `MM/DD/YYYY` format.
+- [ ] Today button updates both signature dates in `MM/DD/YYYY` format.
 - [ ] PO field works.
 - [ ] Transferring Party fields save and restore.
 - [ ] Receiving Party fields save and restore.
@@ -43,6 +45,8 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Phone fields format consistently.
 - [ ] Email fields behave as email inputs.
 - [ ] Radio button groups allow only one selected option.
+- [ ] Signature date fields auto-format typed digits as `MM/DD/YYYY`.
+- [ ] Signature date fields reject invalid dates.
 
 ## Signatures
 
@@ -52,6 +56,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Signature can be drawn with touch.
 - [ ] Clear button removes signature.
 - [ ] Done button saves signature.
+- [ ] Done button stamps a blank signature date as `MM/DD/YYYY`.
 - [ ] Saved signature persists after refresh.
 - [ ] New button clears both signatures.
 

@@ -18,12 +18,13 @@
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
   function safeLocalStorage(action, fallback = null) { try { return action(window.localStorage); } catch (error) { console.warn('Local storage unavailable:', error); return fallback; } }
-  function formatDate() { const n = new Date(); return String(n.getMonth() + 1).padStart(2, '0') + ' / ' + String(n.getDate()).padStart(2, '0') + ' / ' + n.getFullYear(); }
-  function formatDateCompact() { return formatDate().replace(/\s/g, ''); }
+  function formatDate(date = new Date()) { return String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0') + '/' + date.getFullYear(); }
+  function formatDateInputValue(value) { const raw = String(value || '').trim(); const slashMatch = /^(\d{1,2})\D+(\d{1,2})\D+(\d{4})$/.exec(raw); if (slashMatch) return slashMatch[1].padStart(2, '0') + '/' + slashMatch[2].padStart(2, '0') + '/' + slashMatch[3]; const digits = raw.replace(/\D/g, '').slice(0, 8); if (digits.length <= 2) return digits; if (digits.length <= 4) return digits.slice(0, 2) + '/' + digits.slice(2); return digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4); }
+  function isValidFormattedDate(value) { const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value || '').trim()); if (!match) return false; const month = Number(match[1]); const day = Number(match[2]); const year = Number(match[3]); if (month < 1 || month > 12 || day < 1 || year < 1900 || year > 2099) return false; const parsed = new Date(year, month - 1, day); return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day; }
   function generateTocNumber() { const n = new Date(); const y = n.getFullYear(); const m = String(n.getMonth() + 1).padStart(2, '0'); const d = String(n.getDate()).padStart(2, '0'); const suffix = String(Math.floor(1000 + Math.random() * 9000)); return 'TOC-' + y + m + d + '-' + suffix; }
   function ensureTocFormNumber() { const el = $('tocFormNumber'); if (el && !String(el.value || '').trim()) el.value = generateTocNumber(); }
   function setTodayAllDates() { const today = formatDate(); APP.dateFields.forEach((id) => { const el = $(id); if (el) el.value = today; }); saveToStorage(); }
-  function stampSignatureDate(signatureId) { const targetId = String(signatureId) === '1' ? 'transferSignatureDate' : 'receiverSignatureDate'; const el = $(targetId); if (el && !String(el.value || '').trim()) el.value = formatDateCompact(); }
+  function stampSignatureDate(signatureId) { const targetId = String(signatureId) === '1' ? 'transferSignatureDate' : 'receiverSignatureDate'; const el = $(targetId); if (el && !String(el.value || '').trim()) el.value = formatDate(); }
   function formatPhoneValue(value) { let v = value.replace(/\D/g, '').substring(0, 10); if (v.length >= 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6); if (v.length >= 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3); return v; }
   function formatManualWeightValue(value) { const digits = value.replace(/\D/g, ''); return digits ? Number(digits).toLocaleString('en-US') : ''; }
   function normalizeStateValue(value) { return value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2); }
@@ -44,10 +45,11 @@
     if (el.type === 'email') return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     if (el.type === 'tel') { const digits = value.replace(/\D/g, ''); return digits.length > 0 && digits.length !== 10; }
     if (el.dataset.format === 'weight') return Number(value.replace(/\D/g, '')) <= 0;
+    if (APP.dateFields.includes(el.id)) return !isValidFormattedDate(value);
     return false;
   }
   function validateRequiredRadioGroups(mark = false) { const missing = []; Object.entries(APP.requiredRadioGroups).forEach(([groupName, label]) => { const checked = Boolean(getRadioGroupValue(groupName)); if (!checked) missing.push(label); if (mark) $$(`input[name="${groupName}"]`).forEach((el) => markField(el, !checked)); }); return missing; }
-  function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); setValidity(el, invalid ? 'Please check this field.' : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
+  function validateField(el, mark = false) { if (!el || !el.id) return true; const missing = isEmptyExpectedField(el); const invalid = fieldHasInvalidValue(el); const message = APP.dateFields.includes(el.id) && invalid ? 'Use MM/DD/YYYY.' : 'Please check this field.'; setValidity(el, invalid ? message : ''); if (mark) markField(el, missing || invalid); return !missing && !invalid; }
   function validateAllFields(mark = false) { if (mark) clearMissingHighlights(); const fieldResults = getSaveFields().map((el) => validateField(el, mark)); const missingRadioGroups = validateRequiredRadioGroups(mark); const missingSignatures = markSignatureBoxes(mark); return { isValid: fieldResults.every(Boolean) && missingRadioGroups.length === 0 && missingSignatures.length === 0, missingRadioGroups, missingSignatures }; }
   function showValidationBanner() { return; }
   function hideValidationBanner() { return; }
@@ -55,7 +57,7 @@
   function closePrintWarningModal() { $('printWarningModal')?.classList.remove('open'); }
   function requestPrint() { const result = validateAllFields(true); if (result.isValid) { clearMissingHighlights(); window.print(); } else { openPrintWarningModal(); } }
   function printAnyway() { closePrintWarningModal(); clearMissingHighlights(); window.print(); }
-  function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); }
+  function formatFieldValue(el) { const type = el.dataset.format; if (type === 'phone') el.value = formatPhoneValue(el.value); if (type === 'weight') el.value = formatManualWeightValue(el.value); if (type === 'state') el.value = normalizeStateValue(el.value); if (type === 'date') el.value = formatDateInputValue(el.value); }
   function handleFormattedInput(el) { formatFieldValue(el); validateField(el, true); }
   function formatRestoredFields() { getSaveFields().forEach((el) => { if (el.dataset.format) formatFieldValue(el); }); }
   function toggleOtherForSelect(select) { const wrapId = select.dataset.otherTarget; if (!wrapId) return; const wrap = $(wrapId); if (!wrap) return; const show = select.value === 'Other'; wrap.style.display = show ? 'block' : 'none'; const input = wrap.querySelector('input'); if (!show && input) { input.value = ''; setValidity(input, ''); markField(input, false); } }
