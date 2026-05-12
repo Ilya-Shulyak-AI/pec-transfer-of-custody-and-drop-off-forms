@@ -75,7 +75,7 @@ body {
   max-width:none!important;
   margin:0!important;
   padding:.24in .32in .18in!important;
-  border:0!important;
+  border:2px solid #29abe2!important;
   box-shadow:none!important;
   overflow:hidden!important;
   box-sizing:border-box!important;
@@ -87,7 +87,7 @@ body {
 .brand-title { font-size:24pt!important; line-height:.88!important; }
 .brand-subtitle { font-size:10pt!important; letter-spacing:2px!important; }
 .brand-note { font-size:7pt!important; }
-.meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:1px solid #999!important; border-bottom:0!important; }
+.meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:1px solid #999!important; border-bottom:1px solid #999!important; }
 .meta-item { min-height:.42in!important; padding:.055in .06in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
 .field-grid { display:grid!important; align-items:stretch!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
