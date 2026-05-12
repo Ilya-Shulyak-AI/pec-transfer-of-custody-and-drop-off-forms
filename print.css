@@ -1,13 +1,13 @@
-@page { size:letter portrait; margin:0; }
+@page { size:letter portrait; margin:.15in; }
 
 html,
 body {
   background:#fff!important;
   margin:0!important;
   padding:0!important;
-  width:100%!important;
+  width:auto!important;
   min-height:0!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   display:block!important;
   -webkit-print-color-adjust:exact!important;
   print-color-adjust:exact!important;
@@ -70,16 +70,16 @@ body {
 }
 
 .page {
-  width:8.02in!important;
-  height:10.72in!important;
+  width:100%!important;
+  height:auto!important;
   max-width:none!important;
-  margin:.14in auto!important;
+  margin:0 auto!important;
   padding:0!important;
   border:2.25px solid #29abe2!important;
   box-shadow:none!important;
   overflow:hidden!important;
   box-sizing:border-box!important;
-  break-after:avoid!important;
+  break-after:auto!important;
   break-inside:avoid!important;
 }
 
