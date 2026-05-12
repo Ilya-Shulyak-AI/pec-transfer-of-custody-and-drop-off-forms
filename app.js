@@ -436,6 +436,17 @@
     $$('select[data-other-target]').forEach(toggleOtherForSelect);
   }
 
+  function autoFillReceivedBy(contactName) {
+    const receivedBy = $('receivedBy');
+    if (!receivedBy || !contactName) return;
+    const hasMatchingOption = Array.from(receivedBy.options).some((option) => option.value === contactName || option.textContent === contactName);
+    if (!hasMatchingOption) return;
+    receivedBy.value = contactName;
+    toggleOtherForSelect(receivedBy);
+    setValidity(receivedBy, '');
+    markField(receivedBy, false);
+  }
+
   function applyReceiverContactWorkflow(options = {}) {
     const contact = $('receiverContactName');
     const phone = $('receiverPhone');
@@ -447,6 +458,7 @@
       phone.value = knownPhone;
       phone.readOnly = true;
       phoneContainer?.classList.add('pre-fill');
+      if (options.autoFillReceivedBy !== false) autoFillReceivedBy(contact.value);
     } else {
       phone.readOnly = false;
       phoneContainer?.classList.remove('pre-fill');
@@ -544,7 +556,7 @@
     formatRestoredFields();
     restoreSignatures();
     toggleAllOtherFields();
-    applyReceiverContactWorkflow({ clearPhone: false });
+    applyReceiverContactWorkflow({ clearPhone: false, autoFillReceivedBy: false });
     validateAllFields(false);
   }
 
