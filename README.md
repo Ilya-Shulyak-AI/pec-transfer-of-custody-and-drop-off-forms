@@ -17,6 +17,16 @@ This repository holds the working code for Precision E-Cycle's Transfer of Custo
 3. Tap Add to Home Screen.
 4. Open the app from the Home Screen.
 
+## Home Screen behavior
+
+The app includes embedded PNG data icons for installability and iPhone/iPad Home Screen use. The PNGs are embedded as text data URLs so PR tools that reject binary files can still review the change:
+
+- 192x192 and 512x512 PNG data icons are referenced from `manifest.webmanifest` for browsers that use the web app manifest.
+- A 180x180 PNG data icon is referenced from `index.html` for Safari on iPhone and iPad.
+- `icon.svg` remains available as the browser favicon.
+
+For best iPhone results, open the live app in Safari, use Share → Add to Home Screen, and launch the saved Home Screen icon. If an older SVG icon is cached, remove the old Home Screen shortcut and add it again.
+
 ## Data storage
 
 The form stores entered data locally in the browser on the device being used. It does not use a backend database.
@@ -38,7 +48,9 @@ The current app is the Transfer of Custody form. The Drop-Off form / multi-form 
 - `print.css` controls print/PDF styling.
 - `app.js` controls form behavior, local storage, validation, and signatures.
 - `manifest.webmanifest` controls PWA/Home Screen metadata.
-- `icon.svg` provides the app icon.
+- `icon.svg` provides the SVG favicon.
+- Embedded 192x192 and 512x512 PNG data icons in `manifest.webmanifest` provide installable app icons without adding binary files.
+- The embedded 180x180 PNG data icon in `index.html` provides the iPhone/iPad Home Screen icon without adding binary files.
 
 ## Credit and starting point
 
