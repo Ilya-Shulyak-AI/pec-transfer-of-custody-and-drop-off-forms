@@ -1,0 +1,13 @@
+{
+  "name": "pec-transfer-of-custody",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Public GitHub Pages project for the Precision E-Cycle Transfer of Custody form.",
+  "type": "commonjs",
+  "scripts": {
+    "test:print": "node tests/print-output.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.52.0"
+  }
+}
