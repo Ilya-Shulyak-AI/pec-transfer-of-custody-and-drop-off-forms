@@ -73,7 +73,6 @@
       'fromZip',
       'transferMethod',
       'receiverContactName',
-      'receiverPhone',
       'receivedBy',
       'reasonSelect',
       'estimatedWeight',
@@ -92,17 +91,16 @@
     ],
     conditionalRequiredFields: [
       { fieldId: 'transferMethodOther', controllerId: 'transferMethod', requiredValue: 'Other' },
+      { fieldId: 'receiverContactNameOther', controllerId: 'receiverContactName', requiredValue: 'Other' },
       { fieldId: 'receivedByOther', controllerId: 'receivedBy', requiredValue: 'Other' },
-      { fieldId: 'receiverPhone', controllerId: 'receivedBy', requiredValue: 'Other' },
+      { fieldId: 'receiverPhone', controllerId: 'receiverContactName', requiredValue: 'Other' },
       { fieldId: 'reasonOther', controllerId: 'reasonSelect', requiredValue: 'Other' },
       { fieldId: 'estimatedWeightOther', controllerId: 'estimatedWeight', requiredValue: 'Other' }
     ],
     receiverPhoneByContact: {
-      'Ilya Shulyak': '(402) 413-1267',
-      'Slavic Brychka': '(402) 413-1267',
-      'Elliot Shuliak': '(402) 413-1267'
+      'Ilya Shulyak': '(402) 413-1267'
     },
-    defaultReceiverPhone: '(402) 413-1267',
+    defaultReceiverPhone: '(402) 540-6965',
     requiredRadioGroups: { dataDestruction: 'Data Destruction Required', certificateRequired: 'Certificate Required' }
   };
 
@@ -279,7 +277,7 @@
   function handleClick(event) { const actionEl = event.target.closest('[data-action]'); if (actionEl) { const action = actionEl.dataset.action; if (action === 'new-form') resetForm(); if (action === 'print') requestPrint(); if (action === 'force-print') printAnyway(); if (action === 'continue-editing') closePrintWarningModal(); if (action === 'today') setTodayAllDates(); if (action === 'clear-signature') { event.stopPropagation(); clearSigBox(actionEl.dataset.signature); } if (action === 'modal-clear-signature') sigModalClear(); if (action === 'modal-save-signature') sigModalDone(); return; } const sigBox = event.target.closest('[data-signature-box]'); if (sigBox) openSigModal(sigBox.dataset.signatureBox); }
   function handleKeydown(event) { const sigBox = event.target.closest('[data-signature-box]'); if (!sigBox) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openSigModal(sigBox.dataset.signatureBox); } }
   function handleInput(event) { const el = event.target; if (el.matches('[data-format]')) handleFormattedInput(el); else validateField(el, true); saveToStorage(); }
-  function handleChange(event) { const el = event.target; if (el.id === 'receivedBy') syncReceiverPhone(); if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); validateField(el, true); validateConditionalFieldsForController(el.id, true); saveToStorage(); }
+  function handleChange(event) { const el = event.target; if (el.matches('select[data-other-target]')) toggleOtherForSelect(el); if (el.id === 'receiverContactName') applyReceiverContactWorkflow({ clearPhone: true }); validateField(el, true); validateConditionalFieldsForController(el.id, true); saveToStorage(); }
   function init() { populateStateOptions(); populateWeightOptions(); bindSignatureCanvas(); loadFromStorage(); document.addEventListener('click', handleClick); document.addEventListener('keydown', handleKeydown); document.addEventListener('input', handleInput); document.addEventListener('change', handleChange); }
   document.addEventListener('DOMContentLoaded', init);
 })();
