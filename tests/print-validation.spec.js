@@ -65,11 +65,12 @@ test('completed Transfer of Custody form prints as one Letter portrait page', as
   await fillText(page, '#fromPhone', '4025550199');
   await fillText(page, '#fromEmail', 'print.validation@example-customer.com');
   await fillText(page, '#fromCity', 'Lincoln');
-  await fillText(page, '#fromState', 'NE');
+  await page.locator('#fromState').selectOption('NE');
   await fillText(page, '#fromZip', '68504-1234');
   await selectOtherAndFill(page, '#transferMethod', '#transferMethodOther', 'Dock pickup with palletized serialized equipment transfer');
 
-  await fillText(page, '#receiverContactName', 'Precision E-Cycle Receiving Validation Team');
+  await selectOtherAndFill(page, '#receiverContactName', '#receiverContactNameOther', 'Precision E-Cycle Receiving Validation Team');
+  await fillText(page, '#receiverPhone', '4025551267');
   await selectOtherAndFill(page, '#receivedBy', '#receivedByOther', 'Receiving Specialist With Long Validation Name');
 
   await selectOtherAndFill(page, '#reasonSelect', '#reasonOther', 'Mixed IT asset recycling, data destruction, and audit documentation');
