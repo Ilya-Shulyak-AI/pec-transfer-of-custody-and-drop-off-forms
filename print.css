@@ -1,213 +1,99 @@
-:root {
-  --print-paper-width: 8.5in;
-  --print-paper-height: 11in;
-  --print-page-padding: .24in .32in;
-  --print-background: #fff;
-  --print-rule-color: #999;
-  --print-rule: 1px solid var(--print-rule-color);
-  --print-cell-padding: .035in .06in;
-  --print-section-padding: .035in .08in;
-}
-
-/* Page setup */
-@page {
-  size: letter portrait;
-  margin: 0;
-}
+@page { size:letter portrait; margin:0; }
 
 html,
 body {
-  background: var(--print-background) !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  display: block !important;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-  font-size: 8.8pt !important;
+  background:#fff!important;
+  margin:0!important;
+  padding:0!important;
+  width:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  display:block!important;
+  -webkit-print-color-adjust:exact!important;
+  print-color-adjust:exact!important;
+  font-family:Arial, Helvetica, sans-serif!important;
+  font-size:8.8pt!important;
 }
 
-/* Visibility */
-.toolbar,
-.sig-modal,
-.print-warning-modal,
-.validation-banner,
-.sig-tap-hint,
-.sig-clear,
-.today-btn,
-.page-footer {
-  display: none !important;
-}
-
-/* Typography */
-.brand-title {
-  font-size: 24pt !important;
-  line-height: .88 !important;
-}
-
-.brand-subtitle {
-  font-size: 10pt !important;
-  letter-spacing: 2px !important;
-}
-
-.brand-note {
-  font-size: 7pt !important;
-}
-
+.brand-title,
+.brand-subtitle,
+.meta-label,
+.sec-header,
+.sig-panel-title,
 .fld label,
 .sig-label,
-.sig-date-row label {
-  font-size: 6.8pt !important;
+.sig-date-row label,
+.meta-item input {
+  font-family:"Arial Narrow", Arial, Helvetica, sans-serif!important;
 }
 
 .fld input,
 .fld select,
-.meta-item input,
-.sig-date-row input {
-  font-size: 9pt !important;
-  min-height: .16in !important;
-}
-
-.cb-opt span {
-  font-size: 8.4pt !important;
-}
-
-/* Document grid */
-.page {
-  width: var(--print-paper-width) !important;
-  height: var(--print-paper-height) !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: var(--print-page-padding) !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  break-after: avoid !important;
-  break-inside: avoid !important;
-}
-
-.field-grid {
-  display: grid !important;
-  align-items: stretch !important;
-  border-left: var(--print-rule) !important;
-  border-right: var(--print-rule) !important;
-}
-
-.fg-2 {
-  grid-template-columns: 1fr 1fr !important;
-}
-
-.fg-3 {
-  grid-template-columns: 1fr 1fr 1fr !important;
-}
-
-.fg-city {
-  grid-template-columns: 2fr 1fr 1fr 1.3fr !important;
-}
-
-/* Borders */
-.doc-header {
-  padding: .06in .1in !important;
-  border: var(--print-rule) !important;
-  border-bottom: 0 !important;
-  text-align: center !important;
-}
-
-.fld {
-  min-height: .34in !important;
-  padding: var(--print-cell-padding) !important;
-  border-right: var(--print-rule) !important;
-  border-bottom: var(--print-rule) !important;
-  overflow: hidden !important;
-}
-
-.fld:last-child {
-  border-right: 0 !important;
-}
-
-.sec-header {
-  padding: var(--print-section-padding) !important;
-  font-size: 8.4pt !important;
-  border-left: var(--print-rule) !important;
-  border-right: var(--print-rule) !important;
-}
-
-/* Metadata rows */
-.meta-row {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  border: var(--print-rule) !important;
-  border-bottom: 0 !important;
-}
-
-.meta-item {
-  min-height: .3in !important;
-  padding: .03in .06in !important;
-  border-right: var(--print-rule) !important;
-}
-
-.meta-item:last-child {
-  border-right: 0 !important;
-}
-
-/* Receiving party
-   Receiving-party rows intentionally reuse the shared document grid,
-   border, and typography rules above for consistent print output.
-*/
-
-.checkbox-row {
-  gap: 7px !important;
-  padding-top: 1px !important;
-}
-
+.fld textarea,
+.cb-opt span,
+.sig-date-row input,
 .note-box {
-  padding: var(--print-section-padding) !important;
-  font-size: 7.4pt !important;
-  border-left: var(--print-rule) !important;
-  border-right: var(--print-rule) !important;
+  font-family:Arial, Helvetica, sans-serif!important;
 }
 
-/* Signatures */
-.sig-grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  border-left: var(--print-rule) !important;
-  border-right: var(--print-rule) !important;
+.toolbar,
+.sig-modal,
+.print-warning-modal,
+.validation-banner,
+.storage-warning,
+.local-data-note,
+.sig-tap-hint,
+.sig-clear,
+.today-btn,
+.page-footer,
+.storage-warning,
+.local-data-note { display:none!important; }
+
+.page {
+  width:8.5in!important;
+  height:11in!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:.24in .32in!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  break-after:avoid!important;
+  break-inside:avoid!important;
 }
 
-.sig-panel {
-  padding: .05in .08in !important;
-  border-right: var(--print-rule) !important;
-  border-bottom: var(--print-rule) !important;
-  break-inside: avoid !important;
-}
-
-.sig-panel:last-child {
-  border-right: 0 !important;
-}
-
-.sig-panel-title {
-  margin: -.05in -.08in .05in !important;
-  padding: .03in .06in !important;
-  font-size: 8pt !important;
-}
-
-.sig-canvas-wrap {
-  height: .68in !important;
-}
-
-.sig-preview {
-  max-height: calc(100% - 6px) !important;
-}
-
-/* Overflow rules */
+.doc-header { padding:.06in .1in!important; border:1px solid #999!important; border-bottom:0!important; text-align:center!important; }
+.brand-title { font-size:24pt!important; line-height:.88!important; }
+.brand-subtitle { font-size:10pt!important; letter-spacing:2px!important; }
+.brand-note { font-size:7pt!important; }
+.meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:1px solid #999!important; border-bottom:0!important; }
+.meta-item { min-height:.3in!important; padding:.03in .06in!important; border-right:1px solid #999!important; }
+.meta-item:last-child { border-right:0!important; }
+.field-grid { display:grid!important; align-items:stretch!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.fg-2 { grid-template-columns:1fr 1fr!important; }
+.fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
+.fg-city { grid-template-columns:2fr 1fr 1fr 1.3fr!important; }
+.fld { min-height:.34in!important; padding:.035in .06in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; overflow:hidden!important; }
+.fld:last-child { border-right:0!important; }
+.fld label,
+.sig-label,
+.sig-date-row label { font-size:6.8pt!important; }
+.fld input,
+.fld select,
+.meta-item input,
+.sig-date-row input { font-size:9pt!important; min-height:.16in!important; }
+.sec-header { padding:.035in .08in!important; font-size:8.4pt!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.checkbox-row { gap:7px!important; padding-top:1px!important; }
+.cb-opt span { font-size:8.4pt!important; }
+.note-box { padding:.035in .08in!important; font-size:7.4pt!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.sig-grid { display:grid!important; grid-template-columns:1fr 1fr!important; border-left:1px solid #999!important; border-right:1px solid #999!important; }
+.sig-panel { padding:.05in .08in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; break-inside:avoid!important; }
+.sig-panel:last-child { border-right:0!important; }
+.sig-panel-title { margin:-.05in -.08in .05in!important; padding:.03in .06in!important; font-size:8pt!important; }
+.sig-canvas-wrap { height:.68in!important; }
+.sig-preview { max-height:calc(100% - 6px)!important; }
 section,
 .sig-grid,
 .note-box,
-.sig-panel {
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
-}
+.sig-panel { break-inside:avoid!important; page-break-inside:avoid!important; }
