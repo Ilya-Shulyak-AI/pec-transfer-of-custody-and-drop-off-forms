@@ -70,19 +70,19 @@ Use this checklist before merging any meaningful change into `main`.
 ## Local storage and reset
 
 - [ ] Entered data persists after refresh.
-- [ ] Stored signatures persist after refresh.
-- [ ] Clear Saved Data/New button asks for confirmation that local saved form data and signatures will be cleared.
-- [ ] Clear Saved Data/New button clears all editable fields.
-- [ ] Clear Saved Data/New button clears all hidden Other values.
-- [ ] Clear Saved Data/New button clears signatures.
-- [ ] Clear Saved Data/New button repopulates today’s date fields.
-- [ ] Clear Saved Data/New button generates a fresh TOC Form Number.
-- [ ] Local data note explains that form data and signatures stay in the browser until cleared.
-- [ ] Last-saved timestamp updates after a successful save.
-- [ ] If browser storage is blocked or full, a visible warning appears after editing or saving a signature.
-- [ ] If browser storage is blocked or full, the console message identifies quota/security storage failure where applicable.
+- [ ] Signatures persist after refresh.
+- [ ] Clear Saved Data/New confirmation mentions local saved form data and signatures.
+- [ ] Clear Saved Data/New clears all editable fields.
+- [ ] Clear Saved Data/New clears all hidden Other values.
+- [ ] Clear Saved Data/New clears signatures.
+- [ ] Clear Saved Data/New repopulates today’s date fields.
+- [ ] Clear Saved Data/New generates a fresh TOC Form Number.
+- [ ] Local data note is visible and accurately explains local saved data behavior.
+- [ ] Saved-at timestamp updates after a successful save.
+- [ ] Visible warning appears when storage is blocked or full.
+- [ ] Console distinguishes quota and security storage failures where practical.
 - [ ] No stale customer data reappears after reset.
-- [ ] App recovers gracefully if stored JSON is corrupted.
+- [ ] App recovers gracefully if stored JSON is corrupted where practical.
 
 ## Print/PDF
 
@@ -100,7 +100,8 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Signature section is clean and proportional.
 - [ ] App toolbar does not print.
 - [ ] Print warning modal does not print.
-- [ ] Storage warning and local-data note do not print.
+- [ ] Storage warning does not print.
+- [ ] Local data note does not print.
 - [ ] Signature modal does not print.
 - [ ] Tap hints and clear-signature controls do not print.
 - [ ] Empty signature boxes print cleanly.
