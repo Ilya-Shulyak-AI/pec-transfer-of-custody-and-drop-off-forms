@@ -65,7 +65,7 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] Done button saves signature.
 - [ ] Signature date stamps when a signature is saved and the date field is blank.
 - [ ] Saved signature persists after refresh.
-- [ ] New button clears both signatures.
+- [ ] Clear Saved Data/New button clears both signatures.
 
 ## Local storage and reset
 
