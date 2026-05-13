@@ -99,3 +99,59 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 @media(max-width:540px){ .toolbar { justify-content:space-between; gap:6px; padding:8px 10px; padding-top:calc(8px + var(--safe-top)); padding-left:calc(10px + var(--safe-left)); padding-right:calc(10px + var(--safe-right)); } .toolbar-label,.saved-status { display:none; } .btn { min-width:0; min-height:40px; padding:8px 8px; font-size:10px; letter-spacing:.25px; line-height:1.05; white-space:nowrap; } .btn-new { flex:1 1 0; min-width:0; } .btn-print { flex:0 0 66px; margin-left:0; padding-left:6px; padding-right:6px; } .brand-title { font-size:26px; } .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; } .sig-grid { grid-template-columns:1fr; } .sig-panel { border-right:none; border-bottom:1px solid var(--border); } .meta-row { grid-template-columns:1fr; } .meta-item { border-right:none; border-bottom:1px solid var(--border); } .print-warning-actions { flex-direction:column; } }
 @media(max-width:340px){ .toolbar { gap:5px; padding-left:calc(8px + var(--safe-left)); padding-right:calc(8px + var(--safe-right)); } .btn { padding:7px 6px; font-size:9px; letter-spacing:0; } .btn-print { flex-basis:58px; padding-left:4px; padding-right:4px; } }
 .fld select { -webkit-appearance:menulist; appearance:auto; padding-right:6px; }
+
+/* Keep toolbar actions readable in portrait layouts without shrinking the labels. */
+@media (orientation:portrait) and (min-width:541px) and (max-width:1024px){
+  .toolbar {
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    row-gap:8px;
+  }
+
+  .toolbar-label {
+    display:none;
+  }
+
+  .saved-status {
+    flex:1 1 100%;
+    min-width:0;
+    white-space:normal;
+  }
+
+  .btn,
+  .btn-new,
+  .btn-print {
+    flex:0 0 auto;
+    min-width:max-content;
+    width:max-content;
+    max-width:100%;
+    white-space:nowrap;
+  }
+
+  .btn-new {
+    margin-left:auto;
+  }
+
+  body {
+    padding-top:calc(116px + var(--safe-top));
+  }
+}
+
+@media (max-width:540px){
+  .btn,
+  .btn-new,
+  .btn-print {
+    min-width:max-content;
+    width:max-content;
+    white-space:nowrap;
+  }
+
+  .btn-new {
+    flex:0 0 auto;
+    margin-left:auto;
+  }
+
+  .btn-print {
+    flex:0 0 auto;
+  }
+}
