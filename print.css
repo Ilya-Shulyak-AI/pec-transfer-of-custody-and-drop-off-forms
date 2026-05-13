@@ -71,14 +71,14 @@ body {
 
 .page {
   width:100%!important;
-  height:10.74in!important;
-  max-height:10.74in!important;
+  height:auto!important;
+  max-height:none!important;
   max-width:none!important;
   margin:0 auto!important;
   padding:0!important;
   border:2.25px solid #29abe2!important;
   box-shadow:none!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   box-sizing:border-box!important;
   break-after:auto!important;
   break-inside:avoid!important;
