@@ -1,4 +1,4 @@
-@page { size:letter portrait; margin:.15in; }
+@page { size:letter portrait; margin:.12in; }
 
 html,
 body {
@@ -12,7 +12,7 @@ body {
   -webkit-print-color-adjust:exact!important;
   print-color-adjust:exact!important;
   font-family:Arial, Helvetica, sans-serif!important;
-  font-size:8.6pt!important;
+  font-size:8.2pt!important;
 }
 
 .brand-title,
@@ -71,7 +71,8 @@ body {
 
 .page {
   width:100%!important;
-  height:auto!important;
+  height:10.74in!important;
+  max-height:10.74in!important;
   max-width:none!important;
   margin:0 auto!important;
   padding:0!important;
@@ -83,18 +84,18 @@ body {
   break-inside:avoid!important;
 }
 
-.doc-header { padding:.052in .1in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
-.brand-title { font-size:23pt!important; line-height:.88!important; }
-.brand-subtitle { font-size:9.4pt!important; letter-spacing:2px!important; }
-.brand-note { font-size:6.6pt!important; }
+.doc-header { padding:.045in .09in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
+.brand-title { font-size:22pt!important; line-height:.88!important; }
+.brand-subtitle { font-size:9pt!important; letter-spacing:2px!important; }
+.brand-note { font-size:6.2pt!important; }
 .meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; border-bottom:1px solid #999!important; }
-.meta-item { min-height:.34in!important; padding:.04in .055in!important; border-right:1px solid #999!important; }
+.meta-item { min-height:.31in!important; padding:.035in .05in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
 .field-grid { display:grid!important; align-items:stretch!important; border:0!important; }
 .fg-2 { grid-template-columns:1fr 1fr!important; }
 .fg-3 { grid-template-columns:1fr 1fr 1fr!important; }
 .fg-city { grid-template-columns:2fr .88fr .88fr 1.2fr!important; }
-.fld { min-height:.405in!important; padding:.044in .052in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; overflow:hidden!important; }
+.fld { min-height:.37in!important; padding:.038in .048in!important; border-right:1px solid #999!important; border-bottom:1px solid #999!important; overflow:hidden!important; }
 .fld:last-child { border-right:0!important; }
 .fld label,
 .sig-label,
@@ -103,15 +104,15 @@ body {
 .fld select,
 .meta-item input,
 .sig-date-row input { font-size:8.4pt!important; min-height:.15in!important; }
-.sec-header { padding:.048in .07in!important; font-size:7.7pt!important; border:0!important; }
+.sec-header { padding:.04in .06in!important; font-size:7.7pt!important; border:0!important; }
 .checkbox-row { gap:6px!important; padding-top:1px!important; }
 .cb-opt span { font-size:8pt!important; }
-.note-box { padding:.048in .07in!important; font-size:6.8pt!important; border:0!important; border-bottom:1px solid #999!important; }
+.note-box { padding:.04in .06in!important; font-size:6.8pt!important; border:0!important; border-bottom:1px solid #999!important; }
 .sig-grid { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; }
-.sig-panel { padding:.06in .07in!important; border-right:1px solid #999!important; border-bottom:0!important; break-inside:auto!important; page-break-inside:auto!important; }
+.sig-panel { padding:.05in .06in!important; border-right:1px solid #999!important; border-bottom:0!important; break-inside:auto!important; page-break-inside:auto!important; }
 .sig-panel:last-child { border-right:0!important; }
-.sig-panel-title { margin:-.06in -.07in .06in!important; padding:.048in .055in!important; font-size:7.2pt!important; white-space:nowrap!important; overflow:hidden!important; text-overflow:clip!important; }
-.sig-canvas-wrap { height:.9in!important; }
+.sig-panel-title { margin:-.05in -.06in .05in!important; padding:.04in .05in!important; font-size:7.2pt!important; white-space:nowrap!important; overflow:hidden!important; text-overflow:clip!important; }
+.sig-canvas-wrap { height:.78in!important; }
 .sig-preview { max-height:calc(100% - 6px)!important; }
 section,
 .sig-grid,
