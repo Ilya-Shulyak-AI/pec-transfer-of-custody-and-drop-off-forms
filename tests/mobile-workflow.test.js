@@ -56,6 +56,18 @@ async function main() {
     assert.ok(savedStatusStyles.width > 0, 'Expected saved status to have readable width in portrait mobile toolbar');
     assert.notEqual(savedStatusStyles.color, 'rgb(0, 0, 0)', 'Expected saved status text not to render black on the dark toolbar');
 
+    const mobileControlFontSizes = await page.evaluate(() => {
+      const selectors = ['#tocFormNumber', '#fromCompanyName', '#fromState', '#transferSignatureDate'];
+      return selectors.map((selector) => ({
+        selector,
+        fontSize: Number.parseFloat(window.getComputedStyle(document.querySelector(selector)).fontSize),
+      }));
+    });
+
+    for (const { selector, fontSize } of mobileControlFontSizes) {
+      assert.ok(fontSize >= 16, `Expected ${selector} to use at least 16px text on mobile to avoid iOS focus zoom, got ${fontSize}px`);
+    }
+
     await page.selectOption('#receiverContactName', 'Ilya Shulyak');
     await page.locator('#receiverContactName').dispatchEvent('change');
     assert.equal(await page.locator('#receiverPhone').inputValue(), '(402) 413-1267');
