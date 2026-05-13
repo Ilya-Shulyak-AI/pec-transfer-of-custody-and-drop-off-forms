@@ -143,6 +143,21 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
   }
 
   body { padding-top:calc(114px + var(--safe-top)); }
+
+  /* iOS Safari auto-zooms focused form controls below 16px, then can leave
+     the document horizontally panned after the keyboard is dismissed. Keep
+     mobile controls at 16px so filling a cell never zooms the whole form. */
+  input,
+  select,
+  textarea,
+  .meta-item input,
+  .fld input:not([type="checkbox"]):not([type="radio"]),
+  .fld select,
+  .fld textarea,
+  .sig-date-row input {
+    font-size:16px;
+  }
+
   .brand-title { font-size:26px; }
   .fg-2,.fg-3,.fg-city { grid-template-columns:1fr; }
   .sig-grid { grid-template-columns:1fr; }
