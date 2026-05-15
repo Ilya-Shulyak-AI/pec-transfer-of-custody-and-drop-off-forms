@@ -68,21 +68,20 @@ async function main() {
       assert.ok(fontSize >= 16, `Expected ${selector} to use at least 16px text on mobile to avoid iOS focus zoom, got ${fontSize}px`);
     }
 
-    await page.selectOption('#receiverContactName', 'Ilya Shulyak');
-    await page.locator('#receiverContactName').dispatchEvent('change');
-    assert.equal(await page.locator('#receiverPhone').inputValue(), '(402) 413-1267');
-    assert.equal(await page.locator('#receivedBy').inputValue(), 'Ilya Shulyak');
+    assert.equal(await page.locator('#receiverPhone').inputValue(), '(402) 540-6965');
+    await page.selectOption('#receivedBy', 'Roman Stepanyuk');
+    await page.locator('#receivedBy').dispatchEvent('change');
+    assert.equal(await page.locator('#receivedBy').inputValue(), 'Roman Stepanyuk');
 
     await page.selectOption('#receivedBy', 'Slavic Brychka');
     await page.locator('#receivedBy').dispatchEvent('change');
     assert.equal(await page.locator('#receivedBy').inputValue(), 'Slavic Brychka');
 
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await page.locator('#receiverContactName').inputValue(), 'Ilya Shulyak');
-    assert.equal(await page.locator('#receiverPhone').inputValue(), '(402) 413-1267');
+    assert.equal(await page.locator('#receiverPhone').inputValue(), '(402) 540-6965');
     assert.equal(await page.locator('#receivedBy').inputValue(), 'Slavic Brychka');
 
-    console.log('Mobile toolbar and receiving-party autofill workflow passed');
+    console.log('Mobile toolbar and receiving-party locked company workflow passed');
   } finally {
     await context.close();
     await browser.close();

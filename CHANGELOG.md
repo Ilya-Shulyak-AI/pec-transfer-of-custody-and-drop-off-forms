@@ -7,7 +7,8 @@ All notable changes to this project should be documented in this file.
 ### Form and print cleanup
 
 - Changed the TOC label to TOC Form # and removed automatic TOC number generation.
-- Added Receiving Party Contact Name dropdown workflow with Ilya Shulyak autofill and Other/manual phone behavior.
+- Removed the Receiving Party Contact Name workflow, locked the Precision E-Cycle phone to (402) 540-6965, and added Roman Stepanyuk, Ilya Dubina, and Phillip Popov to Received By.
+- Removed the Data Destruction Required question because data destruction is always performed.
 - Added a visible validation banner and more detailed pre-print validation summary.
 - Standardized dates to MM/DD/YYYY.
 - Reworked signature input to Pointer Events and improved signature clear behavior.

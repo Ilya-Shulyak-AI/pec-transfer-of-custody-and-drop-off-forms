@@ -21,23 +21,22 @@ Use this checklist before merging any meaningful change into `main`.
 - [ ] PO field works and may remain blank.
 - [ ] Transferring Party fields save and restore.
 - [ ] Receiving Party prefilled company/address/phone/email/city/state/zip fields remain readonly.
-- [ ] Receiving Party contact fields save and restore.
+- [ ] Receiving Party Received By selection saves and restores.
 - [ ] Transfer Details fields save and restore.
 
-## Receiving Party contact workflow
+## Receiving Party workflow
 
-- [ ] Contact Name is a dropdown.
-- [ ] Selecting Ilya Shulyak fills Receiving Party phone as (402) 413-1267.
-- [ ] Selecting Ilya Shulyak makes the Receiving Party phone read-only.
-- [ ] Selecting Other shows the manual contact-name field beside the dropdown on desktop.
-- [ ] Selecting Other clears the default phone and allows manual phone entry.
-- [ ] Other contact name and manual phone persist after refresh.
+- [ ] Contact Name is not shown in the Receiving Party section.
+- [ ] Receiving Party phone is prefilled as (402) 540-6965 and remains read-only.
+- [ ] Received By is the only editable control in the Receiving Party section.
+- [ ] Selecting Other shows the manual receiver-name field beside the dropdown on desktop.
+- [ ] Other receiver name persists after refresh when visible/relevant.
 
 ## Dropdowns and Other fields
 
 - [ ] Transfer Method dropdown works.
 - [ ] Transfer Method Other field appears only when Other is selected.
-- [ ] Receiving Party / Received By contact dropdown includes Ilya Shulyak, Slavic Brychka, and Other.
+- [ ] Receiving Party / Received By dropdown includes Ilya Shulyak, Slavic Brychka, Roman Stepanyuk, Ilya Dubina, Phillip Popov, and Other.
 - [ ] Receiving Party / Received By contact dropdown saves and restores the selected contact.
 - [ ] Receiving Party / Received By Other field appears only when Other is selected.
 - [ ] Receiving Party / Received By Other field clears when the dropdown changes away from Other.
@@ -54,7 +53,6 @@ Use this checklist before merging any meaningful change into `main`.
 
 - [ ] Empty required fields are highlighted when Print is selected.
 - [ ] Missing signatures are highlighted when Print is selected.
-- [ ] Missing Data Destruction Required choice is highlighted when Print is selected.
 - [ ] Missing Certificate Required choice is highlighted when Print is selected.
 - [ ] State field accepts valid two-letter state abbreviations.
 - [ ] State field uppercases entries.
