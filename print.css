@@ -15,7 +15,8 @@ body {
   font-size:8.2pt!important;
 }
 
-.brand-subtitle,
+.brand-title-main,
+.brand-title-sub,
 .meta-label,
 .sec-header,
 .sig-panel-title,
@@ -83,10 +84,11 @@ body {
   break-inside:avoid!important;
 }
 
-.doc-header { padding:.04in .09in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
-.brand-logo { display:block!important; width:4.95in!important; max-width:100%!important; height:auto!important; margin:0 auto!important; }
-.brand-subtitle { font-size:11pt!important; letter-spacing:2.2px!important; margin-top:.012in!important; }
-.brand-note { font-size:6.2pt!important; }
+.doc-header { padding:.06in .09in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
+.brand-title { display:inline-flex!important; flex-direction:column!important; align-items:center!important; gap:.015in!important; max-width:100%!important; }
+.brand-title-main { font-size:23pt!important; font-style:italic!important; font-weight:900!important; line-height:.9!important; color:#214a9a!important; letter-spacing:1.1pt!important; text-transform:uppercase!important; transform:skewX(-8deg)!important; }
+.brand-title-sub { position:relative!important; width:100%!important; padding-top:.035in!important; font-size:10.5pt!important; font-weight:800!important; line-height:1!important; color:#29abe2!important; letter-spacing:1.7pt!important; text-transform:uppercase!important; }
+.brand-title-sub::before { content:""!important; position:absolute!important; top:0!important; left:8%!important; right:8%!important; height:1px!important; background:#29abe2!important; }
 .meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; border-bottom:1px solid #999!important; }
 .meta-item { min-height:.31in!important; padding:.035in .05in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
