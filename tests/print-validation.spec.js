@@ -96,12 +96,9 @@ async function main() {
     await fillText(page, '#fromZip', '68504-1234');
     await selectOtherAndFill(page, '#transferMethod', '#transferMethodOther', 'Dock pickup with palletized serialized equipment transfer');
 
-    await selectOtherAndFill(page, '#receiverContactName', '#receiverContactNameOther', 'Precision E-Cycle Receiving Validation Team');
-    await fillText(page, '#receiverPhone', '4025551267');
     await selectOtherAndFill(page, '#receivedBy', '#receivedByOther', 'Receiving Specialist With Long Validation Name');
 
     await selectOtherAndFill(page, '#reasonSelect', '#reasonOther', 'Mixed IT asset recycling, data destruction, and audit documentation');
-    await page.check('#dataDestructionYes');
     await page.check('#certificateYes');
     await selectOtherAndFill(page, '#estimatedWeight', '#estimatedWeightOther', '9876');
     await fillText(page, '#totalUnits', '12 pallets, 48 laptops, 32 desktops, 24 monitors, and boxed accessories');

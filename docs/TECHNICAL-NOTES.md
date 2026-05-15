@@ -49,7 +49,7 @@ The app is still intentionally small and uses file-level separation instead of J
 Although `app.js` is not split into separate files, it is organized around these responsibilities:
 
 - App constants:
-  - Current storage key: `pec_toc_form_v7`.
+  - Current storage key: `pec_toc_form_v8`.
   - Backward-compatible old storage keys.
   - Signature key prefix.
   - Supported state abbreviations.
@@ -80,11 +80,11 @@ Although `app.js` is not split into separate files, it is organized around these
   - Valid forms call `window.print()` immediately.
   - Incomplete or invalid forms show a validation banner and open a modal with Continue Editing and Print Anyway actions.
 
-## Receiving Party contact behavior
+## Receiving Party behavior
 
-The Receiving Party section is prefilled for Precision E-Cycle and includes a `Received By` contact dropdown. The dropdown currently includes Ilya Shulyak, Slavic Brychka, and Other.
+The Receiving Party section is prefilled for Precision E-Cycle. Company, address, phone, email, city, state, and zip are read-only, and the phone value is locked to (402) 540-6965. The only editable control in the section is the `Received By` dropdown. The dropdown currently includes Ilya Shulyak, Slavic Brychka, Roman Stepanyuk, Ilya Dubina, Phillip Popov, and Other.
 
-When Other is selected, the custom receiver-name field is displayed. When the dropdown changes away from Other, that custom field is hidden, cleared, and its validation/highlight state is reset. Both the selected contact and the custom Other value participate in local storage when visible/relevant.
+When Other is selected, the custom receiver-name field is displayed. When the dropdown changes away from Other, that custom field is hidden, cleared, and its validation/highlight state is reset. Both the selected receiver and the custom Other value participate in local storage when visible/relevant.
 
 ## Storage model
 
@@ -92,7 +92,7 @@ Form data is stored in browser `localStorage` only. There is no backend database
 
 Current keys:
 
-- `pec_toc_form_v7` for the versioned form payload.
+- `pec_toc_form_v8` for the versioned form payload.
 - `pec_toc_sig_1` for the Transferring Party signature image.
 - `pec_toc_sig_2` for the Receiving Party signature image.
 

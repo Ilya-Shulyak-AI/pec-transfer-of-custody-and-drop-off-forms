@@ -18,7 +18,6 @@ This repository hosts a lightweight, local-first Transfer of Custody form for Pr
 4. Review the Receiving Party section, which is prefilled for Precision E-Cycle. Select the receiving contact from the Received By dropdown, or choose Other to reveal a custom receiver-name field.
 5. Complete Transfer Details:
    - Reason for Transfer dropdown, with an Other field when needed.
-   - Data Destruction Required radio choice.
    - Certificate Required radio choice.
    - Estimated Total Weight dropdown, including Less than 100 lbs, 100-lb increments up to 10,000 lbs, and an Other/manual weight entry.
    - Total Units free-text summary.
@@ -43,7 +42,7 @@ The app does not use a backend database, cloud sync, or server-side customer-dat
 
 Storage details:
 
-- Current form payload key: `pec_toc_form_v7`.
+- Current form payload key: `pec_toc_form_v8`.
 - Older form keys are checked for compatibility and cleaned during reset.
 - Signature keys use the `pec_toc_sig_` prefix.
 - Local storage reads/writes are wrapped so the app can continue functioning if browser storage is unavailable, full, or blocked.

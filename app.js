@@ -2,10 +2,10 @@
   'use strict';
 
   const APP = {
-    storageKey: 'pec_toc_form_v7',
-    oldStorageKeys: ['pec_toc_form_v6', 'pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
+    storageKey: 'pec_toc_form_v8',
+    oldStorageKeys: ['pec_toc_form_v7', 'pec_toc_form_v6', 'pec_toc_form_v5', 'pec_toc_form_v4', 'pec_toc_form_v3', 'pec_toc_form_v2'],
     signatureKeyPrefix: 'pec_toc_sig_',
-    payloadVersion: 7,
+    payloadVersion: 8,
     states: [
       'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
       'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
@@ -15,9 +15,8 @@
     ],
     dateFields: ['formDate', 'transferSignatureDate', 'receiverSignatureDate'],
     signatureIds: ['1', '2'],
-    radioGroups: ['dataDestruction', 'certificateRequired'],
+    radioGroups: ['certificateRequired'],
     requiredRadioGroups: {
-      dataDestruction: 'Data Destruction Required',
       certificateRequired: 'Certificate Required'
     },
     fieldLabels: {
@@ -33,9 +32,6 @@
       fromZip: 'Transferring Party Zip',
       transferMethod: 'Transfer Method',
       transferMethodOther: 'Transfer Method Other',
-      receiverContactName: 'Receiving Party Contact Name',
-      receiverContactNameOther: 'Receiving Party Contact Name Other',
-      receiverPhone: 'Receiving Party Phone',
       receivedBy: 'Received By',
       receivedByOther: 'Received By Other',
       reasonSelect: 'Reason for Transfer',
@@ -58,8 +54,6 @@
       'fromState',
       'fromZip',
       'transferMethod',
-      'receiverContactName',
-      'receiverPhone',
       'receivedBy',
       'reasonSelect',
       'estimatedWeight',
@@ -70,14 +64,10 @@
     optionalFieldIds: ['poNumber'],
     conditionalRequiredFields: [
       { fieldId: 'transferMethodOther', controllerId: 'transferMethod', requiredValue: 'Other' },
-      { fieldId: 'receiverContactNameOther', controllerId: 'receiverContactName', requiredValue: 'Other' },
       { fieldId: 'receivedByOther', controllerId: 'receivedBy', requiredValue: 'Other' },
       { fieldId: 'reasonOther', controllerId: 'reasonSelect', requiredValue: 'Other' },
       { fieldId: 'estimatedWeightOther', controllerId: 'estimatedWeight', requiredValue: 'Other' }
-    ],
-    receiverPhoneByContact: {
-      'Ilya Shulyak': '(402) 413-1267'
-    }
+    ]
   };
 
   const state = {
@@ -436,40 +426,6 @@
     $$('select[data-other-target]').forEach(toggleOtherForSelect);
   }
 
-  function autoFillReceivedBy(contactName) {
-    const receivedBy = $('receivedBy');
-    if (!receivedBy || !contactName) return;
-    const hasMatchingOption = Array.from(receivedBy.options).some((option) => option.value === contactName || option.textContent === contactName);
-    if (!hasMatchingOption) return;
-    receivedBy.value = contactName;
-    toggleOtherForSelect(receivedBy);
-    setValidity(receivedBy, '');
-    markField(receivedBy, false);
-  }
-
-  function applyReceiverContactWorkflow(options = {}) {
-    const contact = $('receiverContactName');
-    const phone = $('receiverPhone');
-    if (!contact || !phone) return;
-
-    const knownPhone = APP.receiverPhoneByContact[contact.value];
-    const phoneContainer = findFieldContainer(phone);
-    if (knownPhone) {
-      phone.value = knownPhone;
-      phone.readOnly = true;
-      phoneContainer?.classList.add('pre-fill');
-      if (options.autoFillReceivedBy !== false) autoFillReceivedBy(contact.value);
-    } else {
-      phone.readOnly = false;
-      phoneContainer?.classList.remove('pre-fill');
-      if (options.clearPhone || contact.value === '') phone.value = '';
-    }
-
-    formatFieldValue(phone);
-    setValidity(phone, '');
-    markField(phone, false);
-  }
-
   function populateStateOptions() {
     const select = $('fromState');
     if (!select || select.dataset.populated === 'true') return;
@@ -556,7 +512,6 @@
     formatRestoredFields();
     restoreSignatures();
     toggleAllOtherFields();
-    applyReceiverContactWorkflow({ clearPhone: false, autoFillReceivedBy: false });
     validateAllFields(false);
   }
 
@@ -578,7 +533,6 @@
     closePrintWarningModal();
     hideStorageWarning();
     toggleAllOtherFields();
-    applyReceiverContactWorkflow({ clearPhone: true });
     setSavedAtDisplay('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -816,7 +770,6 @@
     const el = event.target;
     if (!el.matches?.('[data-save="true"]')) return;
     if (el.matches('select[data-other-target]')) toggleOtherForSelect(el);
-    if (el.id === 'receiverContactName') applyReceiverContactWorkflow({ clearPhone: true });
     formatFieldValue(el);
     validateField(el, true);
     validateConditionalFieldsForController(el.id, true);

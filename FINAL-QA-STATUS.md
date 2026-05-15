@@ -28,9 +28,9 @@ The following items were verified by reviewing repository files, not by running 
 
 - The app is a single Transfer of Custody page.
 - Receiving Party company/address/phone/email/city/state/zip values are readonly and prefilled for Precision E-Cycle.
-- The Receiving Party / Received By dropdown includes Ilya Shulyak, Slavic Brychka, and Other.
+- The Receiving Party / Received By dropdown includes Ilya Shulyak, Slavic Brychka, Roman Stepanyuk, Ilya Dubina, Phillip Popov, and Other.
 - Other fields are shown only when their dropdown value is Other, and are cleared when hidden.
-- Current form payload storage key is `pec_toc_form_v7`.
+- Current form payload storage key is `pec_toc_form_v8`.
 - Signatures use the `pec_toc_sig_` localStorage prefix.
 - Print styles live in `print.css` and are loaded as print media.
 - PWA metadata is present in `manifest.webmanifest` and iOS meta tags are present in `index.html`.
