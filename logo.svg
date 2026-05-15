@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 180" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">Precision E-Cycle</title>
+  <desc id="logoDesc">Precision E-Cycle logo with the tagline Precision in every process, integrity in every outcome.</desc>
+  <defs>
+    <style>
+      .blue{fill:#224a99}.cyan{fill:#13aeea}.stroke-cyan{fill:none;stroke:#13aeea;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}.word{font-family:Arial Black, Impact, Arial, sans-serif;font-style:italic;font-weight:900;letter-spacing:3px}.tag{font-family:Arial, Helvetica, sans-serif;font-weight:700;letter-spacing:.6px}
+    </style>
+  </defs>
+
+  <g transform="translate(42 28)">
+    <path class="stroke-cyan" d="M115 7c24 5 45 18 60 36"/>
+    <path class="cyan" d="M173 21l-1 24-24-2z"/>
+    <path class="stroke-cyan" d="M176 88c-9 38-42 67-83 70"/>
+    <path class="cyan" d="M110 144l-22 15 25 12z"/>
+    <path class="stroke-cyan" d="M48 148C20 128 7 98 13 65 20 25 54 0 96 0"/>
+
+    <path class="blue" d="M42 52h91c17 0 31 14 31 31 0 16-13 30-30 30H92l-18 43-24-8 17-52h63c7 0 12-6 12-13s-5-12-12-12H57l-25 76-24-8z"/>
+    <path class="blue" d="M63 116l-39 63 8-49z"/>
+    <path class="cyan" d="M39 154l-15 25 5-31z"/>
+  </g>
+
+  <text x="230" y="85" class="blue word" font-size="55">PRECISION E-CYCLE</text>
+  <text x="232" y="124" class="cyan tag" font-size="24">PRECISION IN EVERY PROCESS, INTEGRITY IN EVERY OUTCOME</text>
+</svg>
