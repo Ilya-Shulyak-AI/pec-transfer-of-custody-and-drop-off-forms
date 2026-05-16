@@ -17,6 +17,7 @@ body {
 
 .brand-title-main,
 .brand-title-sub,
+.brand-title-docline,
 .meta-label,
 .sec-header,
 .sig-panel-title,
@@ -84,11 +85,12 @@ body {
   break-inside:avoid!important;
 }
 
-.doc-header { padding:.06in .09in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
-.brand-title { display:inline-flex!important; flex-direction:column!important; align-items:center!important; gap:.015in!important; max-width:100%!important; }
-.brand-title-main { font-size:23pt!important; font-style:italic!important; font-weight:900!important; line-height:.9!important; color:#214a9a!important; letter-spacing:1.1pt!important; text-transform:uppercase!important; transform:skewX(-8deg)!important; }
-.brand-title-sub { position:relative!important; width:100%!important; padding-top:.035in!important; font-size:10.5pt!important; font-weight:800!important; line-height:1!important; color:#29abe2!important; letter-spacing:1.7pt!important; text-transform:uppercase!important; }
+.doc-header { padding:.045in .09in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
+.brand-title { display:inline-flex!important; flex-direction:column!important; align-items:center!important; gap:.012in!important; max-width:100%!important; }
+.brand-title-main { font-family:"Arial Black", Impact, "Arial Narrow", Arial, Helvetica, sans-serif!important; font-size:21pt!important; font-style:italic!important; font-weight:900!important; line-height:.9!important; color:#214a9a!important; letter-spacing:.6pt!important; text-transform:uppercase!important; }
+.brand-title-sub { position:relative!important; width:100%!important; padding-top:.03in!important; font-size:9.8pt!important; font-weight:800!important; line-height:1!important; color:#29abe2!important; letter-spacing:1.5pt!important; text-transform:uppercase!important; }
 .brand-title-sub::before { content:""!important; position:absolute!important; top:0!important; left:8%!important; right:8%!important; height:1px!important; background:#29abe2!important; }
+.brand-title-docline { font-size:6.6pt!important; font-weight:700!important; line-height:1.05!important; color:#1a1a1a!important; letter-spacing:.25pt!important; }
 .meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; border-bottom:1px solid #999!important; }
 .meta-item { min-height:.31in!important; padding:.035in .05in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
