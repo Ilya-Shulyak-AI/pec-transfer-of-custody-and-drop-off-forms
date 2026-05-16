@@ -16,12 +16,19 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .storage-warning { display:none; width:100%; max-width:760px; margin:10px 16px 0; padding:10px 14px; background:var(--warn); border:2px solid var(--warn-border); color:var(--warn-text); font-size:14px; line-height:1.35; font-weight:600; box-shadow:0 2px 10px rgba(0,0,0,.12); }
 .storage-warning.show { display:block; }
 @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
-.doc-header { border-bottom:3px solid var(--blue-light); padding:18px 20px 17px; background:#fff; text-align:center; }
-.brand-title { display:inline-flex; flex-direction:column; align-items:center; gap:3px; max-width:100%; }
-.brand-title-main { font-family:"Arial Black", Impact, var(--font-display); font-size:clamp(30px, 7vw, 52px); font-style:italic; font-weight:900; line-height:.92; color:#214a9a; letter-spacing:.8px; text-transform:uppercase; text-shadow:0 1px 0 rgba(26,79,138,.12); }
-.brand-title-sub { position:relative; width:100%; padding-top:7px; font-family:var(--font-display); font-size:clamp(15px, 3.3vw, 22px); font-weight:800; line-height:1; color:var(--blue-light); letter-spacing:2.6px; text-transform:uppercase; }
+.doc-header { border-bottom:3px solid var(--blue-light); padding:15px 20px 14px; background:#fff; text-align:center; }
+.brand-lockup { display:flex; align-items:center; justify-content:center; gap:14px; max-width:100%; margin:0 auto 7px; }
+.brand-mark { flex:0 0 clamp(58px, 12vw, 90px); width:clamp(58px, 12vw, 90px); }
+.brand-mark svg { display:block; width:100%; height:auto; overflow:visible; }
+.brand-mark-blue { fill:#224a99; }
+.brand-mark-cyan { fill:#13aeea; }
+.brand-mark-arrow { fill:none; stroke:#13aeea; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+.brand-copy { display:flex; flex-direction:column; align-items:flex-start; min-width:0; }
+.brand-title-main { font-family:"Arial Black", Impact, var(--font-display); font-size:clamp(28px, 6.7vw, 48px); font-style:italic; font-weight:900; line-height:.92; color:#214a9a; letter-spacing:1.8px; text-transform:uppercase; text-shadow:0 1px 0 rgba(26,79,138,.12); white-space:nowrap; }
+.brand-title-tagline { margin-top:5px; font-family:Arial, Helvetica, sans-serif; font-size:clamp(9px, 1.8vw, 14px); font-weight:800; line-height:1.1; color:var(--blue-light); letter-spacing:.45px; text-transform:uppercase; text-align:left; }
+.brand-title-sub { position:relative; width:min(100%, 520px); margin:0 auto; padding-top:8px; font-family:var(--font-display); font-size:clamp(16px, 3.4vw, 24px); font-weight:900; line-height:1; color:var(--blue-light); letter-spacing:3px; text-transform:uppercase; }
 .brand-title-sub::before { content:""; position:absolute; top:0; left:8%; right:8%; height:2px; background:linear-gradient(90deg, transparent, var(--blue-light), transparent); }
-.brand-title-docline { max-width:100%; font-family:var(--font-display); font-size:clamp(11px, 2.2vw, 15px); font-weight:700; line-height:1.2; color:var(--ink); letter-spacing:.55px; }
+.brand-title-docline { max-width:100%; margin-top:5px; font-family:var(--font-display); font-size:clamp(10px, 2vw, 13px); font-weight:700; line-height:1.2; color:var(--ink); letter-spacing:.45px; }
 .local-data-note { padding:8px 16px; background:#fff9e6; border-bottom:1px solid #e6cc80; color:#5f4500; font-size:11px; line-height:1.35; }
 .local-data-note strong { font-weight:700; }
 #savedAtStatus { display:block; margin-top:2px; color:rgba(255,255,255,.78); font-size:10px; }
@@ -161,10 +168,13 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
     font-size:16px;
   }
 
-  .doc-header { padding:16px 14px 15px; }
-  .brand-title-main { font-size:clamp(28px, 11vw, 40px); letter-spacing:.8px; }
-  .brand-title-sub { font-size:clamp(14px, 5vw, 18px); letter-spacing:1.8px; }
-  .brand-title-docline { font-size:clamp(10px, 3.3vw, 13px); letter-spacing:.25px; }
+  .doc-header { padding:13px 12px 14px; }
+  .brand-lockup { gap:9px; margin-bottom:6px; }
+  .brand-mark { flex-basis:clamp(46px, 16vw, 62px); width:clamp(46px, 16vw, 62px); }
+  .brand-title-main { font-size:clamp(22px, 8.6vw, 34px); letter-spacing:.7px; }
+  .brand-title-tagline { font-size:clamp(7.5px, 2.7vw, 10px); letter-spacing:.12px; }
+  .brand-title-sub { font-size:clamp(14px, 4.8vw, 18px); letter-spacing:1.6px; }
+  .brand-title-docline { font-size:clamp(9px, 3vw, 12px); letter-spacing:.2px; }
   .fg-1,.fg-2,.fg-3,.fg-city { grid-template-columns:1fr; }
   .sig-grid { grid-template-columns:1fr; }
   .sig-panel { border-right:none; border-bottom:1px solid var(--border); }
