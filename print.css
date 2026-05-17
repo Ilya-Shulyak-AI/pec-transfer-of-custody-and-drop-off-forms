@@ -87,7 +87,8 @@ body {
 }
 
 .doc-header { padding:.035in .06in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
-.toc-header-reference { display:block!important; width:100%!important; max-width:7.35in!important; height:auto!important; margin:0 auto!important; }
+.toc-header-logo { display:block!important; width:100%!important; max-width:4.9in!important; height:auto!important; margin:0 auto!important; }
+.toc-header-title { margin-top:.01in!important; font-size:14pt!important; line-height:1!important; color:#1a4f8a!important; font-weight:800!important; letter-spacing:1.5px!important; text-transform:uppercase!important; }
 .meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; border-bottom:1px solid #999!important; }
 .meta-item { min-height:.31in!important; padding:.035in .05in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }

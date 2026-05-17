@@ -17,7 +17,8 @@ body { font-family:var(--font-body); background:var(--bg); min-height:100vh; min
 .storage-warning.show { display:block; }
 @media(min-width:780px){ .page{ margin:16px; } body{ padding-top:calc(72px + var(--safe-top)); } }
 .doc-header { border-bottom:3px solid var(--blue-light); padding:10px 14px; background:#fff; text-align:center; }
-.toc-header-reference { display:block; width:100%; max-width:1000px; height:auto; margin:0 auto; }
+.toc-header-logo { display:block; width:100%; max-width:640px; height:auto; margin:0 auto; }
+.toc-header-title { margin-top:4px; font-family:var(--font-display); font-size:clamp(18px, 4vw, 30px); font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--blue); }
 .local-data-note { padding:8px 16px; background:#fff9e6; border-bottom:1px solid #e6cc80; color:#5f4500; font-size:11px; line-height:1.35; }
 .local-data-note strong { font-weight:700; }
 #savedAtStatus { display:block; margin-top:2px; color:rgba(255,255,255,.78); font-size:10px; }

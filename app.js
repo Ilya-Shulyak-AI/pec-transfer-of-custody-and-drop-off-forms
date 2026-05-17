@@ -171,6 +171,16 @@
     return String(value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
   }
 
+  function formatZipValue(value) {
+    const digits = String(value || '').replace(/\D/g, '').slice(0, 9);
+    if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    return digits;
+  }
+
+  function isValidZipValue(value) {
+    return /^\d{5}(-\d{4})?$/.test(String(value || '').trim());
+  }
+
   function setValidity(el, message) {
     if (el && typeof el.setCustomValidity === 'function') el.setCustomValidity(message || '');
   }
@@ -225,6 +235,7 @@
     const value = String(el?.value || '').trim();
     if (!value) return false;
     if (el.dataset.format === 'state') return !APP.states.includes(value.toUpperCase());
+    if (el.dataset.format === 'zip') return !isValidZipValue(value);
     if (el.dataset.format === 'date' || APP.dateFields.includes(el.id)) return !isValidFormattedDate(value);
     if (el.dataset.format === 'weight') return Number(value.replace(/\D/g, '')) <= 0;
     if (el.type === 'email') return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -236,7 +247,9 @@
     if (!el || !el.id) return true;
     const missing = isRequiredField(el) && !String(el.value || '').trim();
     const invalid = fieldHasInvalidValue(el);
-    const message = invalid && (el.dataset.format === 'date' || APP.dateFields.includes(el.id)) ? 'Use a real date in MM/DD/YYYY format.' : 'Please check this field.';
+    let message = 'Please check this field.';
+    if (invalid && (el.dataset.format === 'date' || APP.dateFields.includes(el.id))) message = 'Use a real date in MM/DD/YYYY format.';
+    if (invalid && el.dataset.format === 'zip') message = 'Use a 5-digit ZIP or ZIP+4.';
     setValidity(el, invalid ? message : '');
     if (mark) markField(el, missing || invalid);
     return !missing && !invalid;
@@ -348,6 +361,7 @@
     if (el.dataset.format === 'phone') el.value = formatPhoneValue(el.value);
     if (el.dataset.format === 'weight') el.value = formatManualWeightValue(el.value);
     if (el.dataset.format === 'state') el.value = normalizeStateValue(el.value);
+    if (el.dataset.format === 'zip') el.value = formatZipValue(el.value);
     if (el.dataset.format === 'date') el.value = formatDateInputValue(el.value);
   }
 
@@ -611,8 +625,8 @@
     const pad = 16;
     minX = Math.max(0, minX - pad);
     minY = Math.max(0, minY - pad);
-    maxX = Math.min(srcCanvas.width, maxX + pad);
-    maxY = Math.min(srcCanvas.height, maxY + pad);
+    maxX = Math.min(srcCanvas.width, maxX + pad + 1);
+    maxY = Math.min(srcCanvas.height, maxY + pad + 1);
     const width = maxX - minX;
     const height = maxY - minY;
     const out = document.createElement('canvas');
