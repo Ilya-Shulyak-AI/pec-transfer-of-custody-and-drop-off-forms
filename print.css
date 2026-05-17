@@ -15,20 +15,15 @@ body {
   font-size:8.2pt!important;
 }
 
-.brand-title-main,
-.brand-title-sub,
-.brand-title-tagline,
-.brand-title-docline,
+.toc-header-title,
+.toc-header-website,
 .meta-label,
 .sec-header,
 .sig-panel-title,
 .fld label,
 .sig-label,
 .sig-date-row label,
-.meta-item input {
-  font-family:"Arial Narrow", Arial, Helvetica, sans-serif!important;
-}
-
+.meta-item input,
 .fld input,
 .fld select,
 .fld textarea,
@@ -86,9 +81,10 @@ body {
   break-inside:avoid!important;
 }
 
-.doc-header { padding:.035in .06in!important; border:0!important; border-bottom:1px solid #999!important; text-align:center!important; }
-.toc-header-logo { display:block!important; width:100%!important; max-width:4.9in!important; height:auto!important; margin:0 auto!important; }
-.toc-header-title { margin-top:.01in!important; font-size:14pt!important; line-height:1!important; color:#1a4f8a!important; font-weight:800!important; letter-spacing:1.5px!important; text-transform:uppercase!important; }
+.doc-header { display:grid!important; grid-template-columns:1.8in 1fr 1.8in!important; grid-template-rows:auto auto!important; align-items:center!important; column-gap:.08in!important; padding:.05in .07in!important; border:0!important; border-bottom:1px solid #999!important; }
+.toc-header-logo { display:block!important; grid-column:1!important; grid-row:1 / span 2!important; width:100%!important; max-width:1.8in!important; height:auto!important; margin:0!important; }
+.toc-header-title { grid-column:2!important; grid-row:1 / span 2!important; justify-self:center!important; font-size:14pt!important; line-height:1!important; color:#1a4f8a!important; font-weight:800!important; letter-spacing:1.4px!important; text-transform:uppercase!important; white-space:nowrap!important; }
+.toc-header-website { grid-column:3!important; grid-row:2!important; align-self:end!important; justify-self:end!important; font-size:6.8pt!important; line-height:1!important; color:#555!important; font-weight:700!important; letter-spacing:.25px!important; white-space:nowrap!important; }
 .meta-row { display:grid!important; grid-template-columns:1fr 1fr!important; border:0!important; border-bottom:1px solid #999!important; }
 .meta-item { min-height:.31in!important; padding:.035in .05in!important; border-right:1px solid #999!important; }
 .meta-item:last-child { border-right:0!important; }
